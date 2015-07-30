@@ -4,3 +4,4 @@
 *.aux
 *.py~
 *.tmp
+*.pyc
