@@ -1,0 +1,13 @@
+<script
+    src="http://localhost:5006/bokeh/autoload.js/663ad121-6f0d-4305-83e0-3bbda7419c5a"
+    id="663ad121-6f0d-4305-83e0-3bbda7419c5a"
+    async="true"
+    data-bokeh-data="server"
+    data-bokeh-modelid="ef67e2f6-4b7a-420f-ad35-5e27e013f07f"
+    data-bokeh-root-url="http://localhost:5006/"
+    data-bokeh-docid="fd9a7b5b-8fa5-4a3a-9f58-d699e6055368"
+    
+    data-bokeh-docapikey="f19acbd9-b251-4093-9524-432e83d1259b"
+    
+    data-bokeh-loglevel="info"
+></script>
