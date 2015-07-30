@@ -1,2 +1,6 @@
+*.synctex.gz
+*.out
+*.log
+*.aux
 *.py~
 *.tmp
