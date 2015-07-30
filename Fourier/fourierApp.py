@@ -173,7 +173,7 @@ print("""Bokeh server is now running the fourier app!""")
 
 # saves the tag which identifies the app to a file, the Flask server later
 # generates a html using this tag.
-tag_f = open('current_tag', 'w')
+tag_f = open('current_tag.tmp', 'w')
 tag_f.write(tag)
 tag_f.close()
 
