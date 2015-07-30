@@ -29,7 +29,7 @@ Email: benjamin.rueth@tum.de
 \maketitle
 
 %abstract
-We developed a flexible open--source based workflow with the specific application of webdriven, platform independent, interactive applications for mathematical visualization in the context of university education. Our main goal is to realize mathematical visualization with no requirements of programming skills or program installation on the user--side. The Python plotting library Bokeh plays a crucial role in our approach.
+We developed a flexible open--source based workflow with the specific application of webdriven, platform independent, interactive applications for mathematical visualization in the context of university education. Our main goal is to realize mathematical visualization with no requirements of programming skills or program installation on the user--side. The Python plotting library \href{http://bokeh.pydata.org/}{Bokeh} plays a crucial role in our approach.
 
 \section{Introduction}
 We wanted to setup interactive webapplications for the visualization of math content, specially in the context of the math lecture for mechanical engineering students. The goal was to have an environment where as few user interaction as possible is necessary to get the application running and with as less visible code as possible. Both restrictions are in our opinion very important, because a non smooth start--up of the application often frustrates the user and especially undergraduate students often do not want or are not able to program (even few lines of code), sometimes even seeing code results in the user immediatelly leaving the webpage. Therefore we put up the following constraints to our application:
@@ -47,7 +47,7 @@ Our MATLAB videos were --- obviously --- not able to fulfil our constraints. Als
 The Python framework is in general very flexible, open--source and also extendible, since many scientific applications base on Python. After some research we discovered the plotting library Bokeh, which is similar to matplotlib, but also supports interactive manipulation of the plots with different kinds of widgets as well as running these interactive plots on a server. In the following we want to describe our workflow for setting up an interactive webapp using Bokeh as well as the other used tools. 
 
 \section{Installation}
-The Framework \href{}{Anaconda} turned out to be a good choice for the installation of all the necessary python modules. The installation of Anaconda is described at
+The Framework \href{http://continuum.io/downloads}{Anaconda} turned out to be a good choice for the installation of all the necessary python modules. The installation of Anaconda is described at
 \begin{center}
 \href{http://continuum.io/downloads}{http://continuum.io/downloads}
 \end{center}
@@ -98,8 +98,8 @@ The dynamic generation of \LaTeX\ strings depending on the degree of the fourier
 
 The most important part of our implementation is in \verb!fourierApp.py!. This file sets up the web app and uses the previously mentioned files to correctly handle user input.
 
-These functions are only able to publish our app directly on the Bokeh plotting server. For more elaborate functionality (like the dynamic update of \LaTeX\ strings) we feed the output of the Bokeh plotting server to a \href{}{Flask} server(which is able to handle to \LaTeX\ strings sent via an request). The \LaTeX\ strings are finally embedded into the html file via \href{https://www.mathjax.org/}{MathJax}.
-All source files can be found in the appendix as well as on GitHub: \href{}{}
+These functions are only able to publish our app directly on the Bokeh plotting server. For more elaborate functionality (like the dynamic update of \LaTeX\ strings) we feed the output of the Bokeh plotting server to a \href{http://flask.pocoo.org/}{Flask} server(which is able to handle to \LaTeX\ strings sent via an request). The \LaTeX\ strings are finally embedded into the html file via \href{https://www.mathjax.org/}{MathJax}.
+All source files can be found in the appendix as well as on GitHub: \href{https://github.com/BenjaminRueth/Visualization}{https://github.com/BenjaminRueth/Visualization}
 
 \section{Running the App}
 For running the app one firstly has to start the Bokeh plotting server via
