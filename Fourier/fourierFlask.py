@@ -31,7 +31,7 @@ subscriptions = []
 # Client code consumes like this.
 @appFlask.route("/")
 def index():
-    tag_f = open('current_tag','r')
+    tag_f = open('current_tag.tmp','r')
     tag = tag_f.read()        
     
     debug_template = """

@@ -1,9 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% 	Template for seminar reports
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \documentclass[a4paper,pdftex]{scrartcl}
 
 \usepackage[utf8]{inputenc}   
@@ -16,8 +10,6 @@
 \usepackage{comment}
 \usepackage{listings}
 
-% no page number on first page
-% \pagestyle{empty}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{acronym}
 
@@ -25,14 +17,11 @@
 
 \begin{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 	Paper title
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{Designing interactive webapplications for mathematical visualization}
 \subtitle{}
 
 \author{
-Christian Karpfinger, Benjamin Rüth\\
+Benjamin Rüth\\
 Technische Universit\"at M\"unchen\\
 Email: benjamin.rueth@tum.de 
 }
@@ -42,9 +31,6 @@ Email: benjamin.rueth@tum.de
 %abstract
 We developed a flexible open--source based workflow with the specific application of webdriven, platform independent, interactive applications for mathematical visualization in the context of university education. Our main goal is to realize mathematical visualization with no requirements of programming skills or program installation on the user--side. The Python plotting library Bokeh plays a crucial role in our approach.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 	Sections, Subsections,...
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 We wanted to setup interactive webapplications for the visualization of math content, specially in the context of the math lecture for mechanical engineering students. The goal was to have an environment where as few user interaction as possible is necessary to get the application running and with as less visible code as possible. Both restrictions are in our opinion very important, because a non smooth start--up of the application often frustrates the user and especially undergraduate students often do not want or are not able to program (even few lines of code), sometimes even seeing code results in the user immediatelly leaving the webpage. Therefore we put up the following constraints to our application:
 \begin{itemize}
