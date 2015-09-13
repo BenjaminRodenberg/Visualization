@@ -4,7 +4,7 @@ This app visualizes, how different ODE Solvers solve different ODEs. The user ca
 ## Running
 Enter 
 ```
-$ bokeh-server --script ODEApp.py
+$ bokeh-server --script ode_app.py
 ```
 in bash to run the app. Then enter
 ```

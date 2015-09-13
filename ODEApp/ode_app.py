@@ -9,15 +9,14 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-import ODEFunctions as ODEfun;
+import ode_functions as ode_fun;
 
-from bokeh.models.widgets import VBox,HBox, Slider, RadioButtonGroup, VBoxForm, TextInput
+from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm
 from bokeh.models import Plot,ColumnDataSource 
 from bokeh.properties import Instance
 from bokeh.plotting import figure
 from bokeh.server.app import bokeh_app
 from bokeh.server.utils.plugins import object_page
-import bokeh.embed as embed 
 
 class ODEApp(HBox):   
 #==============================================================================
@@ -64,7 +63,7 @@ class ODEApp(HBox):
         #slider controlling initial value of the ode
         obj.startvalue = Slider(
             title="startvalue", name='startvalue',
-            value=x0, start=-1, end=1, step=.1
+            value=x0, start=0, end=2, step=.1
         );        
         #gives the opportunity to choose from different solvers
         obj.solvers = RadioButtonGroup(
@@ -85,7 +84,7 @@ class ODEApp(HBox):
                       #title=obj.text.value,
                       title="ODE",
                       x_range=[0, T],
-                      y_range=[-2.5, 2.5]
+                      y_range=[-1.5, 3.5]
         )          
         # Plot the numerical solution by the x,t values in the source property
         plot.line('t', 'x', source=obj.source,
@@ -149,12 +148,12 @@ class ODEApp(HBox):
         lam=-5;    
         T=5;
         #available ODEs
-        ODELibrary = [lambda t,x,x_0: ODEfun.dahlquist(t,x,x_0,lam),
-                      lambda t,x,x_0: ODEfun.logisticEquation(t,x,x_0,k,G)];
+        ODELibrary = [lambda t,x,x_0: ode_fun.dahlquist(t,x,x_0,lam),
+                      lambda t,x,x_0: ode_fun.logisticEquation(t,x,x_0,k,G)];
         #available solvers
-        solverLibrary = [lambda f,x0,h,T: ODEfun.explEuler(f,x0,h,T),
-                         lambda f,x0,h,T: ODEfun.implEuler(f,x0,h,T),
-                         lambda f,x0,h,T: ODEfun.implMidpoint(f,x0,h,T)];                
+        solverLibrary = [lambda f,x0,h,T: ode_fun.explEuler(f,x0,h,T),
+                         lambda f,x0,h,T: ode_fun.implEuler(f,x0,h,T),
+                         lambda f,x0,h,T: ode_fun.implMidpoint(f,x0,h,T)];                
         
         # Get the current slider values
         h = self.stepsize.value;
@@ -175,6 +174,6 @@ class ODEApp(HBox):
         
 @bokeh_app.route("/bokeh/ode/")
 @object_page("ode")
-def make_ode_app():
+def make_ode():
     app = ODEApp.create()     
     return app
