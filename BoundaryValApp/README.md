@@ -2,7 +2,15 @@
 This App visualized, how one can solve a boundary value problem using the [shooting method](https://en.wikipedia.org/wiki/Shooting_method).
 
 ## Running
-currently this app is NOT working!
+This app can be run by typing
+```
+$ bokeh-server --script boundaryVal_app.py
+```
+into bash and then open
+```
+http://localhost:5006/bokeh/boundaryVal/
+```
+in the browser.
 
 ## ToDos
 - [x] Change the structure of the code towards the style in the sliders example.
