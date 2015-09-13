@@ -3,15 +3,13 @@ This app visualizes, how different ODE Solvers solve different ODEs. The user ca
 
 ## Running
 Enter 
-
-´´´
+```
 $ bokeh-server --script ODEApp.py
-´´´
+```
 in bash to run the app. Then enter
-´´´
+```
 http://localhost:5006/bokeh/ode
-´´´
-
+```
 in your browser to use the app in it.
 
 ##ToDos
