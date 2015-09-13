@@ -32,4 +32,4 @@ def drawTargetAt(fig,xTarget):
     y = -0.25;
     print "drawing target..."
     drawImage(fig,'target.png',x,y,scaling_target);     
-    print "target finished."
+    print "target finished."        
