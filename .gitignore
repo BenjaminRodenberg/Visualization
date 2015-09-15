@@ -7,3 +7,5 @@
 *.pyc
 *~
 *sandbox*
+
+*embed_multiple.html
