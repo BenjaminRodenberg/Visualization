@@ -14,5 +14,5 @@ in your browser to use the app in it.
 
 ##ToDos
 - [x] Change structure of the App in the style of the sliders example
-- [ ] Improve GUI
+- [ ] Improve GUI (see [here](https://www-m11.ma.tum.de/en/karpfing/buecher/videoanimationen/bokehunderconstruction/), esp. plot of reference solution, legend entries)
 - [ ] Add code for embedding, such that the app can be published on the internet.
