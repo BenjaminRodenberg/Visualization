@@ -15,7 +15,8 @@ Please also read the pdf file in Fourier/fourierSpecification.pdf on how to use 
 
 ### Local machine
 - [x] Publish some html from local machine
-- [ ] Find out how to bring an app to the internet running on the local machine ( see [Examples/Stocks](https://www.google.de/) )
+- [ ] Find out how to bring an app to the internet running on the local machine ( see [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) )
+- [ ] Find out if information in the bokeh docu on embedding might be helpful (see [here](http://bokeh.pydata.org/en/latest/docs/user_guide/embed.html#server-data))
 
 ### Virtual machine
 - [x] Get VM running
