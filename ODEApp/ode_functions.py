@@ -9,83 +9,104 @@ import numpy as np
 import scipy as sp
 from scipy.optimize import newton
 
-def dahlquist(t,x,x0,lam): #dahlquist test equation
-    dx = lam*x;
-    x_ref = sp.exp(lam*t)*x0; #analytical solution of the dahlquist test equation
-    return dx,x_ref;
-    
-def definitionArea(t,x,x0): #for the initial value x0 = 1 this ODE only has a solution for x in (-sqrt(2),sqrt(2)).
-    dx = t*x**2;    
-    x_ref = 1./(1./x0-1./2.*(t**2)); #analytical solution of this ODE
-    return dx,x_ref;
-    
-def logisticEquation(t,x,x0,k,G):
-    dx = k * x * (G-x);
-    if x0 != 0:
-        x_ref = G * 1/(1+np.exp(-k*G*t)*(G/x0-1));
+
+def dahlquist(t, x, lam): # dahlquist test equation
+    dx = lam * x
+    return dx
+
+
+def dahlquist_ref(t, x0, lam):
+    x_ref = sp.exp(lam * t) * x0  # analytical solution of the dahlquist test equation
+    return x_ref
+
+
+def definition_area(t, x):  # for the initial value x0 = 1 this ODE only has a solution for x in (-sqrt(2),sqrt(2)).
+    dx = t * x ** 2
+    return dx
+
+
+def definition_area_ref(t, x0):
+    x_ref = 1. / (1. / x0 - 1. / 2. * (t ** 2))  # analytical solution of this ODE
+    return x_ref
+
+
+def logistic_equation(t, x, k, g):
+    dx = k * x * (g - x)
+    return dx
+
+
+def logistic_equation_ref(t, x0, k, G):
+    if 0 != x0:
+        x_ref = G * 1 / (1 + np.exp(-k * G * t) * (G / x0 - 1))
     else:
-        x_ref = 0;
-            
-    return dx,x_ref;
+        x_ref = 0
+    return x_ref
 
-def explEuler(f,x0,h,T) :
-    N=int(np.ceil(T/h));
-    t=np.empty(N+1);
-    x=np.empty(N+1);
-    x_ref=np.empty(N+1);
-    
-    t[0]=0;
-    x[0]=x0;
-    for k in range(N):        
-        [dx,x_ref[k]]=f(t[k],x[k],x0);
-        t[k+1]=(k+1)*h;
-        x[k+1]=x[k]+dx*h;   
-        
-    [dx,x_ref[k+1]]=f(t[k+1],x[k+1],x0);
-        
-    return t,x,x_ref;
-    
-def implEuler(f,x0,h,T) :
-    N=int(np.ceil(T/h));
-    t=np.empty(N+1);
-    x=np.empty(N+1);    
-    x_ref=np.empty(N+1);
-    
-    t[0]=0;
-    x[0]=x0;
-    [dx,x_ref[0]]=f(t[0],x[0],x0);
-    for k in range(N):
-        t[k+1]=(k+1)*h; 
-        try:
-            x[k+1]=newton(lambda X:x[k]-X+h*f(t[k+1],X,x0)[0],x[k])        
-        except RuntimeError:
-            print "newton did not converge!";
-            for k in range(k,N):
-                t[k+1]=(k+1)*h;
-            break;
-        [dx,x_ref[k+1]]=f(t[k+1],x[k+1],x0)
-        
-    return t,x,x_ref;  
 
-def implMidpoint(f,x0,h,T):
-    N=int(np.ceil(T/h));
-    t=np.empty(N+1);
-    x=np.empty(N+1);    
-    x_ref=np.empty(N+1);
-    
-    t[0]=0;
-    x[0]=x0;
-    [dx,x_ref[0]]=f(t[0],x[0],x0);
-    for k in range(N):
-        t[k+1]=(k+1)*h; 
+def ref_sol(f_ref,x0,timespan):
+    h = float(timespan) / 1000.0
+    n = int(np.ceil(timespan / h))
+    t_ref = np.empty(n + 1)
+    x_ref = np.empty(n + 1)
+
+    t_ref[0] = 0
+    x_ref[0] = x0
+    for k in range(n):
+        t_ref[k + 1] = (k + 1) * h
+        x_ref[k + 1] = f_ref(t_ref[k + 1], x0)
+
+    return t_ref, x_ref
+
+
+def expl_euler(f, x0, h, timespan):
+    n = int(np.ceil(timespan / h))
+    t = np.empty(n + 1)
+    x = np.empty(n + 1)
+
+    t[0] = 0
+    x[0] = x0
+    for k in range(n):
+        dx = f(t[k], x[k])
+        t[k + 1] = (k + 1) * h
+        x[k + 1] = x[k] + dx * h
+
+    return t, x
+
+
+def impl_euler(f, x0, h, timespan):
+    n = int(np.ceil(timespan / h))
+    t = np.empty(n + 1)
+    x = np.empty(n + 1)
+
+    t[0] = 0
+    x[0] = x0
+    for k in range(n):
+        t[k + 1] = (k + 1) * h
         try:
-            dxLeft = f(t[k],x[k],x0)[0];
-            x[k+1]=newton(lambda X:x[k]-X+h/2*(f(t[k+1],X,x0)[0]+dxLeft),x[k])        
+            x[k + 1] = newton(lambda arg: x[k] - arg + h * f(t[k + 1], arg), x[k])
         except RuntimeError:
-            print "newton did not converge!";
-            for k in range(k,N):
-                t[k+1]=(k+1)*h;
-            break;
-        [dx,x_ref[k+1]]=f(t[k+1],x[k+1],x0)
-        
-    return t,x,x_ref;       
+            print "newton did not converge!"
+            for k in range(k, n):
+                t[k + 1] = (k + 1) * h
+            break
+    return t, x
+
+
+def impl_midpoint(f, x0, h, timespan):
+    n = int(np.ceil(timespan / h))
+    t = np.empty(n + 1)
+    x = np.empty(n + 1)
+
+    t[0] = 0
+    x[0] = x0
+    for k in range(n):
+        t[k + 1] = (k + 1) * h
+        try:
+            dx_left = f(t[k], x[k])
+            x[k + 1] = newton(lambda arg: x[k] - arg + h / 2 * (f(t[k + 1], arg) + dx_left), x[k])
+        except RuntimeError:
+            print "newton did not converge!"
+            for k in range(k, n):
+                t[k + 1] = (k + 1) * h
+            break
+    return t, x
