@@ -39,20 +39,24 @@ p3.scatter(x3, y3, size=12, color="green", alpha=0.5)
 plots = {'Red': p1, 'Blue': p2, 'Green': p3}
 
 script, div = components(plots)
+names = {'Blue':'plot1','Green':'plot2','Red':'plot3'}
 
 template = Template('''<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <title>Bokeh Scatter Plots</title>
-        <style> div{float: left;} </style>
         <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.9.0.min.css" type="text/css" />
         <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-0.9.0.min.js"></script>
         {{ script }}
     </head>
     <body>
     {% for key in div.keys() %}
+        <label>
+        {{ names[key] }}
+        </label><br>
         {{ div[key] }}
+        <br>
     {% endfor %}
     </body>
 </html>
@@ -60,7 +64,7 @@ template = Template('''<!DOCTYPE html>
 
 html_file = 'embed_multiple.html'
 with open(html_file, 'w') as textfile:
-    textfile.write(template.render(script=script, div=div))
+    textfile.write(template.render(script=script, div=div, names=names))
 url = 'file:{}'.format(six.moves.urllib.request.pathname2url(os.path.abspath(html_file)))
 webbrowser.open(url)
 
