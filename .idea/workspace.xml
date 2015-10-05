@@ -2,10 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8b971a2-4941-4ed2-a257-993881939aeb" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/BoundaryValApp/02.1-schiefer-wurf.pdf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/BoundaryValApp/out.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/BoundaryValApp/sandbox.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ODEApp/flask_server.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ODEApp/templates/ode.html" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/BoundaryValApp/simpleButton.py" afterPath="$PROJECT_DIR$/Sandbox/simpleButton.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BoundaryValApp/README.md" afterPath="$PROJECT_DIR$/BoundaryValApp/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MinimalInteractive/README.md" afterPath="$PROJECT_DIR$/MinimalInteractive/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ODEApp/README.md" afterPath="$PROJECT_DIR$/ODEApp/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py" afterPath="$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BoundaryValApp/boundaryVal_app.py" afterPath="$PROJECT_DIR$/BoundaryValApp/boundaryVal_app.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MinimalInteractive/minimal_app.py" afterPath="$PROJECT_DIR$/MinimalInteractive/minimal_app.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ODEApp/ode_app.py" afterPath="$PROJECT_DIR$/ODEApp/ode_app.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ODEApp/ode_functions.py" afterPath="$PROJECT_DIR$/ODEApp/ode_functions.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Visualization.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,52 +36,76 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="embed_multiple.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py">
+      <file leaf-file-name="minimal_app.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MinimalInteractive/minimal_app.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="45" column="10" selection-start-line="45" selection-start-column="10" selection-end-line="45" selection-end-column="10" />
+              <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run_app.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MinimalInteractive/run_app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="6" column="11" selection-start-line="0" selection-start-column="0" selection-end-line="9" selection-end-column="14" />
               <folding>
-                <element signature="e#0#33#0" expanded="true" />
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run_app.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ODEApp/run_app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="24" selection-start-line="0" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="ode_app.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_app.py">
+        <entry file="file://$PROJECT_DIR$/ODEApp/ode_app.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="188" column="22" selection-start-line="0" selection-start-column="0" selection-end-line="202" selection-end-column="0" />
+              <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="minimal_app.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/MinimalInteractive/minimal_app.py">
+      <file leaf-file-name="run_apps.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/run_apps.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41093117">
-              <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="taylor_server.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Examples/TaylorServer/taylor_server.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="19" column="9" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.6433409">
+              <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
               <folding>
-                <element signature="e#0#37#0" expanded="true" />
+                <element signature="e#0#42#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app_reveal.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Examples/Slideshow/app_reveal.py">
+      <file leaf-file-name="boundaryVal_app.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/BoundaryValApp/boundaryVal_app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="14" column="33" selection-start-line="14" selection-start-column="33" selection-end-line="14" selection-end-column="33" />
+              <folding>
+                <element signature="e#88#122#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simpleButton.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Sandbox/simpleButton.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -80,22 +114,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app_plot.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Examples/Slideshow/templates/app_plot.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="39.791668">
-              <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ode_functions.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_functions.py">
+      <file leaf-file-name="run_app.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/BoundaryValApp/run_app.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
-              <folding />
+              <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="10" selection-end-column="14" />
+              <folding>
+                <element signature="e#0#22#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -117,9 +143,14 @@
       <list>
         <option value="$PROJECT_DIR$/ODEApp/ode_functions.py" />
         <option value="$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py" />
-        <option value="$PROJECT_DIR$/ODEApp/ode_app.py" />
         <option value="$PROJECT_DIR$/EmbedODEApp/ode_app.py" />
         <option value="$PROJECT_DIR$/MinimalInteractive/minimal_app.py" />
+        <option value="$PROJECT_DIR$/MinimalInteractive/run_app.py" />
+        <option value="$PROJECT_DIR$/ODEApp/run_app.py" />
+        <option value="$PROJECT_DIR$/ODEApp/ode_app.py" />
+        <option value="$PROJECT_DIR$/BoundaryValApp/run_app.py" />
+        <option value="$PROJECT_DIR$/BoundaryValApp/boundaryVal_app.py" />
+        <option value="$PROJECT_DIR$/run_apps.py" />
       </list>
     </option>
   </component>
@@ -127,10 +158,10 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1215" />
-    <option name="y" value="24" />
+    <option name="x" value="65" />
+    <option name="y" value="-4" />
     <option name="width" value="1215" />
-    <option name="height" value="776" />
+    <option name="height" value="804" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -139,7 +170,7 @@
     <OptionsSetting value="true" id="Update" />
     <OptionsSetting value="true" id="Status" />
     <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="1" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
@@ -155,7 +186,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -184,7 +214,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="ODEApp" />
+              <option name="myItemId" value="Sandbox" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -198,21 +228,27 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="MinimalInteractive" />
+              <option name="myItemId" value="BoundaryValApp" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
     <property name="recentsLimit" value="5" />
+    <property name="FullScreen" value="false" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/BoundaryValApp" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Sandbox" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -379,28 +415,36 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1215" y="24" width="1215" height="776" extended-state="6" />
+    <frame x="65" y="-4" width="1215" height="804" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32907802" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32907802" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2533557" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2567376" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2567376" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32765958" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32765958" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -413,33 +457,35 @@
     <entry file="file://$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="45" column="10" selection-start-line="45" selection-start-column="10" selection-end-line="45" selection-end-column="10" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ODEApp/ode_app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9089069">
-          <caret line="199" column="25" selection-start-line="199" selection-start-column="25" selection-end-line="199" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ODEApp/ode_functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7874494">
-          <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py">
+    <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_app.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="10" selection-start-line="45" selection-start-column="10" selection-end-line="45" selection-end-column="10" />
+          <caret line="188" column="22" selection-start-line="0" selection-start-column="0" selection-end-line="202" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MinimalInteractive/minimal_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_apps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#33#0" expanded="true" />
+            <element signature="e#0#42#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -464,7 +510,108 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Examples/Slideshow/templates/app_plot.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="39.791668">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="10" selection-start-line="45" selection-start-column="10" selection-end-line="45" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="188" column="22" selection-start-line="0" selection-start-column="0" selection-end-line="202" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MinimalInteractive/minimal_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/TaylorServer/taylor_server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="9" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/Slideshow/app_reveal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/Slideshow/templates/app_plot.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ODEApp/ode_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7874494">
+          <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/Slideshow/app_reveal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/Slideshow/templates/app_plot.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
           <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
           <folding />
         </state>
@@ -480,17 +627,103 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/EmbedODEApp/ode_app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="0.39271256">
           <caret line="188" column="22" selection-start-line="0" selection-start-column="0" selection-end-line="202" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/ExampleEmbed/embed_multiple.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.058704454">
+          <caret line="45" column="10" selection-start-line="45" selection-start-column="10" selection-end-line="45" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/TaylorServer/taylor_server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="9" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/MinimalInteractive/minimal_app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41093117">
-          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ODEApp/ode_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MinimalInteractive/run_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="11" selection-start-line="0" selection-start-column="0" selection-end-line="9" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ODEApp/run_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="24" selection-start-line="0" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Sandbox/simpleButton.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BoundaryValApp/run_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="10" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#22#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BoundaryValApp/boundaryVal_app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="33" selection-start-line="14" selection-start-column="33" selection-end-line="14" selection-end-column="33" />
+          <folding>
+            <element signature="e#88#122#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_apps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6433409">
+          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#42#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

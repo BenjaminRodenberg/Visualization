@@ -15,9 +15,6 @@ from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropd
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
 from bokeh.plotting import figure
-from bokeh.server.app import bokeh_app
-from bokeh.server.utils.plugins import object_page
-
 
 class ODEApp(HBox):
     # ==============================================================================
@@ -192,10 +189,3 @@ class ODEApp(HBox):
         self.source_ref.data = dict(x_ref=x_ref, t_ref=t_ref)
 
         print "data was updated with parameters: h=" + str(h) + " and x0=" + str(x0)
-
-
-@bokeh_app.route("/bokeh/ode/")
-@object_page("ode")
-def make_ode():
-    app = ODEApp.create()
-    return app

@@ -15,8 +15,6 @@ from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropd
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
 from bokeh.plotting import figure
-from bokeh.server.app import bokeh_app
-from bokeh.server.utils.plugins import object_page
 
 import numpy as np
 
@@ -130,13 +128,3 @@ class MinApp(HBox):
         self.source.data = dict(x=x, y=y)
 
         print "data was updated with parameters: m=" + str(m)
-
-
-@bokeh_app.route("/bokeh/minimal/")
-@object_page("minimal")
-def make_ode():
-    app = MinApp.create()
-    return app
-
-
-
