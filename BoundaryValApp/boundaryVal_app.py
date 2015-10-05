@@ -13,8 +13,7 @@ from bokeh.models.widgets import HBox, Slider, Button, VBoxForm
 from bokeh.models import Plot,ColumnDataSource 
 from bokeh.properties import Instance
 from bokeh.plotting import figure
-from bokeh.server.app import bokeh_app
-from bokeh.server.utils.plugins import object_page
+
 
 class BoundaryValApp(HBox):
         
@@ -209,9 +208,3 @@ class BoundaryValApp(HBox):
         print "data saved.";        
         print "data and plot was updated with parameters: alpha="+str(self.app_data.data['alpha'])+".";
         print "update_data(...) exited!";
-
-@bokeh_app.route("/bokeh/boundaryVal/")
-@object_page("boundaryVal")
-def make_ode():
-    app = BoundaryValApp.create()     
-    return app        
