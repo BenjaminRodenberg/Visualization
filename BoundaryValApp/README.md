@@ -4,7 +4,7 @@ This App visualized, how one can solve a boundary value problem using the [shoot
 ## Running
 This app can be run by typing
 ```
-$ bokeh-server --script boundaryVal_app.py
+$ bokeh-server --script run_app.py
 ```
 into bash and then open
 ```
@@ -16,4 +16,6 @@ in the browser.
 - [x] Change the structure of the code towards the style in the sliders example.
 - [ ] Fix issue with buttons (see simpleButton.py minimal working example)
 - [ ] Fix issue with plotting of old results
-- [ ] Add code for embedding, such that the app can be published on the internet.
+- [ ] Add code for embedding
+- [x] publish app on the internet.
+- [ ] publish app with run_apps.py script on top level!

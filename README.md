@@ -5,6 +5,29 @@ This Repository contains different prototypes for WebApps for the visualization 
 
 Please also read the pdf file in Fourier/fourierSpecification.pdf on how to use the fourier app.
 
+## Running
+### Local
+For running all the complete apps type
+```
+bokeh-server --script run_apps.py
+```
+and navigate to the respective site
+
+### Internet
+For publishing all apps to the internet run
+```
+redis-server --port 7001
+```
+Then
+```
+gunicorn -k tornado -w 4 "bokeh.server.start:make_tornado(config_file='config.py')" --log-level=debug --log-file=- -b 0.0.0.0:5006
+```
+finally
+```
+python forwarder.py 
+```
+gunicorn can be shut down with `pkill -9 gunicorn`. Access the apps by navigating to `<globalip>:5006/bokeh/<appurl>`.
+
 ## ToDos
 ### On particular Apps
 - [ ] Find out how to bring an app to the internet ( see [Gallery](http://bokeh.pydata.org/en/latest/docs/gallery.html) ). How to get from an app like [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) to an app running in the internet?

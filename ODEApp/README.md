@@ -4,7 +4,7 @@ This app visualizes, how different ODE Solvers solve different ODEs. The user ca
 ## Running
 Enter 
 ```
-$ bokeh-server --script ode_app.py
+$ bokeh-server --script run_app.py
 ```
 in bash to run the app. Then enter
 ```
@@ -15,4 +15,7 @@ in your browser to use the app in it.
 ##ToDos
 - [x] Change structure of the App in the style of the sliders example
 - [x] Improve GUI
-- [ ] Add code for embedding, such that the app can be published on the internet.
+- [ ] Add code for embedding.
+- [ ] Add oszillator ODE
+- [ ] Add störmer verlet (?) -> midpointrule might be sufficient...
+- [x] publish this to the internet
