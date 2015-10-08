@@ -30,7 +30,7 @@ gunicorn can be shut down with `pkill -9 gunicorn`. Access the apps by navigatin
 
 ## ToDos
 ### On particular Apps
-- [ ] Find out how to bring an app to the internet ( see [Gallery](http://bokeh.pydata.org/en/latest/docs/gallery.html) ). How to get from an app like [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) to an app running in the internet?
+- [x] Find out how to bring an app to the internet ( see [Gallery](http://bokeh.pydata.org/en/latest/docs/gallery.html) ). How to get from an app like [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) to an app running in the internet?
 - [ ] Finalize [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
 - [ ] Finalize [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
 - [ ] Finalize [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
@@ -38,8 +38,8 @@ gunicorn can be shut down with `pkill -9 gunicorn`. Access the apps by navigatin
 
 ### Local machine
 - [x] Publish some html from local machine
-- [ ] Find out how to bring an app to the internet running on the local machine ( see [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) )
-- [ ] Find out if information in the bokeh docu on embedding might be helpful (see [here](http://bokeh.pydata.org/en/latest/docs/user_guide/embed.html#server-data))
+- [x] Find out how to bring an app to the internet running on the local machine ( see [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) )
+- [x] Find out if information in the bokeh docu on embedding might be helpful (see [here](http://bokeh.pydata.org/en/latest/docs/user_guide/embed.html#server-data))
 
 ### Virtual machine
 - [x] Get VM running

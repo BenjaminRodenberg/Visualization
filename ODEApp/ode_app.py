@@ -10,17 +10,18 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 import ode_functions as ode_fun
+import ode_settings
 
-from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
+from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
 from bokeh.plotting import figure
 
-class ODEApp(HBox):
+class ODEApp(VBox):
     # ==============================================================================
     # Only bokeh quantities for layout, data, controls... go here!
     # ==============================================================================
-    extra_generated_classes = [["ODEApp", "ODEApp", "HBox"]]
+    extra_generated_classes = [["ODEApp", "ODEApp", "VBox"]]
 
     # layout
     controls = Instance(VBoxForm)
@@ -47,11 +48,6 @@ class ODEApp(HBox):
         # ==============================================================================
         obj = cls()
 
-        # default values
-        timespan = 5
-        x0 = 1
-        h = 1
-
         # initialize data source
         obj.source = ColumnDataSource(data=dict(t=[], x=[]))
         obj.source_ref = ColumnDataSource(data=dict(t_ref=[], x_ref=[]))
@@ -60,21 +56,21 @@ class ODEApp(HBox):
         # slider controlling stepsize of the solver
         obj.stepsize = Slider(
             title="stepsize", name='stepsize',
-            value=h, start=0.1, end=1.0, step=.05
+            value=ode_settings.step_init, start=ode_settings.step_min, end=ode_settings.step_max, step=ode_settings.step_step
         )
         # slider controlling initial value of the ode
         obj.startvalue = Slider(
             title="startvalue", name='startvalue',
-            value=x0, start=0, end=2, step=.1
+            value=ode_settings.x0_init, start=ode_settings.x0_min, end=ode_settings.x0_max, step=ode_settings.x0_step
         )
         # gives the opportunity to choose from different solvers
         obj.solvers = RadioButtonGroup(
-            labels=["ExplicitEuler", "ImplicitEuler", "MidpointRule"], active=0
+            labels=["ExplicitEuler", "ImplicitEuler", "MidpointRule"], active=ode_settings.solver_init
         )
         #obj.solvers = Dropdown(label="solvers",type="warning",menu=[("ExplicitEuler","0"),("ImplicitEuler","1"),("MidpointRule","2")])
         # gives the opportunity to choose from different odes
         obj.odes = RadioButtonGroup(
-            labels=["Dahlquist", "Logistic"], active=0
+            labels=["Dahlquist", "Logistic"], active=ode_settings.odetype_init
         )
         #obj.odes = Dropdown(label="ODE",type="warning",menu=[("Dahlquist","0"),("Logistic","1")])
 
@@ -87,8 +83,8 @@ class ODEApp(HBox):
                       tools=toolset,
                       # title=obj.text.value,
                       title="numerical ODE solving",
-                      x_range=[0, timespan],
-                      y_range=[-1.5, 3.5]
+                      x_range=[ode_settings.min_time, ode_settings.max_time],
+                      y_range=[ode_settings.min_y, ode_settings.max_y]
                       )
         # Plot the numerical solution by the x,t values in the source property
         plot.line('t', 'x', source=obj.source,
@@ -120,8 +116,8 @@ class ODEApp(HBox):
         )
 
         # make layout
-        obj.children.append(obj.controls)
         obj.children.append(obj.plot)
+        obj.children.append(obj.controls)
 
         # don't forget to return!
         return obj
@@ -153,10 +149,10 @@ class ODEApp(HBox):
         # ==============================================================================
 
         # default values for ODEs...
-        k = 5
-        g = .5
-        lam = -5
-        timespan = 5.0
+        k = ode_settings.logistic_k
+        g = ode_settings.logistic_g
+        lam = ode_settings.dahlquist_lambda
+        timespan = ode_settings.max_time
         # available ODEs
         ode_library = [lambda t, x: ode_fun.dahlquist(t, x, lam),
                        lambda t, x: ode_fun.logistic_equation(t, x, k, g)]
