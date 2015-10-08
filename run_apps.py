@@ -1,5 +1,6 @@
 from MinimalInteractive import minimal_app
 from ODEApp import ode_app
+from FourierApp import fourier_app
 #from BoundaryValApp import boundaryVal_app
 
 from bokeh.server.app import bokeh_app
@@ -17,6 +18,13 @@ def make_minimal():
 @object_page("ode")
 def make_ode():
     app = ode_app.ODEApp.create()
+    return app
+
+
+@bokeh_app.route("/bokeh/fourier/")
+@object_page("fourier")
+def make_fourier():
+    app = fourier_app.FourierApp.create()
     return app
 
 

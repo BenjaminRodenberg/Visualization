@@ -10,13 +10,6 @@ import math
 from scipy.integrate import quad
 
 #==============================================================================
-# Here the function, of which we calculate the fourier series, is hardcoded if 
-# one wants to use a different function, this has to be changed here.
-#==============================================================================
-def f( x ):
-    return saw(x);
-
-#==============================================================================
 # The hat function    
 #==============================================================================
 def hat(x):    

@@ -1,95 +1,129 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jul 11 22:04:14 2015
+
+@author: benjamin
+"""
 #==============================================================================
 # This file demonstrates a bokeh applet. The applet has been designed at TUM
 # for educational purposes. The structure of the following code bases to large
 # part on the work published on
-# https://github.com/bokeh/bokeh/tree/master/examples/app/sliders_applet
+# https://github.com/bokeh/bokeh/tree/master/examples
 #==============================================================================
+
+import logging
+from statsmodels.tools.tests.test_numdiff import fun
+from FourierApp.fourier_functions import fourier_series
+
+logging.basicConfig(level=logging.DEBUG)
+
+from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
+from bokeh.models import Plot, ColumnDataSource
+from bokeh.properties import Instance
+from bokeh.plotting import figure
 
 import urllib, time
 import numpy as np
-import fourierFunctions as ff
-import fourierTex as ft
 
-class FourierApp(object):    
-    extra_generated_classes = [["FourierApp", "FourierApp", "VBox"]]                
-    start = 0; # start of plotting range
-    end = 2*np.pi; # end of plotting range
-    xRes = 200; #number of plotted points 
-       
-    def __init__(self):                
-#==============================================================================
-#         Initializes FourierApp object with all important properties
-#==============================================================================
-        from bokeh.document import Document
-        from bokeh.session import Session
-        from bokeh.models import ColumnDataSource 
-        
-        self.document = Document()
-        self.session = Session()
-        self.session.use_doc('fourier')
-        self.session.load_document(self.document)
-        #here the data is stored
-        self.source = ColumnDataSource(data=dict(x=[], y=[], y_series=[]))                
-        #finally renders the app
-        self.render();
-        
-    def render(self):  
-#==============================================================================
-#         renders the App: Sets up layout, initializes plots...
-#==============================================================================
-        self.init_curves()        
-        self.create_layout()    
-        self.document.add(self.layout)
-        self.init_data()
-        
-    def create_layout(self):
-#==============================================================================
-#         Initializes layout of the interactive bokeh plot        
-#==============================================================================
-        from bokeh.models.widgets import VBox, Slider, VBoxForm        
-        
-        #slider controlling degree of the fourier series
-        self.degree = Slider(
+import fourier_functions as ff
+import fourier_tex as ft
+import fourier_settings
+
+class FourierApp(VBox):
+    extra_generated_classes = [["FourierApp", "FourierApp", "VBox"]]
+
+    # layout
+    controls = Instance(VBoxForm)
+
+    # controllable values
+    function_type = Instance(RadioButtonGroup)
+    degree = Instance(Slider)
+
+    # plot
+    plot = Instance(Plot)
+
+    # data
+    source_fourier = Instance(ColumnDataSource)
+    source_orig = Instance(ColumnDataSource)
+
+    @classmethod
+    def create(cls):
+        # ==============================================================================
+        # creates initial layout and data
+        # ==============================================================================
+        obj = cls()
+
+        # initialize data source
+        obj.source_fourier = ColumnDataSource(data=dict(t=[], x_fourier=[]))
+        obj.source_orig = ColumnDataSource(data=dict(t=[], x_orig=[]))
+
+        # initialize controls
+        # slider controlling the base function
+        obj.function_type = RadioButtonGroup(
+            labels=fourier_settings.function_names, active=fourier_settings.function_init
+        )
+
+        # slider controlling degree of the fourier series
+        obj.degree = Slider(
             title="degree", name='degree',
-            value=5.0, start=0, end=20.0, step=1
-        )           
-        #add behaviour to slider: slider change calls function input_change
-        self.degree.on_change('value', self,'input_change')
-        
-        #lists all the controls in our plot
-        self.controls = VBoxForm(
-            children=[self.degree]);  
-        #put plot and slider in a vertical box (VBox)
-        self.layout = VBox(self.controls,self.plot);
-        
-    def init_curves(self):
-#==============================================================================
-#         Initializes the plots of our App.
-#==============================================================================
-        from bokeh.plotting import figure
-        
-        toolset = "crosshair,pan,reset,resize,save,wheel_zoom"       
+            value=fourier_settings.degree_init, start=fourier_settings.degree_min, end=fourier_settings.degree_max, step=fourier_settings.degree_step
+        )
+
+        # initialize plot
+        toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
         # Generate a figure container
-        self.plot = figure(title_text_font_size="12pt",
+        plot = figure(title_text_font_size="12pt",
                       plot_height=400,
                       plot_width=400,
                       tools=toolset,
-                      title="fourier",#obj.text.value,
-                      x_range=[0, 2*np.pi],
-                      y_range=[-2.5, 2.5]
-        )                     
+                      title="Fourier Series Approximation",
+                      x_range=[fourier_settings.x_min, fourier_settings.x_max],
+                      y_range=[fourier_settings.y_min, fourier_settings.y_max]
+        )
         # Plot the line by the x,y values in the source property
-        self.plot.line('x', 'y', source=self.source,
+        plot.line('t', 'x_orig', source=obj.source_orig,
                   line_width=3,
                   line_alpha=0.6,
-                  color='red'
+                  color='red',
+                  legend='original function'
         )
-        self.plot.line('x','y_series',source=self.source,
-                  color='green',              
+        plot.line('t','x_fourier',source=obj.source_fourier,
+                  color='green',
                   line_width=3,
-                  line_alpha=0.6                  
-        )        
-        
+                  line_alpha=0.6,
+                  legend='fourier series'
+        )
+        obj.plot = plot
+
+        # calculate data
+        obj.update_data()
+
+        # lists all the controls in our app
+        obj.controls = VBoxForm(
+            children=[
+                obj.degree,
+                obj.function_type
+            ]
+        )
+
+        # make layout
+        obj.children.append(obj.plot)
+        obj.children.append(obj.controls)
+
+        # don't forget to return!
+        return obj
+
+    def setup_events(self):
+        # ==============================================================================
+        # Here we have to set up the event behaviour.
+        # ==============================================================================
+        # recursively searches the right level?
+        if not self.degree:
+            return
+
+        # event registration
+        self.degree.on_change('value', self, 'input_change')
+        self.function_type.on_change('active', self, 'input_change')
 
     def input_change(self, obj, attrname, old, new):
 #==============================================================================
@@ -100,87 +134,53 @@ class FourierApp(object):
 #             attrname : the attr that changed
 #             old : old value of attr
 #             new : new value of attr
-#==============================================================================        
-        TeX_string = self.update_data() #update data and get new TeX
+#==============================================================================
+        TeX_string = self.update_data()  #update data and get new TeX
         self.send_request(TeX_string)   #send new TeX to server
-        
-    def init_data(self):
-#==============================================================================
-#         Called for initializing data of the plots.        
-#==============================================================================
-        #function f(x) which will be approximated                
-        x = np.linspace(self.start,self.end,self.xRes)
-        y = np.empty(len(x))        
-        for i in range(0,len(x)):
-            y[i] = ff.f(x[i])
 
-        #saving data to plot
-        self.source.data = dict(x=x, y=y) 
-        self.update_data();        
-        self.session.store_document(self.document)
-        
+
     def update_data(self):
 #==============================================================================
 #         Called each time that any watched property changes.
 #
 #         This updates the fourier series expansion with the most recent values
-#         of the slider. The new fourier series y data is stored as a numpy 
-#         arrays in a dict into the app's data source property.        
+#         of the slider. The new fourier series y data is stored as a numpy
+#         arrays in a dict into the app's data source property.
 #==============================================================================
-        x = self.source.data.get('x') # get data of f(x)
-        y = self.source.data.get('y')        
-        N = int(round((self.degree.value))) # Get the current slider values        
-        
+        N = int(round(self.degree.value)) # Get the current slider values
+        f = fourier_settings.function_library[self.function_type.active]
+
+        #function f(x) which will be approximated
+        t = np.linspace(fourier_settings.x_min,fourier_settings.x_max,fourier_settings.resolution)
+        x_orig = np.empty(len(t))
+
+        for i in range(len(t)):
+            x_orig[i] = f(t[i])
+
         # Generate Fourier series
-        T = self.end - self.start #length of one period of the function
-        a,b = ff.coeff(ff.f,self.start,self.end,N) #calculate coefficients
-        y_series = np.empty(len(x))
-        
-        for i in range(0,len(x)): # evaluate fourier series           
-            y_series[i] = ff.fourier_series(a,b,T,x[i])	
+        T = fourier_settings.timeinterval_length #length of one period of the function
+        a,b = ff.coeff(f, fourier_settings.timeinterval_start, fourier_settings.timeinterval_end, N) #calculate coefficients
+        x_fourier = np.empty(len(x_orig))
+
+        for i in range(len(x_fourier)): # evaluate fourier series
+            x_fourier[i] = ff.fourier_series(a,b,T,t[i])
 
         #saving data to plot
-        self.source.data = dict(x=x,y=y,y_series=y_series)         
-        self.session.store_document(self.document)     
-        
+        self.source_orig.data = dict(t=t, x_orig=x_orig)
+        self.source_fourier.data = dict(t=t,x_fourier=x_fourier)
+
         #generate new TeX string
         TeX_string = ft.generate_tex(a,b,T)
-        
+
+        print "data was updated with N = %d" % (N)
+
         return TeX_string
-    
-    def send_request(self,TeX_string): 
+
+
+    def send_request(self,TeX_string):
 #==============================================================================
 #         Sends the TeX String via a request to the flask server. This directly
-#         triggers the update of the html page.        
-#==============================================================================        
+#         triggers the update of the html page.
+#==============================================================================
         print "sending request..."
-        urllib.urlopen("http://localhost:5001/publish?TEX="+TeX_string)
-        
-#==============================================================================
-# main function
-#==============================================================================
-import bokeh.embed as embed  
-appBokeh = FourierApp();
-
-tag = embed.autoload_server(appBokeh.layout, appBokeh.session)
-print("""\n use the following tag in your flask code: %s """ % tag)
-
-link = appBokeh.session.object_link(appBokeh.document.context)
-print("""You can also go to %s to see the plots on the Bokeh server directly""" 
-% link)
-
-print("""Bokeh server is now running the fourier app!""")
-
-# saves the tag which identifies the app to a file, the Flask server later
-# generates a html using this tag.
-tag_f = open('current_tag', 'w')
-tag_f.write(tag)
-tag_f.close()
-
-# run app.
-try:
-    while True:
-        appBokeh.session.load_document(appBokeh.document)
-        time.sleep(0.1)
-except KeyboardInterrupt:
-    print()
+        #urllib.urlopen("http://localhost:5001/publish?TEX="+TeX_string)
