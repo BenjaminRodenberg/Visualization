@@ -8,6 +8,7 @@ Created on Tue Jul  7 10:57:55 2015
 import numpy as np
 import scipy as sp
 from scipy.optimize import newton
+from scipy.optimize import fsolve
 
 
 def dahlquist(t, x, lam): # dahlquist test equation
@@ -43,6 +44,17 @@ def logistic_equation_ref(t, x0, k, G):
     return x_ref
 
 
+def oscillator_equation(t, x, omega):
+    A = np.array([[0,1],[-omega**2,0]])
+    dx = np.dot(A,x)
+    return dx
+
+
+def oscillator_equation_ref(t, x0, omega):
+    x = x0[0]*np.exp(1j*omega*t)+ x0[1]*np.exp(-1j*omega*t)
+    return float(np.real(x))
+
+
 def ref_sol(f_ref,x0,timespan):
     h = float(timespan) / 1000.0
     n = int(np.ceil(timespan / h))
@@ -50,7 +62,7 @@ def ref_sol(f_ref,x0,timespan):
     x_ref = np.empty(n + 1)
 
     t_ref[0] = 0
-    x_ref[0] = x0
+    x_ref[0] = x0[0]
     for k in range(n):
         t_ref[k + 1] = (k + 1) * h
         x_ref[k + 1] = f_ref(t_ref[k + 1], x0)
@@ -61,14 +73,14 @@ def ref_sol(f_ref,x0,timespan):
 def expl_euler(f, x0, h, timespan):
     n = int(np.ceil(timespan / h))
     t = np.empty(n + 1)
-    x = np.empty(n + 1)
+    x = np.empty([x0.shape[0], n + 1])
 
     t[0] = 0
-    x[0] = x0
+    x[:,0] = x0
     for k in range(n):
-        dx = f(t[k], x[k])
+        dx = f(t[k], x[:,k])
         t[k + 1] = (k + 1) * h
-        x[k + 1] = x[k] + dx * h
+        x[:,k + 1] = x[:,k] + dx * h
 
     return t, x
 
@@ -76,14 +88,14 @@ def expl_euler(f, x0, h, timespan):
 def impl_euler(f, x0, h, timespan):
     n = int(np.ceil(timespan / h))
     t = np.empty(n + 1)
-    x = np.empty(n + 1)
+    x = np.empty([x0.shape[0], n + 1])
 
     t[0] = 0
-    x[0] = x0
+    x[:, 0] = x0
     for k in range(n):
         t[k + 1] = (k + 1) * h
         try:
-            x[k + 1] = newton(lambda arg: x[k] - arg + h * f(t[k + 1], arg), x[k])
+            x[:, k + 1] = fsolve(lambda arg: x[:, k] - arg + h * f(t[k + 1], arg), x[:, k])
         except RuntimeError:
             print "newton did not converge!"
             for k in range(k, n):
@@ -95,15 +107,15 @@ def impl_euler(f, x0, h, timespan):
 def impl_midpoint(f, x0, h, timespan):
     n = int(np.ceil(timespan / h))
     t = np.empty(n + 1)
-    x = np.empty(n + 1)
+    x = np.empty([x0.shape[0], n + 1])
 
     t[0] = 0
-    x[0] = x0
+    x[:, 0] = x0
     for k in range(n):
         t[k + 1] = (k + 1) * h
         try:
-            dx_left = f(t[k], x[k])
-            x[k + 1] = newton(lambda arg: x[k] - arg + h / 2 * (f(t[k + 1], arg) + dx_left), x[k])
+            dx_left = f(t[k], x[:, k])
+            x[:, k + 1] = fsolve(lambda arg: x[:, k] - arg + h / 2 * (f(t[k + 1], arg) + dx_left), x[:, k])
         except RuntimeError:
             print "newton did not converge!"
             for k in range(k, n):

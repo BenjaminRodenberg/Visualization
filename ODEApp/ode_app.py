@@ -12,6 +12,8 @@ logging.basicConfig(level=logging.DEBUG)
 import ode_functions as ode_fun
 import ode_settings
 
+import numpy as np
+
 from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
@@ -65,14 +67,12 @@ class ODEApp(VBox):
         )
         # gives the opportunity to choose from different solvers
         obj.solvers = RadioButtonGroup(
-            labels=["ExplicitEuler", "ImplicitEuler", "MidpointRule"], active=ode_settings.solver_init
+            labels=ode_settings.solver_labels, active=ode_settings.solver_init
         )
-        #obj.solvers = Dropdown(label="solvers",type="warning",menu=[("ExplicitEuler","0"),("ImplicitEuler","1"),("MidpointRule","2")])
         # gives the opportunity to choose from different odes
         obj.odes = RadioButtonGroup(
-            labels=["Dahlquist", "Logistic"], active=ode_settings.odetype_init
+            labels=ode_settings.odetype_labels, active=ode_settings.odetype_init
         )
-        #obj.odes = Dropdown(label="ODE",type="warning",menu=[("Dahlquist","0"),("Logistic","1")])
 
         # initialize plot
         toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
@@ -154,29 +154,30 @@ class ODEApp(VBox):
         lam = ode_settings.dahlquist_lambda
         timespan = ode_settings.max_time
         # available ODEs
-        ode_library = [lambda t, x: ode_fun.dahlquist(t, x, lam),
-                       lambda t, x: ode_fun.logistic_equation(t, x, k, g)]
+        ode_library = ode_settings.ode_library
         # respective reference solutions
-        ref_library = [lambda t, x0: ode_fun.dahlquist_ref(t, x0, lam),
-                       lambda t, x0: ode_fun.logistic_equation_ref(t, x0, k, g)]
-
+        ref_library = ode_settings.ref_library
         # available solvers
-        solver_library = [lambda f, x0, h, timespan: ode_fun.expl_euler(f, x0, h, timespan),
-                          lambda f, x0, h, timespan: ode_fun.impl_euler(f, x0, h, timespan),
-                          lambda f, x0, h, timespan: ode_fun.impl_midpoint(f, x0, h, timespan)]
+        solver_library = ode_settings.solver_library
 
         # Get the current slider values
-        h = self.stepsize.value;
-        x0 = self.startvalue.value;
+        h = self.stepsize.value
+        x0 = self.startvalue.value
         solver = solver_library[self.solvers.active]
         ode = ode_library[self.odes.active]
         ref = ref_library[self.odes.active]
+
+        if self.odes.active == 3:
+            x0 = np.array([x0,0])
+        else:
+            x0 = np.array([x0])
 
         # solve ode with numerical scheme        
         [t, x] = solver(ode, x0, h, timespan)
         [t_ref, x_ref] = ode_fun.ref_sol(ref, x0, timespan)
 
         # save data
+        x = x[0,:] # only take first line of solutions
         x = x.tolist()
         t = t.tolist()
         x_ref = x_ref.tolist()
