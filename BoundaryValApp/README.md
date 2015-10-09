@@ -18,5 +18,6 @@ in the browser.
 - [x] Fix issue with plotting of old results
 - [x] publish app on the internet.
 - [x] publish app with run_apps.py script on top level!
+- [ ] Find another (more complicated) BVP which can be solved with this method
 - [ ] Add code for embedding
 - [ ] Fix issue with buttons (see simpleButton.py minimal working example)
