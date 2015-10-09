@@ -5,6 +5,7 @@
 *.py~
 *.tmp
 *.pyc
+*.*~
 */*~
 */*.pyc
 *sandbox*
