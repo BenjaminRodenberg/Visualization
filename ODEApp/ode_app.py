@@ -82,7 +82,7 @@ class ODEApp(VBox):
                       plot_width=400,
                       tools=toolset,
                       # title=obj.text.value,
-                      title="numerical ODE solving",
+                      title=ode_settings.title,
                       x_range=[ode_settings.min_time, ode_settings.max_time],
                       y_range=[ode_settings.min_y, ode_settings.max_y]
                       )

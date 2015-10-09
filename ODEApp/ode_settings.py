@@ -9,6 +9,9 @@ min_time = 0 # DONT CHANGE THIS!
 max_y = 3.5
 min_y = -1.5
 
+#plot settings
+title = "Numerical ODE Solving"
+
 #constants for dahlquist test equation
 dahlquist_lambda = -5   # parameter y'=lambda*y
 
