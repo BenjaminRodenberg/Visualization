@@ -6,6 +6,7 @@
 *.tmp
 *.pyc
 */*~
+*/*.pyc
 *sandbox*
 
 Examples/ExampleEmbed/embed_multiple.html
