@@ -14,8 +14,9 @@ in the browser.
 
 ## ToDos
 - [x] Change the structure of the code towards the style in the sliders example.
-- [ ] Fix issue with buttons (see simpleButton.py minimal working example)
-- [ ] Fix issue with plotting of old results
-- [ ] Add code for embedding
+- [x] Find workaround for button issue
+- [x] Fix issue with plotting of old results
 - [x] publish app on the internet.
-- [ ] publish app with run_apps.py script on top level!
+- [x] publish app with run_apps.py script on top level!
+- [ ] Add code for embedding
+- [ ] Fix issue with buttons (see simpleButton.py minimal working example)

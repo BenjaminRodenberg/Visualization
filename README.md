@@ -29,20 +29,23 @@ python forwarder.py
 gunicorn can be shut down with `pkill -9 gunicorn`. Access the apps by navigating to `<globalip>:5006/bokeh/<appurl>`.
 
 ## ToDos
+### Embedding
+The next task is embedding the apps, which are currently running with the Bokeh GUI into html pages
+- [ ] Minimal embedding example
+- [ ] Embed all existing apps in nice html
+	- [ ] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
+	- [ ] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
+	- [ ] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+
 ### On particular Apps
 - [x] Find out how to bring an app to the internet ( see [Gallery](http://bokeh.pydata.org/en/latest/docs/gallery.html) ). How to get from an app like [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) to an app running in the internet?
-- [ ] Finalize [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
-- [ ] Finalize [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
-- [ ] Finalize [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [x] Finalize [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
+- [x] Finalize [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
+- [x] Finalize [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [ ] Find nice additional visualisations
-
-### Local machine
-- [x] Publish some html from local machine
-- [x] Find out how to bring an app to the internet running on the local machine ( see [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) )
-- [x] Find out if information in the bokeh docu on embedding might be helpful (see [here](http://bokeh.pydata.org/en/latest/docs/user_guide/embed.html#server-data))
 
 ### Virtual machine
 - [x] Get VM running
 - [x] Run app locally on VM
+- [x] Publish app from VM
 - [ ] Publish some html from VM
-- [ ] Publish app from VM

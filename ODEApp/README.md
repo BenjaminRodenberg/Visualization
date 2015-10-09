@@ -15,7 +15,7 @@ in your browser to use the app in it.
 ##ToDos
 - [x] Change structure of the App in the style of the sliders example
 - [x] Improve GUI
-- [ ] Add code for embedding.
-- [ ] Add oszillator ODE
-- [ ] Add störmer verlet (?) -> midpointrule might be sufficient...
+- [x] Add oszillator ODE
 - [x] publish this to the internet
+- [ ] Add störmer verlet (?) -> midpointrule might be sufficient...
+- [ ] Add code for embedding.
