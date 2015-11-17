@@ -14,16 +14,16 @@ import ode_settings
 
 import numpy as np
 
-from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
+from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
 from bokeh.plotting import figure
 
-class ODEApp(VBox):
+class ODEApp(HBox):
     # ==============================================================================
     # Only bokeh quantities for layout, data, controls... go here!
     # ==============================================================================
-    extra_generated_classes = [["ODEApp", "ODEApp", "VBox"]]
+    extra_generated_classes = [["ODEApp", "ODEApp", "HBox"]]
 
     # layout
     controls = Instance(VBoxForm)
