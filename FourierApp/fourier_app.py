@@ -12,17 +12,14 @@ Created on Sat Jul 11 22:04:14 2015
 #==============================================================================
 
 import logging
-from statsmodels.tools.tests.test_numdiff import fun
-from FourierApp.fourier_functions import fourier_series
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
+from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, Dropdown, TextInput
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
 from bokeh.plotting import figure
 
-import urllib, time
 import numpy as np
 
 import fourier_functions as ff
@@ -38,6 +35,7 @@ class FourierApp(VBox):
     # controllable values
     function_type = Instance(RadioButtonGroup)
     degree = Instance(Slider)
+    function_input = Instance(TextInput)
 
     # plot
     plot = Instance(Plot)
@@ -69,6 +67,8 @@ class FourierApp(VBox):
             value=fourier_settings.degree_init, start=fourier_settings.degree_min, end=fourier_settings.degree_max, step=fourier_settings.degree_step
         )
 
+        obj.function_input = TextInput(value=fourier_settings.function_input_msg, title="my function:")
+
         # initialize plot
         toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
         # Generate a figure container
@@ -93,6 +93,10 @@ class FourierApp(VBox):
                   line_alpha=0.6,
                   legend='fourier series'
         )
+        plot.patch([fourier_settings.timeinterval_start, fourier_settings.timeinterval_start,
+                    fourier_settings.timeinterval_end,fourier_settings.timeinterval_end],
+                   [-10**10,+10**10,+10**10,-10**10],
+                   alpha = .2)
         obj.plot = plot
 
         # calculate data
@@ -102,7 +106,8 @@ class FourierApp(VBox):
         obj.controls = VBoxForm(
             children=[
                 obj.degree,
-                obj.function_type
+                obj.function_type,
+                obj.function_input
             ]
         )
 
@@ -123,7 +128,16 @@ class FourierApp(VBox):
 
         # event registration
         self.degree.on_change('value', self, 'input_change')
-        self.function_type.on_change('active', self, 'input_change')
+        self.function_input.on_change('value', self, 'input_change')
+        self.function_type.on_change('active', self, 'type_input_change')
+
+    def type_input_change(self, obj, attrname, old, new):
+        if self.function_type.active == 3:
+            self.function_input.value = fourier_settings.function_input_init
+        else:
+            self.function_input.value = fourier_settings.function_input_msg
+            self.input_change(obj,attrname,old,new)
+
 
     def input_change(self, obj, attrname, old, new):
 #==============================================================================
@@ -148,14 +162,25 @@ class FourierApp(VBox):
 #         arrays in a dict into the app's data source property.
 #==============================================================================
         N = int(round(self.degree.value)) # Get the current slider values
-        f = fourier_settings.function_library[self.function_type.active]
+        f_raw = fourier_settings.function_library[self.function_type.active]
 
         #function f(x) which will be approximated
         t = np.linspace(fourier_settings.x_min,fourier_settings.x_max,fourier_settings.resolution)
         x_orig = np.empty(len(t))
 
+        if self.function_type.active == 3:
+            fun_str = self.function_input.value
+            f = f_raw(fun_str)
+        else:
+            self.function_input.value = fourier_settings.function_input_msg
+            f = f_raw
+
         for i in range(len(t)):
-            x_orig[i] = f(t[i])
+            periodic_t = (t[i] - fourier_settings.timeinterval_start) \
+                         % fourier_settings.timeinterval_length + \
+                         fourier_settings.timeinterval_start
+            x_orig[i] = f(periodic_t)
+
 
         # Generate Fourier series
         T = fourier_settings.timeinterval_length #length of one period of the function

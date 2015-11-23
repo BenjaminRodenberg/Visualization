@@ -9,5 +9,6 @@
 */*~
 */*.pyc
 *sandbox*
+*.idea
 
 Examples/ExampleEmbed/embed_multiple.html
