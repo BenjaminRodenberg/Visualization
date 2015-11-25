@@ -97,6 +97,8 @@ class FourierApp(VBox):
                     fourier_settings.timeinterval_end,fourier_settings.timeinterval_end],
                    [-10**10,+10**10,+10**10,-10**10],
                    alpha = .2)
+	plot.line([fourier_settings.timeinterval_start,fourier_settings.timeinterval_start],[-10**10,10**10])
+	plot.line([fourier_settings.timeinterval_end,fourier_settings.timeinterval_end],[-10**10,10**10])
         obj.plot = plot
 
         # calculate data
