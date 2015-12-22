@@ -6,5 +6,6 @@ One can also enter any function for computing its Fourier series. For the input 
 ## ToDos
 - [x] Change structure of the App in the style of the sliders example
 - [x] Improve GUI
+- [ ] make sympy input faster (see convolution app as an example implementation)
 - [ ] Add code for embedding, such that the app can be published on the internet.
 - [ ] Implement dynamic printing of analytical expression in embedded html
