@@ -2,6 +2,8 @@ from MinimalInteractive import minimal_app
 from ODEApp import ode_app
 from FourierApp import fourier_app
 from BoundaryValApp import boundaryVal_app
+from ConvolutionApp import convolution_app
+from DirectionFieldApp import directions_app
 
 from bokeh.server.app import bokeh_app
 from bokeh.server.utils.plugins import object_page
@@ -33,5 +35,18 @@ def make_fourier():
 def make_boundary():
     app = boundaryVal_app.BoundaryValApp.create()
     return app
+
+@bokeh_app.route("/bokeh/convolution/")
+@object_page("convolution")
+def make_convolution():
+    app = convolution_app.ConvolutionApp.create()
+    return app
+
+@bokeh_app.route("/bokeh/directions/")
+@object_page("directions")
+def make_direction():
+    app = directions_app.DirectionsApp.create()
+    return app
+
 
 
