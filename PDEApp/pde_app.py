@@ -5,43 +5,55 @@ Created on Sat Jul 11 22:04:14 2015
 @author: benjamin
 """
 
+from __future__ import division
+
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-import ode_functions as ode_fun
-import ode_settings
-
 import numpy as np
 
-from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
+from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, TextInput
 from bokeh.models import Plot, ColumnDataSource
 from bokeh.properties import Instance
 from bokeh.plotting import figure
 
-class ODEApp(HBox):
+import pde_settings
+
+
+def parse(fun_str):
+    from sympy import sympify, lambdify
+    from sympy.abc import x
+
+    fun_sym = sympify(fun_str)
+    fun_lam = lambdify(x, fun_sym)
+    return fun_lam
+
+
+class PDEApp(HBox):
     # ==============================================================================
     # Only bokeh quantities for layout, data, controls... go here!
     # ==============================================================================
-    extra_generated_classes = [["ODEApp", "ODEApp", "HBox"]]
+    extra_generated_classes = [["PDEApp", "PDEApp", "HBox"]]
 
     # layout
     controls = Instance(VBoxForm)
 
     # controllable values
-    startvalue = Instance(Slider)
-    stepsize = Instance(Slider)
-    solvers = Instance(RadioButtonGroup)
-    odes = Instance(RadioButtonGroup)
-    #solvers = Instance(Dropdown)
-    #odes = Instance(Dropdown)
+    time = Instance(Slider)
+    h = Instance(Slider)
+    k = Instance(Slider)
+    pde_type = Instance(RadioButtonGroup)
+    solver_type = Instance(RadioButtonGroup)
+    initial_condition = Instance(TextInput)
 
     # plot
     plot = Instance(Plot)
 
     # data
-    source = Instance(ColumnDataSource)
-    source_ref = Instance(ColumnDataSource)
+    plot_data = Instance(ColumnDataSource)
+    mesh_data = Instance(ColumnDataSource)
+    pde_specs = Instance(ColumnDataSource)
 
     @classmethod
     def create(cls):
@@ -51,28 +63,40 @@ class ODEApp(HBox):
         obj = cls()
 
         # initialize data source
-        obj.source = ColumnDataSource(data=dict(t=[], x=[]))
-        obj.source_ref = ColumnDataSource(data=dict(t_ref=[], x_ref=[]))
+        obj.plot_data = ColumnDataSource(data=dict(x=[], u=[]))
+        obj.mesh_data = ColumnDataSource(data=dict())
+        obj.pde_specs = ColumnDataSource(data=dict(h=[], k=[]))
 
         # initialize controls
-        # slider controlling stepsize of the solver
-        obj.stepsize = Slider(
-            title="stepsize", name='stepsize',
-            value=ode_settings.step_init, start=ode_settings.step_min, end=ode_settings.step_max, step=ode_settings.step_step
+        # slider for going though time
+        obj.time = Slider(
+                title="time", name='time',
+                value=pde_settings.t_init,
+                start=pde_settings.t_min,
+                end=pde_settings.t_max,
+                step=pde_settings.t_step
         )
-        # slider controlling initial value of the ode
-        obj.startvalue = Slider(
-            title="startvalue", name='startvalue',
-            value=ode_settings.x0_init, start=ode_settings.x0_min, end=ode_settings.x0_max, step=ode_settings.x0_step
-        )
-        # gives the opportunity to choose from different solvers
-        obj.solvers = RadioButtonGroup(
-            labels=ode_settings.solver_labels, active=ode_settings.solver_init
-        )
-        # gives the opportunity to choose from different odes
-        obj.odes = RadioButtonGroup(
-            labels=ode_settings.odetype_labels, active=ode_settings.odetype_init
-        )
+        # slider controlling spatial stepsize of the solver
+        obj.h = Slider(title="spatial meshwidth", name='spatial meshwidth',
+                       value=pde_settings.h_init,
+                       start=pde_settings.h_min,
+                       end=pde_settings.h_max,
+                       step=pde_settings.h_step)
+        # slider controlling spatial stepsize of the solver
+        obj.k = Slider(title="temporal meshwidth", name='temporal meshwidth',
+                       value=pde_settings.k_init,
+                       start=pde_settings.k_min,
+                       end=pde_settings.k_max,
+                       step=pde_settings.k_step)
+        # radiobuttons controlling pde type
+        obj.pde_type = RadioButtonGroup(labels=['Heat', 'Wave'],
+                                        active=0)
+        # radiobuttons controlling solver type
+        obj.solver_type = RadioButtonGroup(labels=['Explicit', 'Implicit'],
+                                           active=0)
+        # text input for IC
+        obj.initial_condition = TextInput(value=pde_settings.IC_init,
+                                          title="initial condition")
 
         # initialize plot
         toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
@@ -82,38 +106,33 @@ class ODEApp(HBox):
                       plot_width=400,
                       tools=toolset,
                       # title=obj.text.value,
-                      title=ode_settings.title,
-                      x_range=[ode_settings.min_time, ode_settings.max_time],
-                      y_range=[ode_settings.min_y, ode_settings.max_y]
+                      title="Time dependent PDEs",
+                      x_range=[pde_settings.x_min, pde_settings.x_max],
+                      y_range=[-1, 1]
                       )
-        # Plot the numerical solution by the x,t values in the source property
-        plot.line('t', 'x', source=obj.source,
+
+        # Plot the numerical solution at time=t by the x,u values in the source property
+        plot.line('x', 'u', source=obj.plot_data,
                   line_width=.5,
                   line_alpha=0.6,
-                  color='red',
-                  line_dash=[4, 4]
-                  )
-        plot.circle('t','x',source=obj.source,
+                  line_dash=[4, 4],
+                  color='red')
+        plot.circle('x', 'u', source=obj.plot_data,
                     color='red',
-                    legend='numerical solution'
-                    )
-        # Plot the analytical solution by the x_ref,t values in the source property
-        plot.line('t_ref', 'x_ref', source=obj.source_ref,
-                  color='green',
-                  line_width=3,
-                  line_alpha=0.6,
-                  legend='analytical solution'
-                  )
+                    legend='numerical solution')
+
         obj.plot = plot
         # calculate data
-        obj.update_data()
+        obj.init_pde()
 
         # lists all the controls in our app
-        obj.controls = VBoxForm(
-            children=[
-                obj.stepsize, obj.startvalue, obj.solvers, obj.odes
-            ]
-        )
+        obj.controls = VBoxForm(children=[obj.initial_condition,
+                                          obj.time,
+                                          obj.h,
+                                          obj.k,
+                                          HBox(children=[obj.pde_type, HBox(width=20), obj.solver_type],
+                                               width=300)],
+                                width=400)
 
         # make layout
         obj.children.append(obj.plot)
@@ -127,62 +146,77 @@ class ODEApp(HBox):
         # Here we have to set up the event behaviour.
         # ==============================================================================
         # recursively searches the right level?
-        if not self.startvalue:
+        if not self.time:
             return
 
         # event registration
-        self.stepsize.on_change('value', self, 'input_change')
-        self.startvalue.on_change('value', self, 'input_change')
-        self.solvers.on_change('active', self, 'input_change')
-        self.odes.on_change('active', self, 'input_change')
+        self.time.on_change('value', self, 'time_change')
+        self.h.on_change('value', self, 'mesh_change')
+        self.k.on_change('value', self, 'mesh_change')
+        self.solver_type.on_change('active', self, 'mesh_change')
+        self.pde_type.on_change('active', self, 'mesh_change')
+        self.initial_condition.on_change('value', self, 'mesh_change')
 
-    def input_change(self, obj, attrname, old, new):
-        # ==============================================================================
-        # This function is called if input changes
-        # ==============================================================================
-        print "input changed!"
-        self.update_data()
+    def mesh_change(self, obj, attrname, old, new):
+        h = self.h.value  # spatial meshwidth
+        k = self.k.value  # temporal meshwidth
+        solver_id = self.get_solver_id()  # solver
+        print "mesh changed to " + str((h, k))
+        print "using solver with id " + str(solver_id)
+        self.update_mesh(h, k, solver_id)
 
-    def update_data(self):
-        # ==============================================================================
-        # Updated the data respective to input
-        # ==============================================================================
+    def get_solver_id(self):
+        return self.pde_type.active * 2 + self.solver_type.active
 
-        # default values for ODEs...
-        k = ode_settings.logistic_k
-        g = ode_settings.logistic_g
-        lam = ode_settings.dahlquist_lambda
-        timespan = ode_settings.max_time
-        # available ODEs
-        ode_library = ode_settings.ode_library
-        # respective reference solutions
-        ref_library = ode_settings.ref_library
-        # available solvers
-        solver_library = ode_settings.solver_library
+    def time_change(self, obj, attrname, old, new):
+        print str(obj.name) + " changed from " + str(old) + " to " + str(new)
+        k = self.k.value
+        t = self.time.value
+        self.update_plot(k, t)
+        print "new time: " + str(t)
 
-        # Get the current slider values
-        h = self.stepsize.value
-        x0 = self.startvalue.value
-        solver = solver_library[self.solvers.active]
-        ode = ode_library[self.odes.active]
-        ref = ref_library[self.odes.active]
+    def init_pde(self):
+        h = self.h.value
+        k = self.k.value
+        solver_id = self.get_solver_id()
+        t = self.time.value
 
-        if self.odes.active == 3:
-            x0 = np.array([x0,0])
-        else:
-            x0 = np.array([x0])
+        self.update_mesh(h, k, solver_id)
 
-        # solve ode with numerical scheme        
-        [t, x] = solver(ode, x0, h, timespan)
-        [t_ref, x_ref] = ode_fun.ref_sol(ref, x0, timespan)
+    def update_mesh(self, h, k, solver_id):
 
-        # save data
-        x = x[0,:] # only take first line of solutions
-        x = x.tolist()
-        t = t.tolist()
-        x_ref = x_ref.tolist()
-        t_ref = t_ref.tolist()
-        self.source.data = dict(t=t, x=x)
-        self.source_ref.data = dict(x_ref=x_ref, t_ref=t_ref)
+        self.pde_specs.data = dict(h=[h], k=[k], solver_id=[solver_id])
+        solver = pde_settings.solvers[solver_id]
 
-        print "data was updated with parameters: h=" + str(h) + " and x0=" + str(x0)
+        x0 = pde_settings.x_min
+        x1 = pde_settings.x_max
+        N = int(round((x1 - x0) / h + 1, 0))
+        x = np.linspace(x0, x1, N)
+        f0 = parse(self.initial_condition.value)
+        u = np.empty(x.shape)
+        for i in range(N):
+            u[i] = f0(x[i])
+
+        uold = np.array(u)  # this enforces neumann BC: u'(t=0)=0
+
+        M = int(round(pde_settings.t_max / k, 0)) + 1
+
+        mesh_dict = dict(x=x)
+
+        for i in range(M):
+            key = 'u' + str(i)
+            mesh_dict[key] = u.tolist()
+            unew = solver(uold, u, k, h)
+            uold = u
+            u = unew
+
+        self.mesh_data.data = mesh_dict
+        t = self.time.value
+        self.update_plot(k, t)
+
+    def update_plot(self, k, t):
+        idx = int(round(t / k, 0))
+        u_key = 'u' + str(idx)
+        x = self.mesh_data.data['x']
+        u = self.mesh_data.data[u_key]
+        self.plot_data.data = dict(x=x, u=u)
