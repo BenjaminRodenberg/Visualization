@@ -4,6 +4,7 @@ from FourierApp import fourier_app
 from BoundaryValApp import boundaryVal_app
 from ConvolutionApp import convolution_app
 from DirectionFieldApp import directions_app
+from PDEApp import pde_app
 
 from bokeh.server.app import bokeh_app
 from bokeh.server.utils.plugins import object_page
@@ -20,6 +21,13 @@ def make_minimal():
 @object_page("ode")
 def make_ode():
     app = ode_app.ODEApp.create()
+    return app
+
+
+@bokeh_app.route("/bokeh/pde/")
+@object_page("pde")
+def make_pde():
+    app = pde_app.PDEApp.create()
     return app
 
 

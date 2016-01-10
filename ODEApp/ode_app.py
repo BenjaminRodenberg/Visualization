@@ -33,8 +33,6 @@ class ODEApp(HBox):
     stepsize = Instance(Slider)
     solvers = Instance(RadioButtonGroup)
     odes = Instance(RadioButtonGroup)
-    #solvers = Instance(Dropdown)
-    #odes = Instance(Dropdown)
 
     # plot
     plot = Instance(Plot)

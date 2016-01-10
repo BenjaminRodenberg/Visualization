@@ -57,18 +57,16 @@ class FourierApp(VBox):
 
         # initialize controls
         # slider controlling the base function
-        obj.function_type = RadioButtonGroup(
-            labels=fourier_settings.function_names, active=fourier_settings.function_init
-        )
+        obj.function_type = RadioButtonGroup(labels=fourier_settings.function_names,
+                                             active=fourier_settings.function_init
+                                             )
 
         # slider controlling degree of the fourier series
-        obj.degree = Slider(
-            title="degree", name='degree',
-            value=fourier_settings.degree_init, start=fourier_settings.degree_min, end=fourier_settings.degree_max, step=fourier_settings.degree_step
-        )
-
-        obj.function_input = TextInput(value=fourier_settings.function_input_msg, title="my function:")
-
+        obj.degree = Slider(title="degree", name='degree',
+                            value=fourier_settings.degree_init, start=fourier_settings.degree_min, end=fourier_settings.degree_max, step=fourier_settings.degree_step
+                            )
+        obj.function_input = TextInput(value=fourier_settings.function_input_msg,
+                                       title="my function:")
         # initialize plot
         toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
         # Generate a figure container
@@ -79,26 +77,27 @@ class FourierApp(VBox):
                       title="Fourier Series Approximation",
                       x_range=[fourier_settings.x_min, fourier_settings.x_max],
                       y_range=[fourier_settings.y_min, fourier_settings.y_max]
-        )
+                      )
         # Plot the line by the x,y values in the source property
         plot.line('t', 'x_orig', source=obj.source_orig,
                   line_width=3,
                   line_alpha=0.6,
                   color='red',
                   legend='original function'
-        )
+                  )
         plot.line('t','x_fourier',source=obj.source_fourier,
                   color='green',
                   line_width=3,
                   line_alpha=0.6,
                   legend='fourier series'
-        )
+                  )
         plot.patch([fourier_settings.timeinterval_start, fourier_settings.timeinterval_start,
                     fourier_settings.timeinterval_end,fourier_settings.timeinterval_end],
                    [-10**10,+10**10,+10**10,-10**10],
-                   alpha = .2)
-	plot.line([fourier_settings.timeinterval_start,fourier_settings.timeinterval_start],[-10**10,10**10])
-	plot.line([fourier_settings.timeinterval_end,fourier_settings.timeinterval_end],[-10**10,10**10])
+                   alpha = .2
+                   )
+        plot.line([fourier_settings.timeinterval_start,fourier_settings.timeinterval_start],[-10**10,10**10])
+        plot.line([fourier_settings.timeinterval_end,fourier_settings.timeinterval_end],[-10**10,10**10])
         obj.plot = plot
 
         # calculate data
