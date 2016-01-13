@@ -1,5 +1,6 @@
 from MinimalInteractive import minimal_app
 from ODEApp import ode_app
+from ODESystemApp import odesystem_app
 from FourierApp import fourier_app
 from BoundaryValApp import boundaryVal_app
 from ConvolutionApp import convolution_app
@@ -21,6 +22,13 @@ def make_minimal():
 @object_page("ode")
 def make_ode():
     app = ode_app.ODEApp.create()
+    return app
+
+
+@bokeh_app.route("/bokeh/odesystem/")
+@object_page("odesystem")
+def make_odesystem():
+    app = odesystem_app.ODESystemApp.create()
     return app
 
 
