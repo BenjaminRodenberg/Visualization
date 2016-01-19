@@ -69,22 +69,15 @@ def npDirac(x, h):
     """
     return npHeaviside(x)*npHeaviside(h-x)*1.0/h
 
-#==============================================================================
-# parses a function with given fun_str and returns lambda function
-#==============================================================================
+
 def parser(fun_str, h):
     from sympy import sympify, lambdify
     from sympy.abc import x
 
-    print "parsing:"
-    print "\tstring:\t"+str(fun_str)
     fun_sym = sympify(fun_str)
-    print "\tsymbolic:\t"+str(fun_sym)
     fun_lam = lambdify(x, fun_sym,['numpy',
                                    {"Heaviside": npHeaviside},
                                    {"Dirac": lambda x: npDirac(x,h)}])
-    print "\tfunction:\t"+str(fun_lam)
-
     return fun_lam
 
 
