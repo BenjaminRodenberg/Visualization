@@ -14,4 +14,5 @@ in your browser to use the app in it.
 
 ##ToDos
 - [x] publish this to the internet
+- [ ] Add "PLAY" button for continuous time.
 - [ ] Add code for embedding.

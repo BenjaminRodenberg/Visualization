@@ -1,5 +1,3 @@
-__author__ = 'benjamin'
-
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jul 11 22:04:14 2015
@@ -11,35 +9,34 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
-from bokeh.models import Plot, ColumnDataSource, Int, List, HasProps
-from bokeh.properties import Instance
-from bokeh.plotting import figure
-
 import numpy as np
 
-class ObjA(HasProps):
-    calls = Int
+from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropdown
+from bokeh.models import Plot, ColumnDataSource
+from bokeh.properties import Instance, Color
+from bokeh.plotting import figure
+from bokeh.models.mappers import LinearColorMapper
 
-class MinApp(HBox):
+from pde_settings import svg_palette_jet
+
+class PDEApp(HBox):
     # ==============================================================================
     # Only bokeh quantities for layout, data, controls... go here!
     # ==============================================================================
-    extra_generated_classes = [["MinApp", "MinApp", "HBox"]]
+    extra_generated_classes = [["PDEApp", "PDEApp", "HBox"]]
 
     # layout
     controls = Instance(VBoxForm)
 
     # controllable values
-    slope = Instance(Slider)
+    value1 = Instance(Slider)
+    value2 = Instance(Slider)
 
     # plot
     plot = Instance(Plot)
 
     # data
     source = Instance(ColumnDataSource)
-
-    myObj = Instance(ColumnDataSource)
 
     @classmethod
     def create(cls):
@@ -48,19 +45,19 @@ class MinApp(HBox):
         # ==============================================================================
         obj = cls()
 
-        # default values
-        m = 1
-
-        obj.myObj = ColumnDataSource(data=dict(someObjects=[ObjA(calls=0)]))
-
         # initialize data source
-        obj.source = ColumnDataSource(data=dict(x=[], y=[]))
+        obj.source = ColumnDataSource(data=dict(z=[]))
 
         # initialize controls
         # slider controlling stepsize of the solver
-        obj.slope = Slider(
-            title="slope", name='slope',
-            value=m, start=-1, end=1, step=.05
+        obj.value2 = Slider(
+                title="value2", name='value2',
+                value=1, start=-1, end=+1, step=.1
+        )
+        # slider controlling initial value of the ode
+        obj.value1 = Slider(
+                title="value1", name='value1',
+                value=0, start=-1, end=+1, step=.1
         )
 
         # initialize plot
@@ -71,27 +68,33 @@ class MinApp(HBox):
                       plot_width=400,
                       tools=toolset,
                       # title=obj.text.value,
-                      title="line",
-                      x_range=[0, 1],
+                      title="somestuff",
+                      x_range=[-1, 1],
                       y_range=[-1, 1]
                       )
         # Plot the numerical solution by the x,t values in the source property
-        plot.line('x', 'y', source=obj.source)
-        obj.plot = plot
 
+        plot.image(image='z',
+                   x=-1, y=-1, dw=2, dh=2,
+                   #palette="Spectral11",
+                   color_mapper = LinearColorMapper(palette=svg_palette_jet,low=-2,high=2),
+                   source=obj.source
+                   )
+
+        obj.plot = plot
         # calculate data
-        #obj.update_data()
+        obj.update_data()
 
         # lists all the controls in our app
         obj.controls = VBoxForm(
-            children=[
-                obj.slope
-            ]
+                children=[
+                    obj.value1, obj.value2
+                ]
         )
 
         # make layout
-        obj.children.append(obj.controls)
         obj.children.append(obj.plot)
+        obj.children.append(obj.controls)
 
         # don't forget to return!
         return obj
@@ -101,47 +104,34 @@ class MinApp(HBox):
         # Here we have to set up the event behaviour.
         # ==============================================================================
         # recursively searches the right level?
-        if not self.slope:
+        if not self.value1:
             return
 
         # event registration
-        self.slope.on_change('value', self, 'input_change')
+        self.value2.on_change('value', self, 'input_change')
+        self.value1.on_change('value', self, 'input_change')
 
     def input_change(self, obj, attrname, old, new):
         # ==============================================================================
         # This function is called if input changes
         # ==============================================================================
         print "input changed!"
-        print "calls before this call: "+str(self.myObj.data)
         self.update_data()
-        print "calls after this call: "+str(self.myObj.data)
 
     def update_data(self):
         # ==============================================================================
         # Updated the data respective to input
         # ==============================================================================
+        print "updating data..."
+        v1 = self.value1.value
+        v2 = self.value2.value
 
-        theObj = self.myObj.data['someObjects'][0]
-        print theObj
-        calls = theObj.calls
-        calls += 1
-        newObj = ObjA(calls = 1)
-        self.myObj.data = dict(someObjects = [newObj])
+        N = 200
+        x,y = np.meshgrid(np.linspace(-1,1,N),np.linspace(-1,1,N))
+        z = v1*x**2 + v2*y**2
 
-        x = np.linspace(0,1)
-        y = np.empty(x.shape)
-        n = x.size
-        m = self.slope.value
-        t = 0
+        self.source.data = dict(z=[z.tolist()])
 
-
-
-        for i in range(n):
-            y[i] = m*x[i]+t
-
-        x=x.tolist()
-        y=y.tolist()
-
-        self.source.data = dict(x=x, y=y)
-
-        print "data was updated with parameters: m=" + str(m)
+        print "data was updated with parameters: v1=" + str(v1) + " and v2=" + str(v2)
+        print "new z:"
+        print z
