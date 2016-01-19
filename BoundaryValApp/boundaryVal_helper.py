@@ -1,6 +1,16 @@
-# -*- coding: utf-8 -*-
 from __future__ import division
-import boundaryVal_settings as bv_settings
+
+
+# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
+def import_bokeh(relative_path):
+    import imp
+    import os
+    app_root_dir = os.path.dirname(os.path.realpath(__file__))
+    return imp.load_source('', app_root_dir + '/' + relative_path)
+
+
+# import local modules
+bv_settings = import_bokeh('boundaryVal_settings.py')
 
 def prepareImgBokehRGBA(img):
 

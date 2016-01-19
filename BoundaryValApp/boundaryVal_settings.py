@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep 11 15:44:42 2015
-
-@author: benjamin
-"""
-
 #general settings
 alpha_left = 0.0
 alpha_right = 45.0
