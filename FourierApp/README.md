@@ -8,6 +8,6 @@ One can also enter any function for computing its Fourier series. For the input 
 - [x] Update to Bokeh 0.11
 - [x] Add controls for setting periodicity and interval (e.g. [-pi,pi] or [0,2pi] or [0,2])
 - [x] Improve GUI
-- [ ] make sympy input faster (see convolution app as an example implementation)
+- [x] make sympy input faster (see convolution app as an example implementation)
 - [ ] Add code for embedding, such that the app can be published on the internet.
 - [ ] Implement dynamic printing of analytical expression in embedded html
