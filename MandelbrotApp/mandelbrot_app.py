@@ -2,16 +2,22 @@ from __future__ import division
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
 from bokeh.models.widgets import VBox, Button, TextInput
 from bokeh.models import ColumnDataSource, Callback
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
-import imp
 
-mandel_par = imp.load_source('mandel_par.py', '/home/benjamin/Programming/PYTHON/Visualization/MandelbrotAppB11/mandel_par.py')
+# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
+def import_bokeh(relative_path):
+    import imp
+    import os
+    app_root_dir = os.path.dirname(os.path.realpath(__file__))
+    return imp.load_source('', app_root_dir+'/'+relative_path)
+# import local modules
+mandel_par = import_bokeh('mandel_par.py')
+
+logging.basicConfig(level=logging.DEBUG)
 
 # initialize data source
 source_image = ColumnDataSource(data=dict(image=[], x0=[], y0=[], xw=[], yw=[]))
@@ -22,7 +28,7 @@ refresh = Button(label="Refresh plot")
 max_iter = TextInput(title="iterations", value='50')
 
 # initialize plot
-toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
+toolset = "pan,reset,wheel_zoom,save"
 # Generate a figure container
 plot = Figure(title_text_font_size="12pt",
               plot_height=400,

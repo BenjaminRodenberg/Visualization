@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul  7 10:57:55 2015
-
-@author: benjamin
-"""
-
 import numpy as np
 import scipy as sp
 from scipy.optimize import newton

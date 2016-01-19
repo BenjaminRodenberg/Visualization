@@ -1,6 +1,10 @@
 __author__ = 'benjamin'
 
-import ode_functions as ode_fun
+import imp
+import os
+app_root_dir = os.path.dirname(os.path.realpath(__file__))
+# import local modules
+ode_fun = imp.load_source('ode_fun', app_root_dir+'/ode_functions.py')
 
 #some constants used in the ode_app
 #general
