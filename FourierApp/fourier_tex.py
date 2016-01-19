@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul 30 18:05:34 2015
-
-@author: benjamin
-"""
 #==============================================================================
 # Returns the correct leading sign, depending on coeff, the sign is encoded as
 # a html request, since the TeX string will be sent via request (important for

@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul 30 18:03:09 2015
-
-@author: benjamin
-"""
-
 import numpy as np
 import math
 from scipy.integrate import quad
