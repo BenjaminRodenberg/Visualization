@@ -5,22 +5,14 @@ from scipy.integrate import quad
 #==============================================================================
 # The hat function    
 #==============================================================================
-def hat(x):    
-    if x < 0:
-        y = (np.pi+x)/np.pi
-    else:
-        y = (np.pi-x)/np.pi
-    return y
+def hat(x):
+    return npHeaviside(x) * (np.pi+x)/np.pi + npHeaviside(-1*x) * (np.pi-x)/np.pi
 
 #==============================================================================
 # The step function
 #==============================================================================
 def step(x):
-    if x < 0:
-        y = -1.0
-    else:
-        y = 1.0      
-    return y
+    return npHeaviside(x) - npHeaviside(-1*x)
 
 #==============================================================================
 # The sawtooth function    
@@ -28,16 +20,48 @@ def step(x):
 def saw(x):
     return x/np.pi
 
-#==============================================================================
-# parses a function with given fun_str and returns lambda function
-#==============================================================================
+
+def npHeaviside(x):
+    """
+    numpy compatible implementation of heaviside function
+    :param x: ndarray
+    :return: ndarray
+    """
+    return np.piecewise(x,
+                        [x<0,
+                         x==0,
+                         x>0],
+                        [lambda arg: 0.0,
+                         lambda arg: 0.5,
+                         lambda arg: 1.0])
+
+def npDirac(x, h):
+    """
+    numpy compatible implementation of dirac delta. This implementation is representing a disrete version of dirac with
+    width h and height 1/h. Area under dirac is equal to 1.
+    :param x: ndarray, evaluation point
+    :param h: width of dirac
+    :return: ndarray
+    """
+    return npHeaviside(x)*npHeaviside(h-x)*1.0/h
+
+
 def parser(fun_str):
     from sympy import sympify, lambdify
     from sympy.abc import x
 
     fun_sym = sympify(fun_str)
-    fun_lam = lambdify(x, fun_sym)
+    fun_lam = lambdify(x, fun_sym,['numpy',
+                                   {"Heaviside": npHeaviside},
+                                   {"Dirac": npDirac}])
     return fun_lam
+
+
+def number_parser(number_str):
+    from sympy import sympify
+    number_sym = sympify(number_str)
+    return float(number_sym)
+
 
 #==============================================================================
 # This function computes the coefficients of the fourier series representation
@@ -50,10 +74,14 @@ def coeff(f, start, end, N):
     b = (N+1) * [0]
     
     for k in range(0, N+1):
-        tmp = quad(lambda x: 2/T*f(x)*math.cos(2*math.pi*k*x/T), start, end)
+        tmp_fun = lambda x: 2/T*f(np.asarray([x]))*np.cos(2*math.pi*k*x/T)
+        tmp = quad(tmp_fun, start, end)
         a[k] = tmp[0]
-        tmp = quad(lambda x: 2/T*f(x)*math.sin(2*math.pi*k*x/T), start, end)
+        print "a[%d] = %f" % (k,a[k])
+        tmp_fun = lambda x: 2/T*f(np.asarray([x]))*np.sin(2*math.pi*k*x/T)
+        tmp = quad(tmp_fun, start, end)
         b[k] = tmp[0]
+        print "b[%d] = %f" % (k,b[k])
         
     a[0] = a[0] / 2
     

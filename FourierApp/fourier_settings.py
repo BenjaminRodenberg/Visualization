@@ -23,17 +23,15 @@ y_max=2.5
 resolution=500
 
 #function input
-function_input_msg = "Choose 'my own function' for entering a function here!"
 function_input_init = "sin(x) * Heaviside( (-1)^ceil(x/pi*2) )"
 
 #fourierseries
-timeinterval_start = -np.pi
-timeinterval_end = +np.pi
-timeinterval_length = timeinterval_end-timeinterval_start
+timeinterval_start_init = '-pi'
+timeinterval_end_init = 'pi'
 
-#different functions available
-function_library = [ff.hat,ff.step,ff.saw,ff.parser]
-function_names = ["Hat", "Step", "Saw","my own function"]
+#different sample functions available
+function_library = [ff.hat,ff.step,ff.saw]
+function_names = ["Hat", "Step", "Saw"]
 
 # settings for controls
 # control function type
