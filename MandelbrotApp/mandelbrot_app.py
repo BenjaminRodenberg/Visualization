@@ -1,171 +1,78 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jul 11 22:04:14 2015
-
-@author: benjamin
-"""
+from __future__ import division
 
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from mandel_par import mandel
+from bokeh.models.widgets import VBox, Button, TextInput
+from bokeh.models import ColumnDataSource, Callback
+from bokeh.plotting import Figure
+from bokeh.io import curdoc
 
-from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, Dropdown, TextInput
-from bokeh.models import Plot, ColumnDataSource, CustomJS
-from bokeh.properties import Instance
-from bokeh.plotting import figure
+import imp
 
-class MandelbrotApp(HBox):
-    # ==============================================================================
-    # Only bokeh quantities for layout, data, controls... go here!
-    # ==============================================================================
-    extra_generated_classes = [["MandelbrotApp", "MandelbrotApp", "HBox"]]
+mandel_par = imp.load_source('mandel_par.py', '/home/benjamin/Programming/PYTHON/Visualization/MandelbrotAppB11/mandel_par.py')
 
-    # layout
-    controls = Instance(VBoxForm)
+# initialize data source
+source_image = ColumnDataSource(data=dict(image=[], x0=[], y0=[], xw=[], yw=[]))
+source_fig_specs = ColumnDataSource(data=dict(x0=[], y0=[], xw=[], yw=[]))
 
-    # controllable values
-    focusx = Instance(Slider)
-    focusy = Instance(Slider)
-    width = Instance(Slider)
-    dummy = Instance(Slider)
+# initialize controls
+refresh = Button(label="Refresh plot")
+max_iter = TextInput(title="iterations", value='50')
 
-    # plot
-    plot = Instance(Plot)
-
-    # data
-    source = Instance(ColumnDataSource)
-    source_fig_specs = Instance(ColumnDataSource)
-
-    @classmethod
-    def create(cls):
-        # ==============================================================================
-        # creates initial layout and data
-        # ==============================================================================
-        obj = cls()
-
-        # initialize data source
-        obj.source = ColumnDataSource(data=dict(image=[],x0=[],y0=[],xw=[],yw=[]))
-        obj.source_fig_specs = ColumnDataSource(data=dict(x0=[],y0=[],xw=[],yw=[]))
-
-        # initialize controls
-        # slider controlling x position of focus
-        obj.focusx = Slider(
-            title="x0", name='x0',
-            value=-.5, start=-2.0, end=1.0, step=.01
-        )
-        # slider controlling y position of focus
-        obj.focusy = Slider(
-            title="y0", name='y0',
-            value=0.0, start=-1.0, end=1.0, step=.01
-        )
-        # gives the opportunity to choose from different solvers
-        obj.width = Slider(
-            title="width", name='width',
-            value=3.0, start=0.0, end=3.0, step=.01
-        )
-
-        obj.dummy = Slider(title="dummy", start=-2, end=2)
-
-        # calculate data
-        obj.update_data()
-
-        # initialize plot
-        toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
-        # Generate a figure container
-        plot = figure(title_text_font_size="12pt",
-                      plot_height=400,
-                      plot_width=400,
-                      x_range=[-2,1],
-                      y_range=[-1.5,1.5],
-                      tools=toolset,
-                      title="Mandelbrot Set"
-                      )
-        # Plot the mandelbrot set
-        plot.image(image='image',
-                   x='x0',
-                   y='y0',
-                   dw='xw',
-                   dh='yw',
-                   palette="Spectral11",
-                   source=obj.source)
-
-        jscode = \
-        """
-        var data = source.get('data');
-        var start = range.get('start');
-        var end = range.get('end');
-        data['%s'] = [start + (end - start) / 2];
-        data['%s'] = [end - start];
-        fun.trigger('value',0,(end-start)/2);
-        source.trigger('change');
-        """
-
-        plot.x_range.callback = CustomJS(
-                args=dict(source=obj.source_fig_specs, range=plot.x_range, fun=obj.dummy), code=jscode % ('x0', 'xw'))
-        plot.y_range.callback = CustomJS(
-                args=dict(source=obj.source_fig_specs, range=plot.y_range, fun=obj.dummy), code=jscode % ('y0', 'yw'))
-
-        obj.plot = plot
-
-        # lists all the controls in our app
-        obj.controls = VBoxForm(
-            children=[
-                obj.focusy, obj.focusx, obj.width, obj.dummy
-            ]
-        )
-
-        # make layout
-        obj.children.append(obj.plot)
-        obj.children.append(obj.controls)
-
-        # don't forget to return!
-        return obj
-
-    def setup_events(self):
-        # ==============================================================================
-        # Here we have to set up the event behaviour.
-        # ==============================================================================
-        # recursively searches the right level?
-        if not self.focusx:
-            return
-
-        # event registration
-        self.focusy.on_change('value', self, 'input_change')
-        self.focusx.on_change('value', self, 'input_change')
-        self.width.on_change('value', self, 'input_change')
-        self.dummy.on_change('value',self, 'whine')
+# initialize plot
+toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
+# Generate a figure container
+plot = Figure(title_text_font_size="12pt",
+              plot_height=400,
+              plot_width=400,
+              x_range=[-2, 1],
+              y_range=[-1.5, 1.5],
+              tools=toolset,
+              title="Mandelbrot Set"
+              )
+# Plot the mandelbrot set
+plot.image(image='image',
+           x='x0',
+           y='y0',
+           dw='xw',
+           dh='yw',
+           palette="Spectral11",
+           source=source_image)
 
 
-    def input_change(self, obj, attrname, old, new):
-        # ==============================================================================
-        # This function is called if input changes
-        # ==============================================================================
-        print "input changed!"
-        self.update_data()
+def update_data():
+    x0 = plot.x_range.__getattribute__('start')
+    y0 = plot.y_range.__getattribute__('start')
+    xw = plot.x_range.__getattribute__('end')-x0
+    yw = plot.y_range.__getattribute__('end')-y0
+
+    iterations = int(max_iter.value)
+
+    print "calling mandel."
+    z = mandel_par.mandel(x0, y0, xw, yw, 400, 400, iterations)
+    print "done."
+
+    source_image.data = dict(image=[z.tolist()], x0=[x0], y0=[y0], xw=[xw], yw=[yw])
+
+    print "data was updated."
+    param = dict(x0=x0, y0=y0, xw=xw, yw=yw)
+    print param
 
 
-    def whine(self, obj, attrname, old, new):
-        print "oh noooo i have to work :("
+def refresh_plot():
+    print "REFRESH!"
+    update_data()
 
 
-    def update_data(self):
-        # ==============================================================================
-        # Updated the data respective to input
-        # ==============================================================================
+# initialize data
+update_data()
 
-        # default values for ODEs...
-        focus_x = self.focusx.value
-        focus_y = self.focusy.value
-        w = self.width.value
-        x0 = focus_x-w*.5
-        y0 = focus_y-w*.5
+# setup callback
+refresh.on_click(refresh_plot)
 
-        z = mandel(x0, y0, w, w, 400, 400, 1000)
+# make layout
+curdoc().add_root(VBox(children=[plot, max_iter, refresh]))
 
-        self.source.data = dict(image=[z.tolist()], x0=[x0], y0=[y0], yw=[w], xw=[w])
-
-        print "data was updated."
-        param = dict(x0=x0, y0=y0, w=w)
-        print param
+print "everything initialized."
