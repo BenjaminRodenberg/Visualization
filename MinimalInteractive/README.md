@@ -15,3 +15,4 @@ in your browser to use the app in it.
 ##ToDos
 - [ ] Try something with embedding into html
 - [x] Try to publish this to the internet
+- [ ] Update to Bokeh 0.11

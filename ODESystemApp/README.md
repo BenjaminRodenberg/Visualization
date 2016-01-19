@@ -18,5 +18,6 @@ in your browser to use the app in it.
 - [x] Add support for plotting of critical points
 - [x] Add support for plotting of critical lines
 - [x] publish this to the internet
+- [ ] Update to Bokeh 0.11
 - [ ] Try to improve speed
 - [ ] Add code for embedding.
