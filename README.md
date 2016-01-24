@@ -17,10 +17,10 @@ For publishing all apps to the internet run
 ## ToDos
 ### Update to version 11
 - [ ] Update all Apps to version 11
-    - [ ] BoundaryValApp
-    - [ ] ODEApp
-    - [ ] FourierApp
-    - [ ] ODESystemApp
+    - [x] BoundaryValApp
+    - [x] ODEApp
+    - [x] FourierApp
+    - [x] ODESystemApp
     - [ ] PDEApp
     - [ ] ConvolutionApp
     - [x] MandelbrotApp
