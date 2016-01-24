@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Thu Jul 30 18:03:09 2015
 
@@ -6,11 +5,6 @@ Created on Thu Jul 30 18:03:09 2015
 """
 
 import numpy as np
-import math
-
-from Cython.Shadow import array
-from scipy.integrate import quad
-
 
 #==============================================================================
 # The window function

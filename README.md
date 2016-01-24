@@ -22,7 +22,7 @@ For publishing all apps to the internet run
     - [x] FourierApp
     - [x] ODESystemApp
     - [ ] PDEApp
-    - [ ] ConvolutionApp
+    - [x] ConvolutionApp
     - [x] MandelbrotApp
 - [ ] Find out, what changes w.r.t. publishing content
 - [ ] Update README files instruction for running
