@@ -158,8 +158,8 @@ sample_controls = VBox(width=400,
 default_controls = VBox(width=400,
                         children=[default_function_input,
                                  HBox(width=400,
-                                      children=[default_function_period_start,
-                                                default_function_period_end])])
+                                      children=[VBox(width=20),default_function_period_start,VBox(width=10),
+                                                default_function_period_end,VBox(width=20)])])
 
 # Panels for sample functions or default functions
 sample_funs = Panel(child=sample_controls, title='sample function')

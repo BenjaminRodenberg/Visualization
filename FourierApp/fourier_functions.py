@@ -6,7 +6,7 @@ from scipy.integrate import quad
 # The hat function    
 #==============================================================================
 def hat(x):
-    return npHeaviside(x) * (np.pi+x)/np.pi + npHeaviside(-1*x) * (np.pi-x)/np.pi
+    return -npHeaviside(x) * (-np.pi+x)/np.pi + npHeaviside(-x) * (np.pi+x)/np.pi
 
 #==============================================================================
 # The step function
