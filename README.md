@@ -11,8 +11,11 @@ bokeh serve filename.py
 and navigate to the respective site
 
 ### Internet
-For publishing all apps to the internet run
-**How does that work for bokeh 0.11?**
+For publishing all apps to the internet run the same command with the option
+```
+--host <globalip>:5006
+```
+for accepting connections to the server.
 
 ## ToDos
 ### Update to version 11
@@ -24,8 +27,8 @@ For publishing all apps to the internet run
     - [ ] PDEApp
     - [x] ConvolutionApp
     - [x] MandelbrotApp
-- [ ] Find out, what changes w.r.t. publishing content
-- [ ] Update README files instruction for running
+- [x] Find out, what changes w.r.t. publishing content
+- [x] Update README files instruction for running
 - [ ] Merge with master
 
 ### On particular Apps
