@@ -166,6 +166,7 @@ sample_funs = Panel(child=sample_controls, title='sample function')
 default_funs = Panel(child=default_controls, title='default function')
 # Add panels to tabs
 fun_tabs = Tabs(tabs=[sample_funs,default_funs])
+fun_tabs.on_change('active', type_input_change) # add callback for panel tabs
 
 # lists all the controls in our app
 controls = HBox(width=400,
