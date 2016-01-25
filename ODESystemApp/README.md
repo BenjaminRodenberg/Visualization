@@ -19,5 +19,7 @@ in your browser to use the app in it.
 - [x] Add support for plotting of critical lines
 - [x] publish this to the internet
 - [x] Update to Bokeh 0.11
+- [ ] Add standard examples as predefined equations (circular attractor...)
+- [ ] Improve GUI with panels
 - [ ] Try to improve speed
 - [ ] Add code for embedding.
