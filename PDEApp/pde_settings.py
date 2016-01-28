@@ -1,12 +1,20 @@
 from __future__ import division
-import numpy as np
-import pde_wave
-import pde_heat
 
-solvers = [pde_heat.do_explicit_step,
-           pde_heat.do_implicit_step,
-           pde_wave.do_explicit_step,
-           pde_wave.do_implicit_step]
+# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
+def import_bokeh(relative_path):
+    import imp
+    import os
+    app_root_dir = os.path.dirname(os.path.realpath(__file__))
+    return imp.load_source('', app_root_dir + '/' + relative_path)
+
+
+# import local modules
+pde_solvers = import_bokeh('pde_solvers.py')
+
+solvers = [pde_solvers.heat_do_explicit_step,
+           pde_solvers.heat_do_implicit_step,
+           pde_solvers.wave_do_explicit_step,
+           pde_solvers.wave_do_implicit_step]
 
 t_init = 0.0
 t_min = 0.0

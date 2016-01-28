@@ -14,7 +14,7 @@ in your browser to use the app in it.
 
 ##ToDos
 - [x] publish this to the internet
-- [ ] Update to Bokeh 0.11
+- [x] Update to Bokeh 0.11
 - [ ] Add "PLAY" button for continuous time.
 - [ ] Add analytical solution
 - [ ] Add code for embedding.

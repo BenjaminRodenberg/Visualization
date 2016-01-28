@@ -15,6 +15,8 @@ def do_explicit_step(ux, u0, k, h):
     :param h: spatial meshwidth
     :return: u1: solution u(x,t=t+k)
     """
+
+    print "heat explicit"
     n = u0.shape[0]
     r = k / (h ** 2)
     iteration_matrix = (r * sp.eye(n, n, -1) - 2 * r * sp.eye(n, n) + r * sp.eye(n, n, 1)).tocsr()
@@ -47,6 +49,8 @@ def do_implicit_step(ux, u0, k, h):
     :param h: spatial meshwidth
     :return: u1: solution u(x,t=t+k)
     """
+    print "heat implicit"
+
     n = u0.shape[0]
     r = k / (h ** 2)
     iteration_matrix = (r * sp.eye(n, n, -1) - 2 * r * sp.eye(n, n) + r * sp.eye(n, n, 1)).tocsr()

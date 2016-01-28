@@ -19,12 +19,12 @@ for accepting connections to the server.
 
 ## ToDos
 ### Update to version 11
-- [ ] Update all Apps to version 11
+- [x] Update all Apps to version 11
     - [x] BoundaryValApp
     - [x] ODEApp
     - [x] FourierApp
     - [x] ODESystemApp
-    - [ ] PDEApp
+    - [x] PDEApp
     - [x] ConvolutionApp
     - [x] MandelbrotApp
 - [x] Find out, what changes w.r.t. publishing content
