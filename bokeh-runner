@@ -1,1 +1,1 @@
-bokeh serve ./BoundaryValApp/boundaryVal_app.py ./ConvolutionApp/convolution_app.py ./FourierApp/fourier_app.py ./MandelbrotApp/mandelbrot_app.py ./ODEApp/ode_app.py ./ODESystemApp/odesystem_app.py --host $1 --keep-alive 1000
+bokeh serve ./BoundaryValApp/boundaryVal_app.py ./ConvolutionApp/convolution_app.py ./FourierApp/fourier_app.py ./MandelbrotApp/mandelbrot_app.py ./ODEApp/ode_app.py ./ODESystemApp/odesystem_app.py ./PDEApp/pde_app.py --host $1 --keep-alive 1000
