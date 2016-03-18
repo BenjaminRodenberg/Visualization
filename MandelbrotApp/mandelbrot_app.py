@@ -27,6 +27,7 @@ source_fig_specs = ColumnDataSource(data=dict(x0=[], y0=[], xw=[], yw=[]))
 # initialize controls
 refresh = Button(label="Refresh plot")
 max_iter = TextInput(title="iterations", value='50')
+freq = TextInput(title="colouring frequency", value='32')
 
 # initialize plot
 toolset = "pan,reset,wheel_zoom,save"
@@ -55,13 +56,14 @@ def update_data():
     yw = plot.y_range.__getattribute__('end')-y0
 
     max_iterations = int(max_iter.value)
+    frequency = int(freq.value)
 
     print "calling mandel."
     iterations = mandel.mandel(x0, y0, xw, yw, 400, 400, max_iterations, 10)
     print "done."
 
     print "calculating colors."
-    col = mandel_colormap.it_count_to_color(iterations, 16, max_iterations)
+    col = mandel_colormap.it_count_to_color(iterations, frequency, max_iterations)
     img = mandel_colormap.rgb_color_to_bokeh_rgba(color=col, alpha=1.0)
     print "done."
 
@@ -84,6 +86,6 @@ update_data()
 refresh.on_click(refresh_plot)
 
 # make layout
-curdoc().add_root(VBox(children=[plot, max_iter, refresh]))
+curdoc().add_root(VBox(children=[plot, max_iter, freq, refresh]))
 
 print "everything initialized."
