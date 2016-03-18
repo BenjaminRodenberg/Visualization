@@ -15,7 +15,8 @@ def import_bokeh(relative_path):
     app_root_dir = os.path.dirname(os.path.realpath(__file__))
     return imp.load_source('', app_root_dir+'/'+relative_path)
 # import local modules
-mandel_par = import_bokeh('mandel_par.py')
+mandel = import_bokeh('mandel.py')
+mandel_colormap = import_bokeh('mandel_colormap.py')
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -39,13 +40,12 @@ plot = Figure(title_text_font_size="12pt",
               title="Mandelbrot Set"
               )
 # Plot the mandelbrot set
-plot.image(image='image',
-           x='x0',
-           y='y0',
-           dw='xw',
-           dh='yw',
-           palette="Spectral11",
-           source=source_image)
+plot.image_rgba(image='image',
+                x='x0',
+                y='y0',
+                dw='xw',
+                dh='yw',
+                source=source_image)
 
 
 def update_data():
@@ -54,13 +54,18 @@ def update_data():
     xw = plot.x_range.__getattribute__('end')-x0
     yw = plot.y_range.__getattribute__('end')-y0
 
-    iterations = int(max_iter.value)
+    max_iterations = int(max_iter.value)
 
     print "calling mandel."
-    z = mandel_par.mandel(x0, y0, xw, yw, 400, 400, iterations)
+    iterations = mandel.mandel(x0, y0, xw, yw, 400, 400, max_iterations, 10)
     print "done."
 
-    source_image.data = dict(image=[z.tolist()], x0=[x0], y0=[y0], xw=[xw], yw=[yw])
+    print "calculating colors."
+    col = mandel_colormap.it_count_to_color(iterations, 16, max_iterations)
+    img = mandel_colormap.rgb_color_to_bokeh_rgba(color=col, alpha=1.0)
+    print "done."
+
+    source_image.data = dict(image=[img], x0=[x0], y0=[y0], xw=[xw], yw=[yw])
 
     print "data was updated."
     param = dict(x0=x0, y0=y0, xw=xw, yw=yw)
