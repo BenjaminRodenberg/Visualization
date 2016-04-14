@@ -17,4 +17,5 @@ in the browser.
 - [x] Add Mandelbrot
 - [x] update to Bokeh version 11
 - [ ] Add Feigenbaum
-- [ ] Add other Julia? Add arbitrary Julia? 
+- [ ] Add other Julia? Add arbitrary Julia?
+- [ ] Do different versions using techniques from [here](https://www.ibm.com/developerworks/community/blogs/jfp/entry/How_To_Compute_Mandelbrodt_Set_Quickly?lang=en) 
