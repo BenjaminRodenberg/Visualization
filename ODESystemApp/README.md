@@ -1,4 +1,4 @@
-# ODESystemsApp
+# ODE System App
 Plots direction field for arbitrary functions (u(x,y) and v(x,y)) and critical points. Additionally plots streamline for 
 initial value (x0,y0).
 

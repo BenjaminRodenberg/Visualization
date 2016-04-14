@@ -18,5 +18,5 @@ in the browser.
 - [x] Write simple prototype for visualization of convolution with one given function
 - [x] Add support for entering arbitrary functions
 - [x] Update to Bokeh 0.11
-- [] Add easier examples (e.g. Heaviside(x) convolved with cos(x*pi/2) * Heaviside(x+1) * Heaviside(1-x))
-- [] Add panel controls like in fourier app.
+- [ ] Add easier examples (e.g. Heaviside(x) convolved with cos(x*pi/2) * Heaviside(x+1) * Heaviside(1-x))
+- [ ] Add panel controls like in fourier app.
