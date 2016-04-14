@@ -4,17 +4,17 @@ This app visualizes, how different PDE Solvers solve different PDEs. The user ca
 ## Running
 Enter 
 ```
-$ bokeh-server --script run_app.py
+$ bokeh serve pde_app.py
 ```
 in bash to run the app. Then enter
 ```
-http://localhost:5006/bokeh/pde
+http://localhost:5006/pde_app
 ```
 in your browser to use the app in it.
 
 ##ToDos
 - [x] publish this to the internet
 - [x] Update to Bokeh 0.11
-- [ ] Add "PLAY" button for continuous time.
 - [ ] Add analytical solution
+- [ ] Add "PLAY" button for continuous time.
 - [ ] Add code for embedding.

@@ -18,28 +18,15 @@ For publishing all apps to the internet run the same command with the option
 for accepting connections to the server.
 
 ## ToDos
-### Update to version 11
-- [x] Update all Apps to version 11
-    - [x] BoundaryValApp
-    - [x] ODEApp
-    - [x] FourierApp
-    - [x] ODESystemApp
-    - [x] PDEApp
-    - [x] ConvolutionApp
-    - [x] MandelbrotApp
-- [x] Find out, what changes w.r.t. publishing content
-- [x] Update README files instruction for running
-- [ ] Merge with master
-
 ### On particular Apps
-- [x] Find out how to bring an app to the internet ( see [Gallery](http://bokeh.pydata.org/en/latest/docs/gallery.html) ). How to get from an app like [Examples/Stocks](https://github.com/BenjaminRueth/Visualization/tree/master/Examples/ExampleStocks) to an app running in the internet?
 - [x] Finalize [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
 - [x] Finalize [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
 - [x] Finalize [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
-- [ ] Finalize [ODESystemApp]()
-- [ ] Finalize [MandelbrotApp]()
-- [ ] Finalize [PDEApp]()
-- [ ] Finalize [ConvolutionApp]()
+- [x] Finalize [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [x] Finalize [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
+- [x] Finalize [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [x] Finalize [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [ ] Finalize [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
 ### Embedding

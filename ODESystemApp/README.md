@@ -5,11 +5,11 @@ initial value (x0,y0).
 ## Running
 Enter 
 ```
-$ bokeh-server --script run_app.py
+$ bokeh serve odesystem_app.py
 ```
 in bash to run the app. Then enter
 ```
-http://localhost:5006/bokeh/odesystem
+http://localhost:5006/odesystem_app
 ```
 in your browser to use the app in it.
 

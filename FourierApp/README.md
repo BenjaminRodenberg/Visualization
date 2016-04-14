@@ -3,6 +3,17 @@ Information provided in the [documentation](https://github.com/BenjaminRueth/Vis
 
 One can also enter any function for computing its Fourier series. For the input we use `sympy` syntax.
 
+## Running
+This app can be run by typing
+```
+$ bokeh serve fourier_app.py
+```
+into bash and then open
+```
+http://localhost:5006/fourier_app
+```
+in the browser.
+
 ## ToDos
 - [x] Change structure of the App in the style of the sliders example
 - [x] Update to Bokeh 0.11

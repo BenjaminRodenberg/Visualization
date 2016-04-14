@@ -4,11 +4,11 @@ This App visualized, how one can solve a boundary value problem using the [shoot
 ## Running
 This app can be run by typing
 ```
-$ bokeh-server --script run_app.py
+$ bokeh serve boundaryVal_app.py
 ```
 into bash and then open
 ```
-http://localhost:5006/bokeh/boundaryVal/
+http://localhost:5006/boundaryVal_app
 ```
 in the browser.
 
