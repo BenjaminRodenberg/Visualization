@@ -2,7 +2,7 @@ from __future__ import division
 
 import logging
 
-from bokeh.models.widgets import VBox, Button, TextInput
+from bokeh.models.widgets import VBox, Button, Slider
 from bokeh.models import ColumnDataSource, Callback
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
@@ -22,12 +22,17 @@ logging.basicConfig(level=logging.DEBUG)
 
 # initialize data source
 source_image = ColumnDataSource(data=dict(image=[], x0=[], y0=[], xw=[], yw=[]))
+source_its = ColumnDataSource(data=dict(its=[]))
 source_fig_specs = ColumnDataSource(data=dict(x0=[], y0=[], xw=[], yw=[]))
 
 # initialize controls
 refresh = Button(label="Refresh plot")
-max_iter = TextInput(title="iterations", value='50')
-freq = TextInput(title="colouring frequency", value='32')
+max_iter = Slider(title="iterations", name='iterations', value=50,
+                 start=0, end=2000,
+                 step=50)
+freq = Slider(title="coloring", name='coloring', value=.5,
+                 start=1, end=10,
+                 step=1)
 
 # initialize plot
 toolset = "pan,reset,wheel_zoom,save"
@@ -48,6 +53,35 @@ plot.image_rgba(image='image',
                 dh='yw',
                 source=source_image)
 
+from bokeh.models import NumeralTickFormatter, PrintfTickFormatter
+# Turn off tick labels
+plot.axis.formatter = PrintfTickFormatter(format=" ")
+plot.axis.major_tick_line_color = None
+plot.axis.minor_tick_line_color = None
+
+def update_image(attrname, old, new):
+    import numpy as np
+    x0 = plot.x_range.__getattribute__('start')
+    y0 = plot.y_range.__getattribute__('start')
+    xw = plot.x_range.__getattribute__('end')-x0
+    yw = plot.y_range.__getattribute__('end')-y0
+
+    iterations = source_its.data['its'][0]
+    max_iterations = int(max_iter.value)
+    frequency = int(np.mean(iterations[iterations!=max_iterations])/new*10)
+
+    print "calculating colors."
+    col = mandel_colormap.it_count_to_color(iterations, frequency, max_iterations)
+    img = mandel_colormap.rgb_color_to_bokeh_rgba(color=col)
+    print "done."
+
+    print "updating data."
+    source_image.data = dict(image=[img], x0=[x0], y0=[y0], xw=[xw], yw=[yw])
+    print "data was updated."
+
+    param = dict(x0=x0, y0=y0, xw=xw, yw=yw)
+    print param
+
 
 def update_data():
     x0 = plot.x_range.__getattribute__('start')
@@ -56,22 +90,15 @@ def update_data():
     yw = plot.y_range.__getattribute__('end')-y0
 
     max_iterations = int(max_iter.value)
-    frequency = int(freq.value)
 
     print "calling mandel."
     iterations = mandel.mandel(x0, y0, xw, yw, 400, 400, max_iterations, 10)
     print "done."
-
-    print "calculating colors."
-    col = mandel_colormap.it_count_to_color(iterations, frequency, max_iterations)
-    img = mandel_colormap.rgb_color_to_bokeh_rgba(color=col, alpha=1.0)
+    print "updating data."
+    source_its.data = dict(its=[iterations])
     print "done."
 
-    source_image.data = dict(image=[img], x0=[x0], y0=[y0], xw=[xw], yw=[yw])
-
-    print "data was updated."
-    param = dict(x0=x0, y0=y0, xw=xw, yw=yw)
-    print param
+    update_image(None,None,freq.value)
 
 
 def refresh_plot():
@@ -84,6 +111,7 @@ update_data()
 
 # setup callback
 refresh.on_click(refresh_plot)
+freq.on_change('value',update_image)
 
 # make layout
 curdoc().add_root(VBox(children=[plot, max_iter, freq, refresh]))

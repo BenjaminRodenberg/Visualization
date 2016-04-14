@@ -5,13 +5,12 @@ import mandel_colormap
 from scipy.ndimage.filters import gaussian_filter, median_filter
 import scipy.misc as smp
 
+# this script generates a nice looking static picture of the mandelbrot set.
 # target resolution
 x_res = 200
 y_res = 200
 
-
 # in the following you find some sample setups.
-
 # Spiral
 name = 'mandel_spiral.png'
 cx = -0.74364085
@@ -74,6 +73,7 @@ if gauss_filtering_sigma is not 0:
 
 color = mandel_colormap.it_count_to_color(it_count, frequency, max_iterations)
 print color.shape
+
 # plot and save picture
 img = smp.toimage(color) # Create a PIL image
 img.save(name)

@@ -1,5 +1,6 @@
 from scipy.interpolate import PchipInterpolator
 import numpy as np
+from numba import vectorize, guvectorize
 
 def get_color_interpolator():
     '''
@@ -30,10 +31,30 @@ def get_color_interpolator():
     return c_interp
 
 
-def rgb_color_to_bokeh_rgba(color, alpha):
+def rgb_color_to_bokeh_rgba(color):
 
     n = color.shape[1]
     m = color.shape[2]
+
+    color = color.astype(np.uint32)
+
+    print color[:,0,0]
+    cc = np.hstack([color[:,0,0].astype(np.uint8),255])
+    cc = cc.astype(np.uint32)
+    print cc
+    cc_img = ((cc[0] << (0 * 8)) + (cc[1] << (1 * 8)) + (cc[2] << (2 * 8)) + (255 << (3 * 8))).astype(np.uint32)
+    print cc_img
+    print cc.view(dtype=np.uint32)
+    img = ((color[0,:,:]<<(0*8))+(color[1,:,:]<<(1*8))+(color[2,:,:]<<(2*8))+(255<<(3*8))).astype(np.uint32)
+    print img.shape
+    print img.dtype
+    print type(img)
+    '''
+    color_a = np.vstack([color.astype(np.uint8), 255*np.ones([1,n,m], dtype=np.uint8)])
+    color_a = np.rollaxis(color_a,0,3)
+    print color_a[0:2,0:2,:].astype(np.uint8)#.view(np.uint32).shape
+    img = np.array(color_a.astype(np.uint8).view(np.uint8))
+    print img.shape
 
     img = np.empty((n, m), dtype=np.uint32)
     view = img.view(dtype=np.uint8).reshape((n, m, 4))
@@ -42,8 +63,8 @@ def rgb_color_to_bokeh_rgba(color, alpha):
             view[i, j, 0] = color[0,i,j]
             view[i, j, 1] = color[1,i,j]
             view[i, j, 2] = color[2,i,j]
-            view[i, j, 3] = int(alpha*255)
-
+            view[i, j, 3] = 255
+    '''
     return img
 
 def it_count_to_color(it_count, frequency, max_iteration):
