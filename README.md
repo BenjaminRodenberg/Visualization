@@ -18,15 +18,21 @@ For publishing all apps to the internet run the same command with the option
 for accepting connections to the server.
 
 ## ToDos
-### On particular Apps
-- [x] Finalize [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
-- [x] Finalize [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
-- [x] Finalize [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
-- [x] Finalize [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
-- [x] Finalize [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
-- [x] Finalize [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
-- [x] Finalize [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
-- [ ] Finalize [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
+### Next Tasks
+- [ ] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [ ] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [ ] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [ ] do documentation on Bokeh with example App ([MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)?)
+
+### Generate Running version subtasks of particular Apps
+- [x] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
+- [x] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
+- [x] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [x] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
+- [x] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
 ### Embedding
