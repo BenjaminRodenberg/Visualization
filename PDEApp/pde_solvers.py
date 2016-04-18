@@ -2,6 +2,18 @@ from __future__ import division
 import scipy.sparse as sp
 import scipy.sparse.linalg as lin
 
+# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
+def import_bokeh(relative_path):
+    import imp
+    import os
+    app_root_dir = os.path.dirname(os.path.realpath(__file__))
+    return imp.load_source('', app_root_dir + '/' + relative_path)
+
+# import local modules
+pde_constants = import_bokeh('pde_constants.py')
+
+c_heat = pde_constants.heat_conductivity
+c_wave = pde_constants.wave_number
 
 def heat_do_explicit_step(ux, u0, k, h):
     """
@@ -18,7 +30,7 @@ def heat_do_explicit_step(ux, u0, k, h):
 
     print "heat explicit"
     n = u0.shape[0]
-    r = k / (h ** 2)
+    r = (c_heat ** 2) * k / (h ** 2)
     iteration_matrix = (r * sp.eye(n, n, -1) - 2 * r * sp.eye(n, n) + r * sp.eye(n, n, 1)).tocsr()
     iteration_matrix[0, 0] = 0  # enforcing dirichlet BC -> no change!
     iteration_matrix[0, 1] = 0
@@ -52,7 +64,7 @@ def heat_do_implicit_step(ux, u0, k, h):
     print "heat implicit"
 
     n = u0.shape[0]
-    r = k / (h ** 2)
+    r = (c_heat ** 2) * k / (h ** 2)
     iteration_matrix = (r * sp.eye(n, n, -1) - 2 * r * sp.eye(n, n) + r * sp.eye(n, n, 1)).tocsr()
     iteration_matrix[0, 0] = 0  # enforcing dirichlet BC -> no change!
     iteration_matrix[0, 1] = 0
@@ -80,7 +92,7 @@ def wave_do_explicit_step(u0, u1, k, h):
 
     print "wave explicit"
     n = u0.shape[0]
-    r = (k / h) ** 2
+    r = (c_wave * k / h) ** 2
     a_h = (-2 * r * sp.eye(n, n) + r * sp.eye(n, n, -1) + r * sp.eye(n, n, 1)).tocsr()
     iteration_matrix1 = 2 * sp.eye(n, n) + a_h
     iteration_matrix1[0, 0] = 1
@@ -122,7 +134,7 @@ def wave_do_implicit_step(u0, u1, k, h):
 
     print "wave implicit"
     n = u0.shape[0]
-    r = (k ** 2) / (h ** 2)
+    r = (c_wave * k / h) ** 2
     a_h = (-2 * r * sp.eye(n, n) + r * sp.eye(n, n, -1) + r * sp.eye(n, n, 1)).tocsr()
     a_h[0, 0] = 0
     a_h[0, 1] = 0

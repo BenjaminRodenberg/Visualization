@@ -27,19 +27,11 @@ def import_bokeh(relative_path):
 
 # import local modules
 pde_settings = import_bokeh('pde_settings.py')
-
-
-def parse(fun_str):
-    from sympy import sympify, lambdify
-    from sympy.abc import x
-
-    fun_sym = sympify(fun_str)
-    fun_lam = lambdify(x, fun_sym)
-    return fun_lam
-
+pde_functions = import_bokeh('pde_functions.py')
 
 # initialize data source
-plot_data = ColumnDataSource(data=dict(x=[], u=[]))
+plot_data_num = ColumnDataSource(data=dict(x=[], u=[]))
+plot_data_ana = ColumnDataSource(data=dict(x=[],u=[]))
 mesh_data = ColumnDataSource(data=dict())
 pde_specs = ColumnDataSource(data=dict(h=[], k=[]))
 
@@ -61,12 +53,27 @@ solver_type = RadioButtonGroup(labels=['Explicit', 'Implicit'], active=0)
 initial_condition = TextInput(value=pde_settings.IC_init, title="initial condition")
 
 
-def update_plot(k, t):
+def get_num_data(k,t):
     idx = int(round(t / k, 0))
     u_key = 'u' + str(idx)
     x = mesh_data.data['x']
     u = mesh_data.data[u_key]
-    plot_data.data = dict(x=x, u=u)
+    return x, u
+
+
+def get_ana_data(t):
+    x = np.linspace(pde_settings.x_min, pde_settings.x_max, 100)
+    u_ana_id = get_solver_id()
+    f0 = pde_functions.parse(initial_condition.value)
+    u = pde_settings.analytical_solutions[u_ana_id](f0, x, t)
+    return x, u
+
+
+def update_plot(k, t):
+    x_num, u_num = get_num_data(k,t)
+    x_ana, u_ana = get_ana_data(t)
+    plot_data_num.data = dict(x=x_num, u=u_num)
+    plot_data_ana.data = dict(x=x_ana, u=u_ana)
 
 
 def get_solver_id():
@@ -76,10 +83,8 @@ def get_solver_id():
 def mesh_change(attrname, old, new):
     h = h_slider.value  # spatial meshwidth
     k = k_slider.value  # temporal meshwidth
-    solver_id = get_solver_id()  # solver
     print "mesh changed to " + str((h, k))
-    print "using solver with id " + str(solver_id)
-    update_mesh(h, k, solver_id)
+    update_mesh(h, k)
 
 
 def time_change(attrname, old, new):
@@ -89,34 +94,31 @@ def time_change(attrname, old, new):
     print "new time: " + str(t)
 
 
-def update_mesh(h, k, solver_id):
-
+def update_mesh(h, k):
+    solver_id = get_solver_id()
     pde_specs.data = dict(h=[h], k=[k], solver_id=[solver_id])
+
     solver = pde_settings.solvers[solver_id]
 
     x0 = pde_settings.x_min
     x1 = pde_settings.x_max
     N = int(round((x1 - x0) / h + 1, 0))
     x = np.linspace(x0, x1, N)
-    f0 = parse(initial_condition.value)
-    u = np.empty(x.shape)
-    for i in range(N):
-        u[i] = f0(x[i])
+    f0 = pde_functions.parse(initial_condition.value)
+    u = f0(x)
 
-    uold = np.array(u)  # this enforces neumann BC: u'(t=0)=0
+    u_old = np.array(u)  # this enforces neumann BC: u'(t=0)=0
 
     M = int(round(pde_settings.t_max / k, 0)) + 1
 
     mesh_dict = dict(x=x)
 
-    print solver
-
     for i in range(M):
         key = 'u' + str(i)
         mesh_dict[key] = u.tolist()
-        unew = solver(uold, u, k, h)
-        uold = u
-        u = unew
+        u_new = solver(u_old, u, k, h)
+        u_old = u
+        u = u_new
 
     mesh_data.data = mesh_dict
     t = time_slider.value
@@ -126,10 +128,7 @@ def update_mesh(h, k, solver_id):
 def init_pde():
     h = h_slider.value
     k = k_slider.value
-    solver_id = get_solver_id()
-    t = time_slider.value
-
-    update_mesh(h, k, solver_id)
+    update_mesh(h, k)
 
 # event registration
 time_slider.on_change('value', time_change)
@@ -152,12 +151,17 @@ plot = Figure(title_text_font_size="12pt",
               )
 
 # Plot the numerical solution at time=t by the x,u values in the source property
-plot.line('x', 'u', source=plot_data,
+plot.line('x', 'u', source=plot_data_num,
           line_width=.5,
-          line_alpha=0.6,
+          line_alpha=.6,
           line_dash=[4, 4],
           color='red')
-plot.circle('x', 'u', source=plot_data,
+plot.line('x', 'u', source=plot_data_ana,
+          line_width=.5,
+          line_alpha=.6,
+          color='blue',
+          legend='analytical solution')
+plot.circle('x', 'u', source=plot_data_num,
             color='red',
             legend='numerical solution')
 
@@ -169,7 +173,7 @@ controls = VBoxForm(children=[initial_condition,
                               time_slider,
                               h_slider,
                               k_slider,
-                              HBox(children=[pde_type, HBox(width=20), solver_type],
+                              HBox(children=[pde_type, solver_type],
                                    width=300)],
                     width=400)
 
