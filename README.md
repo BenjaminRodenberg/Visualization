@@ -4,7 +4,7 @@ This Repository contains different prototypes for WebApps for the visualization 
 
 ## Running
 ### Local
-For running all the complete apps type
+For running the complete apps, type
 ```
 bokeh serve filename.py
 ```
@@ -19,7 +19,7 @@ for accepting connections to the server.
 
 ## ToDos
 ### Next Tasks
-- [ ] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [x] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [ ] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [ ] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [ ] do documentation on Bokeh with example App ([MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)?)

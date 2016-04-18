@@ -1,5 +1,5 @@
 # Partial Differential Equation App
-This app visualizes, how different PDE Solvers solve different PDEs. The user can interactively change stepwidth (in time and space) and initial condition. One can also choose from 2 different solvers (explicit Euler, implicit Euler, implicit midpoint rule) and 2 different PDEs (Heat transport and wave equation) as well as from an implicit and an explicit solver for each PDE.
+This app visualizes, how different PDE Solvers solve different PDEs. The user can interactively change stepwidth (in time and space) and initial condition. One can also choose from 2 different solvers (explicit Euler, implicit Euler, implicit midpoint rule) and 2 different PDEs (Heat transport and wave equation) as well as from an implicit and an explicit solver for each PDE. For comparison the analytical solution is shown, which is derived using a fourier series approach.
 
 ## Running
 Enter 
