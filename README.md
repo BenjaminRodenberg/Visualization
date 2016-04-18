@@ -4,7 +4,7 @@ This Repository contains different prototypes for WebApps for the visualization 
 
 ## Running
 ### Local
-For running all the complete apps type
+For running the complete apps, type
 ```
 bokeh serve filename.py
 ```
