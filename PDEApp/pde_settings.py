@@ -40,7 +40,7 @@ k_step = .005
 x_min = 0.0
 x_max = 1.0
 
-IC_init = 'Heaviside(x-.25)*Heaviside(.75-x)'#'sin(x * 2 * pi)'
+IC_init = 'sin(x * 2 * pi)'
 
 svg_palette_jet = ['#00008f', '#00009f', '#0000af', '#0000bf', '#0000cf', '#0000df', '#0000ef', '#0000ff', '#000fff',
                    '#001fff', '#002fff', '#003fff', '#004fff', '#005fff', '#006fff', '#007fff', '#008fff', '#009fff',
