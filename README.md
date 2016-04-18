@@ -4,22 +4,23 @@ This Repository contains different prototypes for WebApps for the visualization 
 
 ## Running
 ### Local
-For running the complete apps, type
+For running the an app, type
 ```
 bokeh serve filename.py
 ```
-and navigate to the respective site
+and navigate to the respective site.
 
 ### Internet
 For publishing all apps to the internet run the same command with the option
 ```
 --host <globalip>:5006
 ```
-for accepting connections to the server.
+for accepting connections to the server. All apps can be run using the ```bokeh-runner``` script with the corresponding ```<globalip>```.
 
 ## ToDos
 ### Next Tasks
 - [x] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [ ] see [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [ ] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [ ] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [ ] do documentation on Bokeh with example App ([MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)?)
