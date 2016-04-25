@@ -38,7 +38,7 @@ def heat_fourier(f0, c_heat, x):
 
     u0 = f0(x)
 
-    u_lin = u0[0] * (x - np.max(x)) / (np.max(x) - np.min(x)) + u0[-1] * (x - np.min(x)) / (np.max(x) - np.min(x))
+    u_lin = u0[0] * (np.max(x) - x) / (np.max(x) - np.min(x)) + u0[-1] * (x - np.min(x)) / (np.max(x) - np.min(x))
     u_hom = u0 - u_lin
     u_hom = np.concatenate([u_hom, -u_hom[-2::-1]])  # periodically extend function
 
@@ -65,8 +65,7 @@ def heat_fourier(f0, c_heat, x):
 
     u_x = lambda t: u_lin - a[0] / 2 + \
                       np.sum(np.exp(-(kk ** 2) * (c_heat ** 2) * t) *
-                             (b * np.sin(np.outer(x, kk)) + a * np.cos(np.outer(x, kk))),
-                axis=1)
+                             (b * np.sin(np.outer(x, kk)) + a * np.cos(np.outer(x, kk))),axis=1)
     return u_x
 
 
@@ -95,7 +94,7 @@ def wave_fourier(f0, c_wave, x):
 
     u0 = f0(x)
 
-    u_lin = u0[0] * (x - np.max(x)) / (np.max(x) - np.min(x)) + u0[-1] * (x - np.min(x)) / (np.max(x) - np.min(x))
+    u_lin = u0[0] * (np.max(x) - x) / (np.max(x) - np.min(x)) + u0[-1] * (x - np.min(x)) / (np.max(x) - np.min(x))
     u_hom = u0 - u_lin
     u_hom = np.concatenate([u_hom, -u_hom[-2::-1]])  # periodically extend function
 
