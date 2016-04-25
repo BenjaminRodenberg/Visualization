@@ -9,16 +9,11 @@ def npHeaviside(x):
     :param x: ndarray
     :return: ndarray
     """
-    return np.piecewise(x,
-                        [x<0,
-                         x==0,
-                         x>0],
-                        [lambda arg: 0.0,
-                         lambda arg: 0.5,
-                         lambda arg: 1.0])
+    return np.select([x<0,x==0,x>0],[0.0,0.5,1.0])
 
 
 def parse(fun_str):
     fun_sym = sympify(fun_str)
-    fun_lam = lambdify(x, fun_sym,['numpy',{"Heaviside": npHeaviside}])
+    fun_lam = lambdify(x, fun_sym,['numpy',{"Heaviside": npHeaviside,
+                                            "heaviside": npHeaviside}])
     return fun_lam

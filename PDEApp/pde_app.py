@@ -34,6 +34,7 @@ plot_data_num = ColumnDataSource(data=dict(x=[], u=[]))
 plot_data_ana = ColumnDataSource(data=dict(x=[],u=[]))
 mesh_data = ColumnDataSource(data=dict())
 pde_specs = ColumnDataSource(data=dict(h=[], k=[]))
+ana_sol = ColumnDataSource(data=dict())
 
 # initialize controls
 # slider for going though time
@@ -61,11 +62,21 @@ def get_num_data(k,t):
     return x, u
 
 
-def get_ana_data(t):
-    x = np.linspace(pde_settings.x_min, pde_settings.x_max, 100)
+def updata_ana_solution():
+    x = np.linspace(pde_settings.x_min, pde_settings.x_max, 200)
     u_ana_id = get_solver_id()
     f0 = pde_functions.parse(initial_condition.value)
-    u = pde_settings.analytical_solutions[u_ana_id](f0, x, t)
+    u_x = pde_settings.analytical_solutions[u_ana_id](f0, x)
+    ana_sol.data = dict({'u_x':u_x})
+
+
+def get_ana_data(t):
+    x = np.linspace(pde_settings.x_min, pde_settings.x_max, 200)
+    u_x = ana_sol.data['u_x']
+    u_ana_id = get_solver_id()
+    if u_ana_id == 0 or u_ana_id == 1:
+        t += .001
+    u = u_x(t)
     return x, u
 
 
@@ -85,6 +96,11 @@ def mesh_change(attrname, old, new):
     k = k_slider.value  # temporal meshwidth
     print "mesh changed to " + str((h, k))
     update_mesh(h, k)
+
+
+def pde_type_change(attrname, old, new):
+    updata_ana_solution()
+    mesh_change(attrname, old, new)
 
 
 def time_change(attrname, old, new):
@@ -125,9 +141,15 @@ def update_mesh(h, k):
     update_plot(k, t)
 
 
+def initial_condition_change(attrname, old, new):
+    updata_ana_solution()
+    mesh_change(attrname, old, new)
+
+
 def init_pde():
     h = h_slider.value
     k = k_slider.value
+    updata_ana_solution()
     update_mesh(h, k)
 
 # event registration
@@ -135,8 +157,8 @@ time_slider.on_change('value', time_change)
 h_slider.on_change('value', mesh_change)
 k_slider.on_change('value', mesh_change)
 solver_type.on_change('active', mesh_change)
-pde_type.on_change('active', mesh_change)
-initial_condition.on_change('value', mesh_change)
+pde_type.on_change('active', pde_type_change)
+initial_condition.on_change('value', initial_condition_change)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
