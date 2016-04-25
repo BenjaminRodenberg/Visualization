@@ -16,6 +16,7 @@ in your browser to use the app in it.
 - [x] publish this to the internet
 - [x] Update to Bokeh 0.11
 - [x] Add analytical solution
-- [ ] Modify App to support non-homogeneous Dirichlet BC in the analytical solution
+- [x] Modify App to support non-homogeneous Dirichlet BC in the analytical solution
+- [ ] Add symplectic integrator (e.g. Leapfrog)
 - [ ] Add "PLAY" button for continuous time.
 - [ ] Add code for embedding.
