@@ -33,6 +33,7 @@ source_curve = ColumnDataSource(data=dict(x=[], y=[]))
 source_point = ColumnDataSource(data=dict(x=[], y=[]))
 source_sector = ColumnDataSource(data=dict(x=[], y=[]))
 source_lines = ColumnDataSource(data=dict(x_start=[], y_start=[], x_end=[], y_end=[]))
+source_text = ColumnDataSource(data=dict(area=[]))
 
 # initialize controls
 # slider controlling the current parameter t
@@ -62,8 +63,10 @@ def update_curve():
 def update_point():
     # Get the current slider value
     t0 = t_value_input.value
-    f_x = lf.parser(x_component_input.value)
-    f_y = lf.parser(y_component_input.value)
+    f_x_str = x_component_input.value
+    f_y_str = y_component_input.value
+    f_x = lf.parser(f_x_str)
+    f_y = lf.parser(f_y_str)
 
     t_min = leibnitz_settings.t_value_min
 
@@ -79,11 +82,17 @@ def update_point():
     x0 = f_x(t0)
     y0 = f_y(t0)
 
+    area = lf.calc_area(f_x_str, f_y_str, t0)
+
+
+
     # saving data to plot
     source_point.data = dict(x=[x0], y=[y0])
     source_sector.data = dict(x=x,y=y)
     source_lines.data = dict(x_start=[0,f_x(t_min)], y_start=[0,f_y(t_min)],
                              x_end = [0,f_x(t0)], y_end=[0,f_y(t0)])
+    source_text.data = dict(x=[f_x(t0)],y=[f_y(t0)],
+                            text=[str(round(area,2))],text_color=['blue'])
 
 
 def curve_change(attrname, old, new):
@@ -114,6 +123,7 @@ plot.scatter([0],[0], color='black', marker='x')
 pat = plot.patch('x', 'y', source=source_sector, fill_color='blue', fill_alpha=.2, legend='area')
 plot.line('x_start', 'y_start', source=source_lines, line_width=1, line_alpha=1, color='blue')
 plot.line('x_end', 'y_end', source=source_lines, line_width=1, line_alpha=1, color='blue')
+plot.text('x','y',text='text',text_color='text_color',source=source_text)
 
 # calculate data
 update_curve()
