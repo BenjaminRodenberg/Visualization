@@ -1,0 +1,1 @@
+App that visualizes the **Leibnitz sector formula**. Here an arbitrary curve can be defined. The curve with a point corresponding to the current parameter including the overlayed area is plotted.

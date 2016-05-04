@@ -19,10 +19,10 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 
 ## ToDos
 ### Next Tasks
-- [x] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [ ] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [ ] see [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [ ] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
-- [ ] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [x] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [ ] do documentation on Bokeh with example App ([MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)?)
 
 ### Generate Running version subtasks of particular Apps
@@ -33,6 +33,8 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
 - [x] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
+- [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
 - [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
