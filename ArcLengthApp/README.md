@@ -13,4 +13,4 @@ for the computation of s^-1(t) we have to do the following:
 - implement a function that computes s(t) via quadrature.
 - compute s^-1(t) via root finding routine.
 
-Is this problem really relevant enough to justify the work? 
+Is this problem really relevant enough to justify the work? Basically one could also just fake this property by normalizing the vector, the good thing about parametrization w.r.t arc length is, that the visual result does not change, but the analytical expression and the parameter space.
