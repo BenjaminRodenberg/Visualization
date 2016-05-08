@@ -26,7 +26,7 @@ def import_bokeh(relative_path):
 
 # import local modules
 convolution_settings = import_bokeh('convolution_settings.py')
-cf = import_bokeh('convolution_functions.py')
+convolution_functions = import_bokeh('convolution_functions.py')
 
 global update_is_enabled
 
@@ -42,44 +42,39 @@ source_overlay = ColumnDataSource(data=dict(x=[], y=[],y_neg=[], y_pos=[]))
 update_is_enabled = True
 
 # initialize controls
-# slider controlling the base function
-function_type = RadioButtonGroup(labels=convolution_settings.function_names, active=convolution_settings.function_init)
+# dropdown menu for sample functions
+function_type = Dropdown(label="choose a sample function pair or enter one below",
+                         menu=convolution_settings.sample_function_names)
 
-# slider controlling the evalueated x value of the convolved function
+# slider controlling the evaluated x value of the convolved function
 x_value_input = Slider(title="x value", name='x value', value=convolution_settings.x_value_init,
                  start=convolution_settings.x_value_min, end=convolution_settings.x_value_max,
                  step=convolution_settings.x_value_step)
 # text input for the first function to be convolved
-function1_input = TextInput(value=convolution_settings.function1_input_msg, title="my first function:")
+function1_input = TextInput(value=convolution_settings.function1_input_init, title="my first function:")
 # text input for the second function to be convolved
-function2_input = TextInput(value=convolution_settings.function2_input_msg, title="my second function:")
+function2_input = TextInput(value=convolution_settings.function1_input_init, title="my second function:")
 
 
 def update_data():
     # Get the current slider values
     x_value = x_value_input.value
-    f_raw = convolution_settings.function_library[function_type.active]
 
     x = np.linspace(convolution_settings.x_min, convolution_settings.x_max, convolution_settings.resolution) # evaluation interval
     width = convolution_settings.x_max - convolution_settings.x_min # width of the interval
     h = float(width) / float(convolution_settings.resolution) # stepwidth for discrete convolution
 
-    if function_type.active == convolution_settings.default_function_id: # user chooses to evaluate default function pair
-        print "behaviour for custom user function "
-        fun1_str = function1_input.value
-        fun2_str = function2_input.value
-        f1 = f_raw(fun1_str, h)
-        f2 = f_raw(fun2_str, h)
-    else: # user chooses to pick one of the given function pairs
-        f1 = f_raw
-        f2 = f_raw
+    fun1_str = function1_input.value
+    fun2_str = function2_input.value
+    f1 = convolution_functions.parser(fun1_str, h)
+    f2 = convolution_functions.parser(fun2_str, h)
 
     y1 = f1(x) # evaluate first function
     y2 = f2(x) # evaluate second function
     y2shift = f2(x_value - x) # evaluate shifted function2
     y3 = np.convolve(y1, y2, mode='same') / x.size * width # evaluate discrete convolution
 
-    y_positive, y_negative = cf.compute_overlay_vector(y1, y2shift) # computes overlays of f1 and f2.
+    y_positive, y_negative = convolution_functions.compute_overlay_vector(y1, y2shift) # computes overlays of f1 and f2.
 
     # saving data to plot
     source_overlay.data = dict(x=np.concatenate([x, x[-1::-1]]), y_pos=y_positive, y_neg=y_negative)
@@ -87,32 +82,22 @@ def update_data():
     source_function2.data = dict(x=x, y=y2shift)
     source_result.data = dict(x=x, y=y3)
 
-    y_value = cf.find_value(x, y3, x_value)
+    y_value = convolution_functions.find_value(x, y3, x_value)
     source_xmarker.data = dict(x=[x_value, x_value], y=[y_value, 0])
 
 
 def input_change(attrname, old, new):
-    global update_is_enabled
-
-    if update_is_enabled:
-        update_data()  # update data and get new TeX
+    update_data()
 
 
-def type_input_change(attrname, old, new):
-    global update_is_enabled
+def type_input_change(self):
 
-    if function_type.active == convolution_settings.default_function_id:
-        update_is_enabled = False
-        function1_input.value = convolution_settings.function1_input_init
-        function2_input.value = convolution_settings.function2_input_init
-        update_is_enabled = True
-    else:
-        update_is_enabled = False
-        function1_input.value = convolution_settings.function1_input_msg
-        function2_input.value = convolution_settings.function2_input_msg
-        update_is_enabled = True
+    function_key = function_type.value
+    function1, function2 = convolution_settings.sample_functions[function_key]
+    function1_input.value = function1
+    function2_input.value = function2
 
-    input_change(attrname, old, new)
+    update_data()
 
 
 def x_input_change(attrname, old, new):
@@ -123,7 +108,7 @@ def x_input_change(attrname, old, new):
 x_value_input.on_change('value', x_input_change)
 function1_input.on_change('value', input_change)
 function2_input.on_change('value', input_change)
-function_type.on_change('active', type_input_change)
+function_type.on_click(type_input_change)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"

@@ -21,7 +21,7 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 ### Next Tasks
 - [ ] see [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [ ] see [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
-- [ ] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [x] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [x] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [x] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [ ] do documentation on Bokeh with example App ([MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)?)
