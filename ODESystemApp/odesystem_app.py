@@ -14,7 +14,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, VBox, HBox, TextInput
+from bokeh.models.widgets import Slider, VBox, HBox, TextInput, Panel, Tabs, Dropdown
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
@@ -43,6 +43,15 @@ source_initialvalue = ColumnDataSource(data=dict(x0=[], y0=[]))
 source_critical_pts = ColumnDataSource(data=dict(x=[], y=[]))
 source_critical_lines = ColumnDataSource(data=dict(x_ls=[[]], y_ls=[[]]))
 
+def get_plot_bounds():
+    x_min = plot.x_range.__getattribute__('start')
+    x_max = plot.x_range.__getattribute__('end')
+    y_min = plot.y_range.__getattribute__('start')
+    y_max = plot.y_range.__getattribute__('end')
+    return {'x_min':x_min,
+            'x_max':x_max,
+            'y_min':y_min,
+            'y_max':y_max}
 
 def init_data():
     u_str = u_input.value
@@ -75,7 +84,7 @@ def update_streamline_data(u_str, v_str, x0, y0):
     u_fun, u_sym = odesystem_helpers.parser(u_str)
     v_fun, v_sym = odesystem_helpers.parser(v_str)
     # numerical integration
-    x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, odesystem_settings.Tmax)
+    x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, odesystem_settings.Tmax, get_plot_bounds())
     # update sources
     streamline_to_data(x_val, y_val, x0, y0)
     print "streamline was calculated for initial value (x0,y0)=(%d,%d)" % (x0, y0)
@@ -85,10 +94,7 @@ def update_quiver_data(u_str, v_str):
     # string parsing
     u_fun, u_sym = odesystem_helpers.parser(u_str)
     v_fun, v_sym = odesystem_helpers.parser(v_str)
-    x_c, y_c, x_lines, y_lines = odesystem_helpers.critical_points(u_sym, v_sym)
-    # x_lines=[[]]
-    # y_lines=[[]]
-    # x_c, y_c = odesystem_helpers.critical_points_iso(u_sym, v_sym)
+    x_c, y_c, x_lines, y_lines = odesystem_helpers.critical_points(u_sym, v_sym, get_plot_bounds())
     # crating samples
     x_val, y_val, u_val, v_val, h = get_samples(u_fun, v_fun)
     # generating quiver data and updating sources
@@ -101,10 +107,10 @@ def update_quiver_data(u_str, v_str):
 def quiver_to_data(x, y, u, v, h):
     def __normalize(u, v, h):
         length = np.sqrt(u ** 2 + v ** 2)
-        u[length>0] *= 1.0/length[length>0] * h * .9
-        v[length>0] *= 1.0/length[length>0] * h * .9
-        u[length==0] = 0
-        v[length==0] = 0
+        u[length > 0] *= 1.0 / length[length > 0] * h * .9
+        v[length > 0] *= 1.0 / length[length > 0] * h * .9
+        u[length == 0] = 0
+        v[length == 0] = 0
         return u, v
 
     def quiver_to_segments(x, y, u, v, h):
@@ -182,14 +188,14 @@ def quiver_to_data(x, y, u, v, h):
                         elif x < 0:
                             return -np.arctan(y / -x) + np.pi
                         else:
-                            return 1.5*np.pi
+                            return 1.5 * np.pi
                     else:
                         if x > 0:
                             return -np.arctan(-y / x)
                         elif x < 0:
                             return np.arctan(-y / -x) + np.pi
                         else:
-                            return .5*np.pi
+                            return .5 * np.pi
 
             angle = angle_from_xy(u, v)
 
@@ -212,7 +218,7 @@ def quiver_to_data(x, y, u, v, h):
         u = u.flatten()
         v = v.flatten()
 
-        u,v = __normalize(u, v, h)
+        u, v = __normalize(u, v, h)
 
         n_arrows = x.shape[0]
         xs = n_arrows * [None]
@@ -240,9 +246,11 @@ def quiver_to_data(x, y, u, v, h):
 
 
 def get_samples(u_fun, v_fun):
-    h = odesystem_settings.resolution
-    xx = np.arange(odesystem_settings.x_min, odesystem_settings.x_max, h)
-    yy = np.arange(odesystem_settings.y_min, odesystem_settings.y_max, h)
+    bounds = get_plot_bounds()
+    h = odesystem_helpers.get_stepwidth(bounds)
+
+    xx = np.arange(bounds['x_min'], bounds['x_max'], h)
+    yy = np.arange(bounds['y_min'], bounds['y_max'], h)
 
     x_val, y_val = np.meshgrid(xx, yy)
 
@@ -290,6 +298,20 @@ y0_input = Slider(title="y0",
                   end=odesystem_settings.y_max,
                   step=odesystem_settings.y0_step)
 
+# dropdown menu for selecting one of the sample functions
+sample_fun_input = Dropdown(label="choose a sample function pair or enter one below",
+                            menu=odesystem_settings.sample_system_names)
+
+
+def sample_fun_change(self):
+    sample_fun_key = sample_fun_input.value
+    sample_fun_u, sample_fun_v = odesystem_settings.sample_system_functions[sample_fun_key]
+    u_input.value = sample_fun_u
+    v_input.value = sample_fun_v
+
+
+sample_fun_input.on_click(sample_fun_change)
+
 u_input.on_change('value', ode_change)
 v_input.on_change('value', ode_change)
 x0_input.on_change('value', start_change)
@@ -312,7 +334,7 @@ plot.grid[1].grid_line_alpha = 0.0
 # Plot the direction field
 plot.segment('x0', 'y0', 'x1', 'y1', source=source_segments)
 plot.patches('xs', 'ys', source=source_patches)
-plot.circle('x', 'y', source=source_basept, color='blue', radius=odesystem_settings.resolution * .02)
+plot.circle('x', 'y', source=source_basept, color='blue', size=1.5)
 plot.scatter('x0', 'y0', source=source_initialvalue, color='black', legend='(x0,y0)')
 plot.line('x', 'y', source=source_streamline, color='black', legend='streamline')
 plot.scatter('x', 'y', source=source_critical_pts, color='red', legend='critical pts')
@@ -321,13 +343,22 @@ plot.multi_line('x_ls', 'y_ls', source=source_critical_lines, color='red', legen
 # calculate data
 init_data()
 
-# lists all the controls in our app
-controls = VBox(children=[HBox(children=[VBox(width=180,children=[u_input]),
-                                         VBox(width=40),
-                                         VBox(width=180,children=[v_input])]),
-                          HBox(children=[VBox(width=180,children=[x0_input]),
-                                         VBox(width=40),
-                                         VBox(width=180,children=[y0_input])])])
+# lists all the controls in our app associated with the default_funs panel
+function_controls = VBox(children=[HBox(width=400,children=[sample_fun_input]),
+                                   HBox(children=[VBox(width=180, children=[u_input]),
+                                                  VBox(width=40),
+                                                  VBox(width=180, children=[v_input])]),
+                                   ])
+
+streamline_controls = HBox(children=[VBox(width=180, children=[x0_input]),
+                                     VBox(width=40),
+                                     VBox(width=180, children=[y0_input])])
+
+# Panels for sample functions or default functions
+function_panel = Panel(child=function_controls, title='choose function')
+streamline_panel = Panel(child=streamline_controls, title='modify streamline')
+# Add panels to tabs
+tabs = Tabs(tabs=[function_panel, streamline_panel])
 
 # make layout
-curdoc().add_root(VBox(children=[plot, controls]))
+curdoc().add_root(VBox(children=[plot, tabs]))

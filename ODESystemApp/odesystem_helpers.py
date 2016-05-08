@@ -26,12 +26,10 @@ def parser(fun_str):
     return fun_lam, fun_sym
 
 
-def do_integration(x0, y0, u, v, Tmax):
+def do_integration(x0, y0, u, v, Tmax, bounds):
     f = lambda t,x:[u(x[0], x[1]), v(x[0], x[1])]
     init = [x0,y0]
     t0 = 0
-    #t = np.linspace(t0, Tmax, .1)
-    #sol = scipy.integrate.odeint(f, init, t,mxstep=2000,atol=10**-3)
 
     backend = 'dopri5'
 
@@ -43,10 +41,10 @@ def do_integration(x0, y0, u, v, Tmax):
     x_cur, y_cur = sol[-1]
     x_old, y_old = [x0+10*tol, y0+10*tol]
 
-    x_min = odesystem_settings.x_min
-    x_max = odesystem_settings.x_max
-    y_min = odesystem_settings.y_min
-    y_max = odesystem_settings.y_max
+    x_min = bounds['x_min']
+    x_max = bounds['x_max']
+    y_min = bounds['y_min']
+    y_max = bounds['y_max']
 
     while x_min < x_cur < x_max and y_min < y_cur < y_max \
             and abs(x_cur - x_old) > tol and abs(y_cur - y_old) > tol:
@@ -62,7 +60,7 @@ def do_integration(x0, y0, u, v, Tmax):
     return sol[:,0].tolist(), sol[:,1].tolist()
 
 
-def critical_points(u_sym, v_sym):
+def critical_points(u_sym, v_sym, bounds):
     import sympy
     from sympy.abc import x,y
     repeat = True
@@ -136,8 +134,10 @@ def critical_points(u_sym, v_sym):
     x_val_lines = [[]]
     y_val_lines = [[]]
 
+    h = get_stepwidth(bounds)
+
     for x_line in x_lines:
-        x_val_line = np.arange(odesystem_settings.x_min,odesystem_settings.x_max,odesystem_settings.resolution * .1).tolist()
+        x_val_line = np.arange(bounds['x_min'],bounds['x_max'],h * .1).tolist()
         y_val_line = []
         for x_val in x_val_line:
             y_val_line.append(x_line(x_val))
@@ -146,7 +146,7 @@ def critical_points(u_sym, v_sym):
 
     for y_line in y_lines:
         x_val_line = []
-        y_val_line = np.arange(odesystem_settings.y_min,odesystem_settings.y_max,odesystem_settings.resolution * .1).tolist()
+        y_val_line = np.arange(bounds['y_min'],bounds['y_max'],h * .1).tolist()
         for y_val in y_val_line:
             x_val_line.append(y_line(y_val))
         x_val_lines.append(x_val_line)
@@ -155,18 +155,22 @@ def critical_points(u_sym, v_sym):
     return x_c, y_c, x_val_lines, y_val_lines
 
 
-def critical_points_iso(u_sym, v_sym):
+def get_stepwidth(bounds):
+    return (bounds['x_max'] - bounds['x_min']) / (odesystem_settings.n_sample - 1)
+
+
+def critical_points_iso(u_sym, v_sym, bounds):
     from sympy.abc import x,y
     from sympy import lambdify
 
     potential = lambdify([x,y],u_sym**2+v_sym**2)
 
-    x_min = odesystem_settings.x_min
-    x_max = odesystem_settings.x_max
-    y_min = odesystem_settings.y_min
-    y_max = odesystem_settings.y_max
+    x_min = bounds['x_min']
+    x_max = bounds['x_max']
+    y_min = bounds['y_min']
+    y_max = bounds['y_max']
 
-    h = odesystem_settings.resolution*.01
+    h = get_stepwidth(bounds)
 
     [x,y] = np.meshgrid(np.arange(x_min,x_max,h),np.arange(y_min,y_max,h))
 
