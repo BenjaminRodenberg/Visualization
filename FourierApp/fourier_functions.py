@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import math
 from scipy.integrate import quad
@@ -63,38 +64,65 @@ def number_parser(number_str):
     return float(number_sym)
 
 
-#==============================================================================
-# This function computes the coefficients of the fourier series representation
-# of the function f, which is periodic on the interval [start,end] up to the 
-# degree N.   
-#==============================================================================
 def coeff(f, start, end, N):
-    T = end-start
-    a = (N+1) * [0]
-    b = (N+1) * [0]
-    
-    for k in range(0, N+1):
-        tmp_fun = lambda x: 2/T*f(np.asarray([x]))*np.cos(2*math.pi*k*x/T)
-        tmp = quad(tmp_fun, start, end)
-        a[k] = tmp[0]
-        print "a[%d] = %f" % (k,a[k])
-        tmp_fun = lambda x: 2/T*f(np.asarray([x]))*np.sin(2*math.pi*k*x/T)
-        tmp = quad(tmp_fun, start, end)
-        b[k] = tmp[0]
-        print "b[%d] = %f" % (k,b[k])
-        
-    a[0] = a[0] / 2
-    
-    return [a, b]
-    
-#==============================================================================
-# This function evaluates the fourier series of degree N with the coefficient
-# vectors a and b and the period length T at the points in the array x.
-#==============================================================================
+    """
+    This function computes the coefficients of the fourier series representation
+    of the function f, which is periodic on the interval [start,end] up to the
+    degree N.
+    """
+    return coeff_fft(f, start, end, N)
+
+
+def coeff_fft(f, start, end, N):
+    """
+    computes the fourier coefficients using fft
+    :param f:
+    :param start:
+    :param end:
+    :param N:
+    :return:
+    """
+    M = 2*N+101
+    x = np.linspace(start, end, M, endpoint=False)
+    u0 = f(x)
+
+    print u0
+    print x
+
+    c = np.fft.rfft(u0) / M
+
+    print c
+
+    a = 2 * np.real(c)
+    b = -2 * np.imag(c)
+
+    a[0] /= 2
+
+    return [a[0:N+1], b[0:N+1]]
+
+
 def fourier_series(a, b, T, x):
-    N = len(a)-1
-    y = 0
-    for k in range(0, N+1):
-        y += a[k]*math.cos(2*math.pi*k*x/T)+b[k]*math.sin(2*math.pi*k*x/T)
-    
+    """
+    This function evaluates the fourier series of degree N with the coefficient
+    vectors a and b and the period length T at the points in the array x.
+    :param a: even coefficients
+    :param b: uneven coefficients
+    :param T: period length
+    :param x: sample points
+    :return: fourier series evaluated at sample points
+    """
+    # degree of fourier series
+    N = len(a)
+    # numpy matrix version of code below
+    print a
+    print b
+    """
+    y = np.zeros(x.shape)
+    for k in range(N):
+        kk = k * 2 * np.pi / T
+        y += (b[k] * np.sin(kk*x) + a[k] * np.cos(kk*x))
+    """
+    k = np.arange(N)
+    kk = k * 2 * np.pi / T
+    y = np.sum(b * np.sin(np.outer(x, kk)) + a * np.cos(np.outer(x, kk)), axis=1)
     return y

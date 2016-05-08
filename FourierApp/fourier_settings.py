@@ -20,7 +20,7 @@ x_min=-3*np.pi
 x_max=3*np.pi
 y_min=-2.5
 y_max=2.5
-resolution=500
+resolution=1000
 
 #function input
 function_input_init = "sin(x) * Heaviside( (-1)^ceil(x/pi*2) )"
@@ -39,7 +39,7 @@ function_init = 1
 
 # control degree
 degree_min=0
-degree_max=20
+degree_max=25
 degree_step=1
 degree_init=5
 

@@ -54,12 +54,9 @@ def update_data():
 
     # Generate Fourier series
     T = timeinterval_length  # length of one period of the function
-    a, b = ff.coeff(f, timeinterval_start, timeinterval_end,
-                    N)  # calculate coefficients
-    x_fourier = np.empty(len(x_orig))
+    a, b = ff.coeff(f, timeinterval_start, timeinterval_end, N)  # calculate coefficients
 
-    for i in range(len(x_fourier)):  # evaluate fourier series
-        x_fourier[i] = ff.fourier_series(a, b, T, t[i])
+    x_fourier = ff.fourier_series(a, b, T, t - timeinterval_start)
 
     x_min = plot.x_range.start
     x_max = plot.x_range.end

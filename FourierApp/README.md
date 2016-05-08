@@ -20,6 +20,6 @@ in the browser.
 - [x] Add controls for setting periodicity and interval (e.g. [-pi,pi] or [0,2pi] or [0,2])
 - [x] Improve GUI
 - [x] make sympy input faster (see convolution app as an example implementation)
-- [ ] make coeff and function value computation faster by using fft and matrix computations (see analytical solution in [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)).
+- [x] make coeff and function value computation faster by using fft and matrix computations (see analytical solution in [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)).
 - [ ] Add code for embedding, such that the app can be published on the internet.
 - [ ] Implement dynamic printing of analytical expression in embedded html
