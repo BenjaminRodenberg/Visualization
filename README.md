@@ -19,7 +19,6 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 
 ## ToDos
 ### Next Tasks
-- [ ] see [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [ ] see [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [x] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [x] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)

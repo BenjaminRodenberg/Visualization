@@ -16,8 +16,8 @@ in the browser.
 
 ## ToDos
 
-- [ ] add computation of area
+- [x] add computation of area
+- [x] also write down currently computed area
 - [ ] revise first draft
 - [ ] add advanced controls (custom parameter range)
 - [ ] add some nice default examples (can be chosen with dropdown)
-- [ ] also write down currently computed area
