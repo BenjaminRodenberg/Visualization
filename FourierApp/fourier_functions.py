@@ -82,7 +82,7 @@ def coeff_fft(f, start, end, N):
     :param N:
     :return:
     """
-    M = 2*N+101
+    M = 4*N+1000+1
     x = np.linspace(start, end, M, endpoint=False)
     u0 = f(x)
 
