@@ -3,13 +3,14 @@ __author__ = 'benjamin'
 # list defining the dropdown menu.
 # the tuples have the following meaning: (<name in dropdown menu>, <key for sample_system_functions>)
 sample_system_names = [
-    ("linear_stable", "linear_stable"),
-    ("linear_unstable", "linear_unstable"),
+    ("linear stable", "linear_stable"),
+    ("linear unstable", "linear_unstable"),
     ("saddlepoint", "saddlepoint"),
-    ("circular_stable", "circular_stable"),
-    ("circular_critical", "circular_critical"),
-    ("circular_unstable", "circular_unstable"),
-    ("non_linear", "non_linear"),
+    ("circular stable", "circular_stable"),
+    ("circular critical", "circular_critical"),
+    ("circular unstable", "circular_unstable"),
+    ("non linear", "non_linear"),
+    ("non linear orbit", "non_linear_orbit")
 ]
 # key value pairs holding the with the function pair (u,v) that defines the ode system
 sample_system_functions = {
