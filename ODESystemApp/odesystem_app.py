@@ -283,8 +283,8 @@ def critical_to_data(x_c, y_c, x_lines, y_lines):
 
 # initialize controls
 # text input for input of the ode system [u,v] = [x',y']
-u_input = TextInput(value=odesystem_settings.u_input_init, title="u(x,y):")
-v_input = TextInput(value=odesystem_settings.v_input_init, title="v(x,y):")
+u_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][0], title="u(x,y):")
+v_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][1], title="v(x,y):")
 
 # slider input for initial value [x,y](t=0) = [x0,y0]
 x0_input = Slider(title="x0",
