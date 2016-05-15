@@ -10,7 +10,9 @@ sample_system_names = [
     ("circular critical", "circular_critical"),
     ("circular unstable", "circular_unstable"),
     ("non linear", "non_linear"),
-    ("non linear orbit", "non_linear_orbit")
+    ("non linear orbit", "non_linear_orbit"),
+    ("pendulum", "pendulum"),
+    ("chaotic system (long computation!)","dixon")
 ]
 # key value pairs holding the with the function pair (u,v) that defines the ode system
 sample_system_functions = {
@@ -21,7 +23,9 @@ sample_system_functions = {
     "circular_critical": ("-y", "x"),
     "circular_unstable": ("-y", "x+y/10"),
     "non_linear": ("(x-1)*(y-1)", "(x+1)*(y+1)"),
-    "non_linear_orbit": ("y", "(1-x^2)*y -x")
+    "non_linear_orbit": ("y", "(1-x^2)*y -x"),
+    "pendulum": ("y","-sin(x)"),
+    "dixon": ("(x*y)/(x^2+y^2)-x","(y^2)/(x^2+y^2)-y-.1")
 }
 
 # defines initial ode system by key
@@ -44,5 +48,5 @@ y0_input_init=-4.0
 # stepwidth of sliders controlling starting point of streamline
 x0_step=.1
 y0_step=.1
-#maximum itegration time for streamline
-Tmax = 100.0
+#maximum number of integration steps for streamline
+streamline_integration_steps = 1000

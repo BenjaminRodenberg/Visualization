@@ -21,6 +21,8 @@ from bokeh.io import curdoc
 
 import numpy as np
 
+global update_callback
+update_callback = True
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
@@ -63,12 +65,14 @@ def init_data():
 
 
 def ode_change(attrname, old, new):
-    u_str = u_input.value
-    v_str = v_input.value
-    x0 = x0_input.value
-    y0 = y0_input.value
-    update_quiver_data(u_str, v_str)
-    update_streamline_data(u_str, v_str, x0, y0)
+    global update_callback
+    if update_callback:
+        u_str = u_input.value
+        v_str = v_input.value
+        x0 = x0_input.value
+        y0 = y0_input.value
+        update_quiver_data(u_str, v_str)
+        update_streamline_data(u_str, v_str, x0, y0)
 
 
 def start_change(attrname, old, new):
@@ -84,10 +88,11 @@ def update_streamline_data(u_str, v_str, x0, y0):
     u_fun, u_sym = odesystem_helpers.parser(u_str)
     v_fun, v_sym = odesystem_helpers.parser(v_str)
     # numerical integration
-    x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, odesystem_settings.Tmax, get_plot_bounds())
+    chaotic = (sample_fun_input.value == "dixon")
+    x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, get_plot_bounds(), chaotic)
     # update sources
     streamline_to_data(x_val, y_val, x0, y0)
-    print "streamline was calculated for initial value (x0,y0)=(%d,%d)" % (x0, y0)
+    print "streamline was calculated for initial value (x0,y0)=(%f,%f)" % (x0, y0)
 
 
 def update_quiver_data(u_str, v_str):
@@ -304,9 +309,12 @@ sample_fun_input = Dropdown(label="choose a sample function pair or enter one be
 
 
 def sample_fun_change(self):
+    global update_callback
     sample_fun_key = sample_fun_input.value
     sample_fun_u, sample_fun_v = odesystem_settings.sample_system_functions[sample_fun_key]
+    update_callback = False
     u_input.value = sample_fun_u
+    update_callback = True
     v_input.value = sample_fun_v
 
 

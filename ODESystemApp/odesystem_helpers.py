@@ -26,34 +26,42 @@ def parser(fun_str):
     return fun_lam, fun_sym
 
 
-def do_integration(x0, y0, u, v, Tmax, bounds):
+def do_integration(x0, y0, u, v, bounds, chaotic):
     f = lambda t,x:[u(x[0], x[1]), v(x[0], x[1])]
     init = [x0,y0]
     t0 = 0
 
-    backend = 'dopri5'
+    backend = 'vode'
 
-    solver = scipy.integrate.ode(f).set_integrator(backend, nsteps=1)
+    solver = scipy.integrate.ode(f).set_integrator(backend)
     solver.set_initial_value(init, t0)
 
     sol = [[x0,y0]]
-    tol = .0001
-    x_cur, y_cur = sol[-1]
-    x_old, y_old = [x0+10*tol, y0+10*tol]
+    x, y = sol[-1]
 
     x_min = bounds['x_min']
     x_max = bounds['x_max']
     y_min = bounds['y_min']
     y_max = bounds['y_max']
 
-    while x_min < x_cur < x_max and y_min < y_cur < y_max \
-            and abs(x_cur - x_old) > tol and abs(y_cur - y_old) > tol:
-        solver.integrate(Tmax, step=True)
-        x_old = x_cur
-        y_old = y_cur
-        x_cur = solver.y[0]
-        y_cur = solver.y[1]
-        sol.append([x_cur, y_cur])
+    n_step = 0
+
+    res = (x_max - x_min) / (odesystem_settings.n_sample-1) * .1
+    dx = 10*res
+    dy = 10*res
+
+    while x_min <= x <= x_max and y_min <= y <= y_max and \
+                    n_step < odesystem_settings.streamline_integration_steps and \
+            (dx > .1 * res or dy > .1 * res or chaotic):
+        df = max([abs(u(x, y)), abs(v(x, y))])
+        dt = res / df * 2
+        solver.integrate(solver.t + dt)
+        dx = abs(x - solver.y[0])
+        dy = abs(y - solver.y[1])
+        x,y = solver.y
+        sol.append([x, y])
+        n_step += 1
+        print n_step
 
     sol = np.array(sol)
 
