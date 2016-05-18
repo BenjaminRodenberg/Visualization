@@ -14,7 +14,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, HBox, TextInput, Panel, Tabs, Dropdown, VBoxForm, VBox
+from bokeh.models.widgets import Slider, HBox, VBoxForm, TextInput, Panel, Tabs, Dropdown, VBoxForm, VBox
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc, vform
@@ -44,6 +44,7 @@ source_streamline = ColumnDataSource(data=dict(x=[], y=[]))
 source_initialvalue = ColumnDataSource(data=dict(x0=[], y0=[]))
 source_critical_pts = ColumnDataSource(data=dict(x=[], y=[]))
 source_critical_lines = ColumnDataSource(data=dict(x_ls=[[]], y_ls=[[]]))
+source_image = ColumnDataSource(data=dict(x0=[None],y0=[None],xw=[None],yw=[None]))
 
 def get_plot_bounds():
     x_min = plot.x_range.__getattribute__('start')
@@ -348,11 +349,28 @@ plot.line('x', 'y', source=source_streamline, color='black', legend='streamline'
 plot.scatter('x', 'y', source=source_critical_pts, color='red', legend='critical pts')
 plot.multi_line('x_ls', 'y_ls', source=source_critical_lines, color='red', legend='critical lines')
 
+def refresh_quiver():
+    x0 = plot.x_range.__getattribute__('start')
+    y0 = plot.y_range.__getattribute__('start')
+    xw = plot.x_range.__getattribute__('end') - x0
+    yw = plot.y_range.__getattribute__('end') - y0
+
+    change_param = False
+    change_param = change_param or (source_image.data['x0'][0] != x0)
+    change_param = change_param or (source_image.data['y0'][0] != y0)
+    change_param = change_param or (source_image.data['xw'][0] != xw)
+    change_param = change_param or (source_image.data['yw'][0] != yw)
+    if change_param:
+        u_str = u_input.value
+        v_str = v_input.value
+        update_quiver_data(u_str, v_str)
+        source_image.data = dict(x0=[x0], y0=[y0], xw=[xw], yw=[yw])
+
 # calculate data
 init_data()
 
 # lists all the controls in our app associated with the default_funs panel
-ww=380
+ww=400
 function_controls = VBoxForm(
     children=[sample_fun_input,VBox(width=ww,height=20), u_input, v_input,VBox(width=ww,height=20)],
     width=ww)
@@ -364,7 +382,11 @@ streamline_controls = VBoxForm(
 function_panel = Panel(child=function_controls, title='choose function')
 streamline_panel = Panel(child=streamline_controls, title='modify streamline')
 # Add panels to tabs
-tabs = Tabs(tabs=[function_panel, streamline_panel])
+tabs = VBox(
+    children=[Tabs(tabs=[function_panel, streamline_panel])],
+    width=ww)
 
+# refresh quiver field all 100ms
+curdoc().add_periodic_callback(refresh_quiver, 100)
 # make layout
-curdoc().add_root(HBox(children=[plot, tabs]))
+curdoc().add_root(VBoxForm(children=[HBox(children=[plot, tabs])]))
