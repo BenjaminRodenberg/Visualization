@@ -25,7 +25,8 @@ sample_system_functions = {
     "non_linear": ("(x-1)*(y-1)", "(x+1)*(y+1)"),
     "non_linear_orbit": ("y", "(1-x^2)*y -x"),
     "pendulum": ("y","-sin(x)"),
-    "dixon": ("(x*y)/(x^2+y^2)-x","(y^2)/(x^2+y^2)-y-.1") # see dixon system
+    "dixon": ("(x*(y+2.5))/(x^2+(y+2.5)^2)-x/5.0",
+              "((y+2.5)^2)/(x^2+(y+2.5)^2)-(y+2.5)/5.0-0.1") # see dixon system
 }
 
 # defines initial ode system by key
