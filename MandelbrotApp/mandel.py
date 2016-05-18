@@ -6,7 +6,7 @@ import time
 
 def mandel(x0,y0,xw,yw,x_res,y_res, iterate_max, iteration_bound):
     # Calculate the mandelbrot sequence for the point c with start value z
-    @guvectorize(['void(float64[:,:], float64[:,:],float64[:,:])'],'(m,n),(m,n)->(m,n)')
+    @guvectorize(['void(float64[:,:], float64[:,:],float64[:,:])'],'(m,n),(m,n)->(m,n)',target='parallel')
     def iterate_mandelbrot(c_re, c_im, it_count):
 
         apply_smoothening = True # trigger for applying smooth color algorithm or not

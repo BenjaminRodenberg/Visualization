@@ -1,6 +1,7 @@
 from __future__ import division
 
 import logging
+import numpy as np
 
 from bokeh.models.widgets import VBox, Button, Slider
 from bokeh.models import ColumnDataSource, Callback
@@ -21,12 +22,10 @@ mandel_colormap = import_bokeh('mandel_colormap.py')
 logging.basicConfig(level=logging.DEBUG)
 
 # initialize data source
-source_image = ColumnDataSource(data=dict(image=[], x0=[], y0=[], xw=[], yw=[]))
+source_image = ColumnDataSource(data=dict(image=[], x0=[None], y0=[None], xw=[None], yw=[None], max_iter=[None], freq=[None]))
 source_its = ColumnDataSource(data=dict(its=[]))
-source_fig_specs = ColumnDataSource(data=dict(x0=[], y0=[], xw=[], yw=[]))
 
 # initialize controls
-refresh = Button(label="Refresh plot")
 max_iter = Slider(title="iterations", name='iterations', value=50,
                  start=0, end=2000,
                  step=50)
@@ -60,13 +59,12 @@ plot.axis.major_tick_line_color = None
 plot.axis.minor_tick_line_color = None
 
 def update_image(attrname, old, new):
-    import numpy as np
+    iterations = source_its.data['its'][0]
+
     x0 = plot.x_range.__getattribute__('start')
     y0 = plot.y_range.__getattribute__('start')
-    xw = plot.x_range.__getattribute__('end')-x0
-    yw = plot.y_range.__getattribute__('end')-y0
-
-    iterations = source_its.data['its'][0]
+    xw = plot.x_range.__getattribute__('end') - x0
+    yw = plot.y_range.__getattribute__('end') - y0
     max_iterations = int(max_iter.value)
     frequency = int(np.mean(iterations[iterations!=max_iterations])/new*10)
 
@@ -76,11 +74,8 @@ def update_image(attrname, old, new):
     print "done."
 
     print "updating data."
-    source_image.data = dict(image=[img], x0=[x0], y0=[y0], xw=[xw], yw=[yw])
+    source_image.data = dict(image=[img], x0=[x0], y0=[y0], xw=[xw], yw=[yw], max_iter=[max_iterations], freq=[new])
     print "data was updated."
-
-    param = dict(x0=x0, y0=y0, xw=xw, yw=yw)
-    print param
 
 
 def update_data():
@@ -88,32 +83,44 @@ def update_data():
     y0 = plot.y_range.__getattribute__('start')
     xw = plot.x_range.__getattribute__('end')-x0
     yw = plot.y_range.__getattribute__('end')-y0
-
     max_iterations = int(max_iter.value)
 
-    print "calling mandel."
-    iterations = mandel.mandel(x0, y0, xw, yw, 400, 400, max_iterations, 10)
-    print "done."
-    print "updating data."
-    source_its.data = dict(its=[iterations])
-    print "done."
+    change_param = False
+    change_param = change_param or (source_image.data['x0'][0] != x0)
+    change_param = change_param or (source_image.data['y0'][0] != y0)
+    change_param = change_param or (source_image.data['xw'][0] != xw)
+    change_param = change_param or (source_image.data['yw'][0] != yw)
+    change_param = change_param or (source_image.data['max_iter'][0] != max_iterations)
+    change_freq = (source_image.data['freq'][0] != freq.value)
 
-    update_image(None,None,freq.value)
+    if change_param:
+        print "change in parameters."
+        print "calling mandel."
+        iterations = mandel.mandel(x0, y0, xw, yw, 400, 400, max_iterations, 10)
+        print "done."
+        print "updating data."
+        source_its.data = dict(its=[iterations])
+        print "done."
+    else:
+        print "no change in parameters, data update skipped"
 
-
-def refresh_plot():
-    print "REFRESH!"
-    update_data()
+    if change_freq or change_param:
+        print "change in color."
+        print "calling update_image"
+        update_image(None,None,freq.value)
+    else:
+        print "no change in color, color update skipped"
 
 
 # initialize data
 update_data()
 
 # setup callback
-refresh.on_click(refresh_plot)
 freq.on_change('value',update_image)
 
+# update picture all 100 ms w.r.t current view
+curdoc().add_periodic_callback(update_data, 100)
 # make layout
-curdoc().add_root(VBox(children=[plot, max_iter, freq, refresh]))
+curdoc().add_root(VBox(children=[plot, max_iter, freq]))
 
 print "everything initialized."
