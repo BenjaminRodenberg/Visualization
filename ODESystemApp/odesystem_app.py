@@ -14,10 +14,10 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, VBox, HBox, TextInput, Panel, Tabs, Dropdown
+from bokeh.models.widgets import Slider, HBox, TextInput, Panel, Tabs, Dropdown, VBoxForm, VBox
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
-from bokeh.io import curdoc
+from bokeh.io import curdoc, vform
 
 import numpy as np
 
@@ -352,15 +352,13 @@ plot.multi_line('x_ls', 'y_ls', source=source_critical_lines, color='red', legen
 init_data()
 
 # lists all the controls in our app associated with the default_funs panel
-function_controls = VBox(children=[HBox(width=400,children=[sample_fun_input]),
-                                   HBox(children=[VBox(width=180, children=[u_input]),
-                                                  VBox(width=40),
-                                                  VBox(width=180, children=[v_input])]),
-                                   ])
-
-streamline_controls = HBox(children=[VBox(width=180, children=[x0_input]),
-                                     VBox(width=40),
-                                     VBox(width=180, children=[y0_input])])
+ww=380
+function_controls = VBoxForm(
+    children=[sample_fun_input,VBox(width=ww,height=20), u_input, v_input,VBox(width=ww,height=20)],
+    width=ww)
+streamline_controls = VBoxForm(
+    children=[VBox(width=ww,height=50),x0_input, y0_input,VBox(width=ww,height=10)],
+    width=ww)
 
 # Panels for sample functions or default functions
 function_panel = Panel(child=function_controls, title='choose function')
@@ -369,4 +367,4 @@ streamline_panel = Panel(child=streamline_controls, title='modify streamline')
 tabs = Tabs(tabs=[function_panel, streamline_panel])
 
 # make layout
-curdoc().add_root(VBox(children=[plot, tabs]))
+curdoc().add_root(HBox(children=[plot, tabs]))
