@@ -20,6 +20,7 @@ def import_bokeh(relative_path):
 mandel = import_bokeh('mandel.py')
 mandel_colormap = import_bokeh('mandel_colormap.py')
 mandelbrot_settings = import_bokeh('mandelbrot_settings.py')
+my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -80,19 +81,6 @@ plot.axis.major_tick_line_color = None  # turn off major ticks
 plot.axis.minor_tick_line_color = None  # turn off minor ticks
 
 
-def get_user_view(plot):
-    """
-    returns the current user view of the plot
-    :param plot: a bokeh.plotting.Figure
-    :return:
-    """
-    x0 = plot.x_range.__getattribute__('start')  # origin x
-    y0 = plot.y_range.__getattribute__('start')  # origin y
-    xw = plot.x_range.__getattribute__('end') - x0  # width
-    yw = plot.y_range.__getattribute__('end') - y0  # height
-    return x0, y0, xw, yw
-
-
 def update_colormap(attrname, old, new_frequency):
     """
     updates the coloring of the plot.
@@ -100,7 +88,7 @@ def update_colormap(attrname, old, new_frequency):
     :param old: unused, but needed for bokeh callback functions
     :param new_frequency: new value for the frequency
     """
-    x0, y0, xw, yw = get_user_view(plot)
+    x0, y0, xw, yw = my_bokeh_utils.get_user_view(plot)
     mandel_iterations = source_mandel_raw.data['its'][0]
 
     frequency = int(
@@ -122,7 +110,7 @@ def update_mandelbrot_set():
     part of the mandelbrot set is computed using the given maximum iteration number. The output data is written to the
     corresponding bokeh.models.ColumnDataSource
     """
-    x0, y0, xw, yw = get_user_view(plot)
+    x0, y0, xw, yw = my_bokeh_utils.get_user_view(plot)
 
     print "calculating mandelbrot set."
     mandel_iterations = mandel.mandel(x0, y0, xw, yw,  # user view
@@ -173,7 +161,7 @@ def update_data():
         2.  if any relevant parameters for the computation of the colormap have changed, apply the colormap to unchanged
             raw mandelbrot set data and save the changed colors to the corresponding data source
     """
-    x0, y0, xw, yw = get_user_view(plot)
+    x0, y0, xw, yw = my_bokeh_utils.get_user_view(plot)
 
     parameters_have_changed = check_parameters(x0, y0, xw, yw, slider_max_iterations.value)
     frequency_has_changed = check_frequency(slider_frequency.value)
