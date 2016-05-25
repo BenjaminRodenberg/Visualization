@@ -71,7 +71,7 @@ if median_filtering_size is not 0:
 if gauss_filtering_sigma is not 0:
     it_count = gaussian_filter(it_count, sigma=gauss_filtering_sigma)
 
-color = mandel_colormap.it_count_to_color(it_count, frequency, max_iterations)
+color = mandel_colormap.iteration_count_to_rgb_color(it_count, frequency, max_iterations)
 print color.shape
 
 # plot and save picture

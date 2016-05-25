@@ -1,80 +1,76 @@
 from scipy.interpolate import PchipInterpolator
 import numpy as np
-from numba import vectorize, guvectorize
+
 
 def get_color_interpolator():
-    '''
-    Monotone cubic spline interpolation is used
-    for color scheme see
+    """
+    Creates a function that maps scalar values to RGB colors by applying a colormap defined by the colors below.
+    Monotone cubic spline interpolation is used. For mor information see
     http://stackoverflow.com/questions/16500656/which-color-gradient-is-used-to-color-mandelbrot-in-wikipedia
-    '''
+    :return: a function returning colors from scalar values
+    """
 
     # color scheme
-    x = [0.0, 0.16, 0.42, 0.6425, 0.8575,1.0]
-    c = [(0,   7,   100),
-         (32,  107, 203),
+    x = [0.0, 0.16, 0.42, 0.6425, 0.8575, 1.0]
+    c = [(0, 7, 100),
+         (32, 107, 203),
          (237, 255, 255),
          (255, 170, 0),
-         (0,   2,   0),
-         (0,   7,   100)]  # added for making colors cyclic
+         (0, 2, 0),
+         (0, 7, 100)]  # last color equals first color for making colors cyclic
     # extracting color channels
     r = [c[i][0] for i in range(c.__len__())]
     g = [c[i][1] for i in range(c.__len__())]
     b = [c[i][2] for i in range(c.__len__())]
     # using monotone cubic spline interpolation
-    r_interp = PchipInterpolator(x,r)
-    g_interp = PchipInterpolator(x,g)
-    b_interp = PchipInterpolator(x,b)
+    r_interp = PchipInterpolator(x, r)
+    g_interp = PchipInterpolator(x, g)
+    b_interp = PchipInterpolator(x, b)
     # wrapping all color channels into one function
-    c_interp = lambda x: np.array((r_interp(x),g_interp(x),b_interp(x))).transpose()
+    c_interp = lambda x: np.array((r_interp(x), g_interp(x), b_interp(x))).transpose()
 
     return c_interp
 
 
 def rgb_color_to_bokeh_rgba(color):
-
-    n = color.shape[1]
-    m = color.shape[2]
+    """
+    converts a RGB dataset to a RGBA dataset.
+    The dataset is formatted in a fashion such that bokeh.plotting.Figure.image is able to parse the dataset. Therefore
+    each RGBA value (4 times 8 Byte) is encoded in a single np.uint32 (32 Byte).
+    :param color: dataset containing RGB values.
+    :return: dataset containing uint32 values that encode RGBA values
+    """
 
     color = color.astype(np.uint32)
+    # use bitshift operations and typecasts for converting RGBA values to np.uint32
+    img = (
+    (color[0, :, :] << (0 * 8)) +   # Red
+    (color[1, :, :] << (1 * 8)) +   # Green
+    (color[2, :, :] << (2 * 8)) +   # Blue
+    (255 << (3 * 8))                # Alpha by default 100%
+    ).astype(np.uint32)             # convert to uint32
 
-    print color[:,0,0]
-    cc = np.hstack([color[:,0,0].astype(np.uint8),255])
-    cc = cc.astype(np.uint32)
-    print cc
-    cc_img = ((cc[0] << (0 * 8)) + (cc[1] << (1 * 8)) + (cc[2] << (2 * 8)) + (255 << (3 * 8))).astype(np.uint32)
-    print cc_img
-    print cc.view(dtype=np.uint32)
-    img = ((color[0,:,:]<<(0*8))+(color[1,:,:]<<(1*8))+(color[2,:,:]<<(2*8))+(255<<(3*8))).astype(np.uint32)
-    print img.shape
-    print img.dtype
-    print type(img)
-    '''
-    color_a = np.vstack([color.astype(np.uint8), 255*np.ones([1,n,m], dtype=np.uint8)])
-    color_a = np.rollaxis(color_a,0,3)
-    print color_a[0:2,0:2,:].astype(np.uint8)#.view(np.uint32).shape
-    img = np.array(color_a.astype(np.uint8).view(np.uint8))
-    print img.shape
-
-    img = np.empty((n, m), dtype=np.uint32)
-    view = img.view(dtype=np.uint8).reshape((n, m, 4))
-    for i in range(n):
-        for j in range(m):
-            view[i, j, 0] = color[0,i,j]
-            view[i, j, 1] = color[1,i,j]
-            view[i, j, 2] = color[2,i,j]
-            view[i, j, 3] = 255
-    '''
     return img
 
-def it_count_to_color(it_count, frequency, max_iteration):
+
+def iteration_count_to_rgb_color(data, frequency, max_value):
+    """
+    calculates a rgb color for each given scalar values in data.
+    :param data: set of N scalar values in the range [0,max_value]
+    :param frequency: frequency applied for periodical repetition of the colormap. i.e. if the data range is [0,10]
+                      and frequency is 2, then the whole colormap gets applied to the range [0,5) and then the same
+                      colormap is applied to [5,10] in a periodic fashion.
+    :param max_value: maximum value in the dataset. Data values that are equal to max_value are colored black,
+                      regardless of the colormap.
+    :return: an array of N RGB values.
+    """
     # get colormap
     c_interp = get_color_interpolator()
-    # color set according to colormap (coloring a cyclic fashion with a predefined fequency)
-    color = c_interp((it_count % frequency) / frequency).transpose()
+    # color set according to colormap (coloring a periodic fashion with a predefined frequency)
+    color = c_interp((data % frequency) / frequency).transpose()
     # explicitly color regions, where maximum iteration was reached, black
-    color[0, it_count == max_iteration]=0.0  # red channel = 0
-    color[1, it_count == max_iteration]=0.0  # green channel = 0
-    color[2, it_count == max_iteration]=0.0  # blue channel = 0
+    color[0, data == max_value] = 0.0  # red channel = 0
+    color[1, data == max_value] = 0.0  # green channel = 0
+    color[2, data == max_value] = 0.0  # blue channel = 0
 
     return color
