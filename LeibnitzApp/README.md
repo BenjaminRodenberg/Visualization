@@ -20,4 +20,5 @@ in the browser.
 - [x] also write down currently computed area
 - [ ] revise first draft
 - [ ] add advanced controls (custom parameter range)
+- [ ] proper documentation
 - [ ] add some nice default examples (can be chosen with dropdown)

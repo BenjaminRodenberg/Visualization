@@ -19,11 +19,21 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 
 ## ToDos
 ### Next Tasks
-- [x] see [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
-- [x] see [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
-- [x] see [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
-- [x] see [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
-- [ ] do documentation on Bokeh with example App ([MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)?)
+- [ ] add streaming data update for user view. [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [ ] do documentation & Refactoring, where possible.
+- [ ] do documentation on Bokeh with example App. Slides? Link to Webpage Tutorial and some additional remarks?
+
+### Proper Documentation & Refactoring (state: running version with nice functionality)
+- [ ] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
+- [ ] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
+- [ ] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [ ] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
+- [ ] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [ ] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
+- [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
+- [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 
 ### Generate Running version of particular Apps
 - [x] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)

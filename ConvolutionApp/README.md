@@ -19,3 +19,4 @@ in the browser.
 - [x] Add support for entering arbitrary functions
 - [x] Update to Bokeh 0.11
 - [x] Add easier examples (e.g. Heaviside(x) convolved with cos(x*pi/2) * Heaviside(x+1) * Heaviside(1-x))
+- [ ] proper documentation
