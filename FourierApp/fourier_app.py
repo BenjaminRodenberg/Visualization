@@ -2,6 +2,7 @@ import numpy as np
 import logging
 
 from tables.description import Col
+from tables.tableextension import Col
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -9,7 +10,6 @@ from bokeh.models.widgets import VBox, HBox, Slider, RadioButtonGroup, TextInput
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
-import time
 
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
@@ -94,12 +94,12 @@ def update_plot(f, N, t_start, t_end):
                                                plot.y_range.end,
                                                plot.y_range.end])
     # data for patch border lines
-    source_interval_bound.data = dict(x_min = [t_start,
-                                               t_start],
-                                      x_max = [t_end,
-                                               t_end],
-                                      y_minmax = [plot.y_range.start,
-                                                  plot.y_range.start])
+    source_interval_bound.data = dict(x_min=[t_start,
+                                             t_start],
+                                      x_max=[t_end,
+                                             t_end],
+                                      y_minmax=[plot.y_range.start,
+                                                plot.y_range.start])
 
 
 def type_input_change(attrname, old, new):
@@ -160,6 +160,18 @@ def function_change():
     update_plot(f, N, t_start, t_end)
 
 
+def check_user_view():
+    """
+    checks for a change in the user view that affects the plotting
+    :return: bool that states if any relevant parameter has been changed
+    """
+    user_view_has_changed = (source_view.data['x_start'][0] != plot.x_range.start) or \
+                            (source_view.data['x_end'][0] != plot.x_range.end) or \
+                            (source_view.data['y_start'][0] != plot.y_range.start) or \
+                            (source_view.data['y_end'][0] != plot.y_range.end)
+    return user_view_has_changed
+
+
 def automatic_update():
     """
     Function that is regularly called by the periodic callback. Updates the plots to the current user view.
@@ -171,16 +183,25 @@ def automatic_update():
     t_start = source_periodicity.data['t_start'][0]
     t_end = source_periodicity.data['t_end'][0]
 
-    update_plot(f, N, t_start, t_end)
+    user_view_has_changed = check_user_view()
+    if user_view_has_changed:
+        source_view.data = dict(x_start=[plot.x_range.start],
+                                x_end=[plot.x_range.end],
+                                y_start=[plot.y_range.start],
+                                y_end=[plot.y_range.end])
+        print "updating plot"
+        update_plot(f, N, t_start, t_end)
+
 
 # initialize data source
 source_fourier = ColumnDataSource(data=dict(t=[], x_fourier=[]))
 source_orig = ColumnDataSource(data=dict(t=[], x_orig=[]))
 source_interval_patch = ColumnDataSource(data=dict(x_patch=[], y_patch=[]))
-source_interval_bound = ColumnDataSource(data=dict(x_min=[],x_max=[],y_minmax=[]))
-source_coeff = ColumnDataSource(data=dict(a=[],b=[]))
+source_interval_bound = ColumnDataSource(data=dict(x_min=[], x_max=[], y_minmax=[]))
+source_coeff = ColumnDataSource(data=dict(a=[], b=[]))
 source_f = ColumnDataSource(data=dict(f=[None]))
 source_periodicity = ColumnDataSource(data=dict(t_start=[None], t_end=[None]))
+source_view = ColumnDataSource(data=dict(x_start=[None], x_end=[None], y_start=[None], y_end=[None]))
 
 # initialize controls
 # buttons for choosing a sample function
@@ -188,8 +209,8 @@ sample_function_type = RadioButtonGroup(labels=fs.function_names, active=fs.func
 
 # here one can choose arbitrary input function
 default_function_input = TextInput(value=fs.function_input_init)
-default_function_period_start = TextInput(title='start',value=fs.timeinterval_start_init)
-default_function_period_end = TextInput(title='end',value=fs.timeinterval_end_init)
+default_function_period_start = TextInput(title='start', value=fs.timeinterval_start_init)
+default_function_period_end = TextInput(title='end', value=fs.timeinterval_end_init)
 
 # slider controlling degree of the fourier series
 degree = Slider(title="degree", name='degree', value=fs.degree_init, start=fs.degree_min,
@@ -197,7 +218,8 @@ degree = Slider(title="degree", name='degree', value=fs.degree_init, start=fs.de
 
 # initialize callback behaviour
 degree.on_change('value', degree_change)
-default_function_input.on_change('value', type_input_change) # todo write default functions for any callback, like above
+default_function_input.on_change('value',
+                                 type_input_change)  # todo write default functions for any callback, like above
 default_function_period_start.on_change('value', type_input_change)
 default_function_period_end.on_change('value', type_input_change)
 sample_function_type.on_change('active', type_input_change)
@@ -228,30 +250,30 @@ plot.line('t', 'x_fourier', source=source_fourier,
           )
 
 plot.patch('x_patch', 'y_patch', source=source_interval_patch, alpha=.2)
-plot.line('x_min','y_minmax', source=source_interval_bound)
-plot.line('x_max','y_minmax', source=source_interval_bound)
+plot.line('x_min', 'y_minmax', source=source_interval_bound)
+plot.line('x_max', 'y_minmax', source=source_interval_bound)
 
 sample_controls = VBox(width=400,
                        children=[sample_function_type])
 
 default_controls = VBox(width=400,
                         children=[default_function_input,
-                                 HBox(width=400,
-                                      children=[VBox(width=20),default_function_period_start,VBox(width=10),
-                                                default_function_period_end,VBox(width=20)])])
+                                  HBox(width=400,
+                                       children=[VBox(width=20), default_function_period_start, VBox(width=10),
+                                                 default_function_period_end, VBox(width=20)])])
 
 # Panels for sample functions or default functions
 sample_funs = Panel(child=sample_controls, title='sample function')
 default_funs = Panel(child=default_controls, title='default function')
 # Add panels to tabs
-fun_tabs = Tabs(tabs=[sample_funs,default_funs])
-fun_tabs.on_change('active', type_input_change) # add callback for panel tabs
+fun_tabs = Tabs(tabs=[sample_funs, default_funs])
+fun_tabs.on_change('active', type_input_change)  # add callback for panel tabs
 
 # lists all the controls in our app
 controls = HBox(width=400,
                 children=[VBox(),
-                          VBox(children=[HBox(children=[degree],height=50),
-                                         HBox(children=[fun_tabs],height=100)]),
+                          VBox(children=[HBox(children=[degree], height=50),
+                                         HBox(children=[fun_tabs], height=100)]),
                           VBox()])
 
 # initialize data
@@ -260,4 +282,4 @@ function_change()
 # regularly update user view
 curdoc().add_periodic_callback(automatic_update, 100)
 # make layout
-curdoc().add_root(VBox(children=[plot,controls],height=550,width=400))
+curdoc().add_root(VBox(children=[plot, controls], height=550, width=400))
