@@ -20,7 +20,7 @@ x_min=-3*np.pi
 x_max=3*np.pi
 y_min=-2.5
 y_max=2.5
-resolution=1000
+resolution=400
 
 #function input
 function_input_init = "sin(x) * Heaviside( (-1)^ceil(x/pi*2) )"

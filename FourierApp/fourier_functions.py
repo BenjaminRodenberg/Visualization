@@ -86,12 +86,7 @@ def coeff_fft(f, start, end, N):
     x = np.linspace(start, end, M, endpoint=False)
     u0 = f(x)
 
-    print u0
-    print x
-
     c = np.fft.rfft(u0) / M
-
-    print c
 
     a = 2 * np.real(c)
     b = -2 * np.imag(c)
@@ -101,28 +96,28 @@ def coeff_fft(f, start, end, N):
     return [a[0:N+1], b[0:N+1]]
 
 
-def fourier_series(a, b, T, x):
+def fourier_series(a, b, N, T, x):
     """
     This function evaluates the fourier series of degree N with the coefficient
     vectors a and b and the period length T at the points in the array x.
     :param a: even coefficients
     :param b: uneven coefficients
+    :param N: degree of fourier series
     :param T: period length
     :param x: sample points
     :return: fourier series evaluated at sample points
     """
-    # degree of fourier series
-    N = len(a)
     # numpy matrix version of code below
-    print a
-    print b
+    a = a[:N+1]
+    b = b[:N+1]
+
     """
     y = np.zeros(x.shape)
-    for k in range(N):
+    for k in range(N+1):
         kk = k * 2 * np.pi / T
         y += (b[k] * np.sin(kk*x) + a[k] * np.cos(kk*x))
     """
-    k = np.arange(N)
+    k = np.arange(N+1)
     kk = k * 2 * np.pi / T
     y = np.sum(b * np.sin(np.outer(x, kk)) + a * np.cos(np.outer(x, kk)), axis=1)
     return y

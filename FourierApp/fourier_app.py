@@ -1,12 +1,15 @@
 import numpy as np
 import logging
 
+from tables.description import Col
+
 logging.basicConfig(level=logging.DEBUG)
 
 from bokeh.models.widgets import VBox, HBox, Slider, RadioButtonGroup, TextInput, Panel, Tabs, DateRangeSlider
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
+import time
 
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
@@ -23,16 +26,118 @@ ft = import_bokeh('fourier_tex.py')
 fs = import_bokeh('fourier_settings.py')
 
 
-def update_data():
-    # ==============================================================================
-    #         Called each time that any watched property changes.
-    #
-    #         This updates the fourier series expansion with the most recent values
-    #         of the slider. The new fourier series y data is stored as a numpy
-    #         arrays in a dict into the app's data source property.
-    # ==============================================================================
+def update_fourier_coeffs(f, N, t_start, t_end):
+    """
+    updates the fourier coefficients. Therefore the fourier coefficients are computed for a function f, that covers
+    one period on the interval [t_start, t_end]. The final output is saved to a bokeh.models.ColumnDataSource
+    :param f: function handle
+    :param N: maximum degree of fourier coefficients
+    :param t_start: start of one period
+    :param t_end: end of one period
+    """
+    # compute fourier coefficients
+    a, b = ff.coeff(f, t_start, t_end, N)  # calculate coefficients
+
+    # save coefficients to data source
+    source_coeff.data = dict(a=a, b=b)
+
+    print "fourier coefficients have been updated for new function up to maximum degree N = %d" % (N)
+
+
+def update_plot(f, N, t_start, t_end):
+    """
+    updates the plot data from given resources. The resulting plot data fits to the current user view window.
+
+    The following plots are updated:
+    - Line plot of the original function
+    - Line plot of the fourier series from given coefficients a,b
+    - Patch plot marking one period
+    - Line plot of the borders of the period
+
+    All the updated data is saved to the corresponding bokeh.models.ColumnDataSource_s
+    :param f: function handle
+    :param N: maximum degree for the fourier series that is plotted
+    :param t_start: starting point of the period
+    :param t_end: end point of the period
+    """
+    # interval length
+    T = t_end - t_start
+
+    # function f(x) which will be approximated
+    t = np.linspace(plot.x_range.start,
+                    plot.x_range.end,
+                    2 * fs.resolution)
+    periodic_t = (t - t_start) % T + t_start
+    x_orig = f(periodic_t)
+
+    # Generate Fourier series
+    x_fourier = ff.fourier_series(source_coeff.data['a'],
+                                  source_coeff.data['b'],
+                                  N,
+                                  T,
+                                  t - t_start)
+
+    # saving data to plot
+    # data with evaluation of original function
+    source_orig.data = dict(t=t,
+                            x_orig=x_orig)
+    # data with evaluation of fourier series
+    source_fourier.data = dict(t=t,
+                               x_fourier=x_fourier)
+    # data for patch denoting the size of one interval
+    source_interval_patch.data = dict(x_patch=[t_start,
+                                               t_end,
+                                               t_end,
+                                               t_start],
+                                      y_patch=[plot.y_range.start,
+                                               plot.y_range.start,
+                                               plot.y_range.end,
+                                               plot.y_range.end])
+    # data for patch border lines
+    source_interval_bound.data = dict(x_min = [t_start,
+                                               t_start],
+                                      x_max = [t_end,
+                                               t_end],
+                                      y_minmax = [plot.y_range.start,
+                                                  plot.y_range.start])
+
+
+def type_input_change(attrname, old, new):
+    """
+    Callback function for controls that affect the fourier coefficients and therefore require an updated of the
+    coefficients.
+    :param attrname:
+    :param old:
+    :param new:
+    """
+    function_change()
+
+
+def degree_change(attrname, old_N, new_N):
+    """
+    Callback function that handles a change of the degree. This does not affect the (precomputed) fourier
+    coefficients, but only the plotting.
+    :param attrname:
+    :param old_N:
+    :param new_N:
+    :return:
+    """
+    # read control varoables
+    f = source_f.data['f'][0]
+    t_start = source_periodicity.data['t_start'][0]
+    t_end = source_periodicity.data['t_end'][0]
+
+    update_plot(f, new_N, t_start, t_end)
+
+
+def function_change():
+    """
+    function that handles a change in the control variables that cause a change in the fourier coefficients. The
+    updated control variables are parsed and saved and from this information the fourier coefficients are updated.
+    """
     N = int(round(degree.value))  # Get the current slider values
 
+    # parse function from text input
     if fun_tabs.active == 0:
         f = fs.function_library[sample_function_type.active]
         timeinterval_start_str = fs.timeinterval_start_init
@@ -43,63 +148,39 @@ def update_data():
         timeinterval_start_str = default_function_period_start.value
         timeinterval_end_str = default_function_period_end.value
 
-    timeinterval_start = ff.number_parser(timeinterval_start_str)
-    timeinterval_end = ff.number_parser(timeinterval_end_str)
-    timeinterval_length = timeinterval_end - timeinterval_start
+    # parse time interval data
+    t_start = ff.number_parser(timeinterval_start_str)
+    t_end = ff.number_parser(timeinterval_end_str)
 
-    # function f(x) which will be approximated
-    t = np.linspace(fs.x_min, fs.x_max, fs.resolution)
-    periodic_t = (t - timeinterval_start) % timeinterval_length + timeinterval_start
-    x_orig = f(periodic_t)
+    # save updated control variables to data sources.
+    source_f.data = dict(f=[f])
+    source_periodicity.data = dict(t_start=[t_start], t_end=[t_end])
 
-    # Generate Fourier series
-    T = timeinterval_length  # length of one period of the function
-    a, b = ff.coeff(f, timeinterval_start, timeinterval_end, N)  # calculate coefficients
-
-    x_fourier = ff.fourier_series(a, b, T, t - timeinterval_start)
-
-    x_min = plot.x_range.start
-    x_max = plot.x_range.end
-    y_min = plot.y_range.start
-    y_max = plot.y_range.end
-
-    # saving data to plot
-    source_orig.data = dict(t=t, x_orig=x_orig)
-    source_fourier.data = dict(t=t, x_fourier=x_fourier)
-    source_interval_patch.data = dict(x_patch=[timeinterval_start, timeinterval_end, timeinterval_end, timeinterval_start],
-                                      y_patch=[y_min, y_min, y_max, y_max])
-    source_interval_bound.data = dict(x_min = [timeinterval_start, timeinterval_start],
-                                      x_max = [timeinterval_end, timeinterval_end],
-                                      y_minmax = [y_min, y_max])
-    # generate new TeX string
-    TeX_string = ft.generate_tex(a, b, T)
-
-    print "data was updated with N = %d" % (N)
-
-    print fun_tabs.active
-
-    return TeX_string
+    update_fourier_coeffs(f, fs.degree_max, t_start, t_end)
+    update_plot(f, N, t_start, t_end)
 
 
-def send_request(TeX_string):
-    print "sending request..."
-    # urllib.urlopen("http://localhost:5001/publish?TEX="+TeX_string)
+def automatic_update():
+    """
+    Function that is regularly called by the periodic callback. Updates the plots to the current user view.
+    """
+    N = int(round(degree.value))  # Get the current slider values
 
+    # read control varoables
+    f = source_f.data['f'][0]
+    t_start = source_periodicity.data['t_start'][0]
+    t_end = source_periodicity.data['t_end'][0]
 
-def type_input_change(attrname, old, new):
-    input_change(attrname, old, new)
-
-
-def input_change(attrname, old, new):
-    TeX_string = update_data()  # update data and get new TeX
-    send_request(TeX_string)  # send new TeX to server
-
+    update_plot(f, N, t_start, t_end)
 
 # initialize data source
 source_fourier = ColumnDataSource(data=dict(t=[], x_fourier=[]))
 source_orig = ColumnDataSource(data=dict(t=[], x_orig=[]))
 source_interval_patch = ColumnDataSource(data=dict(x_patch=[], y_patch=[]))
 source_interval_bound = ColumnDataSource(data=dict(x_min=[],x_max=[],y_minmax=[]))
+source_coeff = ColumnDataSource(data=dict(a=[],b=[]))
+source_f = ColumnDataSource(data=dict(f=[None]))
+source_periodicity = ColumnDataSource(data=dict(t_start=[None], t_end=[None]))
 
 # initialize controls
 # buttons for choosing a sample function
@@ -115,17 +196,18 @@ degree = Slider(title="degree", name='degree', value=fs.degree_init, start=fs.de
                 end=fs.degree_max, step=fs.degree_step)
 
 # initialize callback behaviour
-degree.on_change('value', input_change)
-default_function_input.on_change('value', input_change)
-default_function_period_start.on_change('value', input_change)
-default_function_period_end.on_change('value', input_change)
-sample_function_type.on_change('active', type_input_change)  # initialize plot
+degree.on_change('value', degree_change)
+default_function_input.on_change('value', type_input_change) # todo write default functions for any callback, like above
+default_function_period_start.on_change('value', type_input_change)
+default_function_period_end.on_change('value', type_input_change)
+sample_function_type.on_change('active', type_input_change)
 
+# initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
 # Generate a figure container
 plot = Figure(title_text_font_size="12pt",
-              plot_height=400,
-              plot_width=400,
+              plot_height=fs.resolution,
+              plot_width=fs.resolution,
               tools=toolset,
               title="Fourier Series Approximation",
               x_range=[fs.x_min, fs.x_max],
@@ -171,8 +253,11 @@ controls = HBox(width=400,
                           VBox(children=[HBox(children=[degree],height=50),
                                          HBox(children=[fun_tabs],height=100)]),
                           VBox()])
-# make layout
-curdoc().add_root(VBox(children=[plot,controls],height=550,width=400))
 
 # initialize data
-update_data()
+function_change()
+
+# regularly update user view
+curdoc().add_periodic_callback(automatic_update, 100)
+# make layout
+curdoc().add_root(VBox(children=[plot,controls],height=550,width=400))

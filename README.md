@@ -19,14 +19,15 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 
 ## ToDos
 ### Next Tasks
-- [ ] add streaming data update for user view. [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [ ] Refactor identical code from different apps into one script in Visualization. Possible parts of the code: Sympy parsing, bokeh interaction, quiver function
+- [x] add streaming data update for user view. [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [ ] do documentation & Refactoring, where possible.
 - [ ] do documentation on Bokeh with example App. Slides? Link to Webpage Tutorial and some additional remarks?
 
 ### Proper Documentation & Refactoring (state: running version with nice functionality)
 - [ ] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
 - [ ] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
-- [ ] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [x] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [ ] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
 - [ ] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
