@@ -50,9 +50,8 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [ ] Find nice additional visualisations
 
 ### Embedding
-The next task is embedding the apps, which are currently running with the Bokeh GUI into html pages
-- [ ] Minimal embedding example
-- [ ] Embed all existing apps in nice html
+The next task is embedding the apps, which are currently running with the Bokeh GUI into html pages. We will wait for
+Bokeh version 0.12 -> templating functionality for the bokeh server will be added. See [here](http://nbviewer.jupyter.org/github/bokeh/bokeh-notebooks/blob/master/tutorial/08%20-%20server.ipynb).
 
 ### Virtual machine
 - [x] Get VM running
