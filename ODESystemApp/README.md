@@ -22,7 +22,7 @@ in your browser to use the app in it.
 - [x] Add standard examples as predefined equations (circular attractor...)
 - [x] Improve GUI with panels
 - [x] Adjust to user's view (if function is updated)
-- [ ] proper documentation
-- [ ] Adjust to user's view (as often as possible in a performant way)
+- [x] proper documentation
+- [x] Adjust to user's view (as often as possible in a performant way)
 - [ ] Try to improve speed
 - [ ] Add code for embedding.

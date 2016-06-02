@@ -21,6 +21,8 @@ x0 = -2
 y0 = -1.5
 xw = 3.0
 yw = 3.0
+x1 = x0 + xw
+y1 = y0 + yw
 
 # if a the result of an iteration in the computation of the mandelbrot set is bigger than the divergence_radius,
 # iteration is stopped and we assume, that the this point diverges after N iterations

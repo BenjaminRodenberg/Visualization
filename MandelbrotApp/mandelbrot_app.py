@@ -8,6 +8,7 @@ from bokeh.models import ColumnDataSource, PrintfTickFormatter
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
+
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
     import imp
@@ -52,8 +53,8 @@ toolset = "pan,reset,wheel_zoom,save"
 plot = Figure(title_text_font_size="12pt",
               plot_height=mandelbrot_settings.x_res,
               plot_width=mandelbrot_settings.y_res,
-              x_range=[mandelbrot_settings.x0, mandelbrot_settings.x0 + mandelbrot_settings.xw],
-              y_range=[mandelbrot_settings.y0, mandelbrot_settings.y0 + mandelbrot_settings.yw],
+              x_range=[mandelbrot_settings.x0, mandelbrot_settings.x1],
+              y_range=[mandelbrot_settings.y0, mandelbrot_settings.y1],
               tools=toolset,
               title="Mandelbrot Set"
               )
@@ -67,6 +68,12 @@ source_image = ColumnDataSource(data=dict(image=[],  # image data
                                           yw=[mandelbrot_settings.yw],  # image height
                                           freq=[mandelbrot_settings.freq_init]  # frequency of the colormap
                                           ))
+
+source_view = ColumnDataSource(data=dict(x_start=[mandelbrot_settings.x0],  # image origin x
+                                         y_start=[mandelbrot_settings.y0],  # image origin y
+                                         x_end=[mandelbrot_settings.x1],  # image final x
+                                         y_end=[mandelbrot_settings.y1],  # image final y
+                                         ))
 
 plot.image_rgba(image='image',  # image data from data source
                 x='x0',  # image origin x
@@ -88,11 +95,11 @@ def update_colormap(attrname, old, new_frequency):
     :param old: unused, but needed for bokeh callback functions
     :param new_frequency: new value for the frequency
     """
-    x0, y0, xw, yw = my_bokeh_utils.get_user_view(plot)
     mandel_iterations = source_mandel_raw.data['its'][0]
 
     frequency = int(
-        np.mean(mandel_iterations[mandel_iterations != int(slider_max_iterations.value)]) / new_frequency * 10)  # todo magic number?
+        np.mean(mandel_iterations[
+                    mandel_iterations != int(slider_max_iterations.value)]) / new_frequency * 10)  # todo magic number?
 
     print "calculating colors."
     col = mandel_colormap.iteration_count_to_rgb_color(mandel_iterations, frequency, int(slider_max_iterations.value))
@@ -100,7 +107,14 @@ def update_colormap(attrname, old, new_frequency):
     print "done."
 
     print "updating image data."
-    source_image.data = dict(image=[img], x0=[x0], y0=[y0], xw=[xw], yw=[yw], freq=[new_frequency])
+    view_data = my_bokeh_utils.get_user_view(plot)
+    source_view.data = view_data
+    source_image.data = dict(image=[img],
+                             x0=view_data['x_start'],
+                             y0=view_data['y_start'],
+                             xw=[view_data['x_end'][0]-view_data['x_start'][0]],
+                             yw=[view_data['y_end'][0]-view_data['y_start'][0]],
+                             freq=[new_frequency])
     print "data was updated."
 
 
@@ -110,7 +124,12 @@ def update_mandelbrot_set():
     part of the mandelbrot set is computed using the given maximum iteration number. The output data is written to the
     corresponding bokeh.models.ColumnDataSource
     """
-    x0, y0, xw, yw = my_bokeh_utils.get_user_view(plot)
+    view_data = my_bokeh_utils.get_user_view(plot)
+
+    x0 = view_data['x_start'][0]
+    xw = view_data['x_end'][0] - x0
+    y0 = view_data['y_start'][0]
+    yw = view_data['y_end'][0] - y0
 
     print "calculating mandelbrot set."
     mandel_iterations = mandel.mandel(x0, y0, xw, yw,  # user view
@@ -124,20 +143,15 @@ def update_mandelbrot_set():
     print "data was updated."
 
 
-def check_parameters(x0, y0, xw, yw, max_iterations):
+def check_parameters(max_iterations):
     """
     checks for a change in the user input parameters that affect the computation of the mandelbrot set
-    :param x0: origin x of the plot
-    :param y0: origin y of the plot
-    :param xw: width of the plot
-    :param yw: height of the plot
     :param max_iterations: maximum iteration number
     :return: bool that states if any relevant parameter has been changed
     """
-    parameters_have_changed = (source_image.data['x0'][0] != x0) or \
-                              (source_image.data['y0'][0] != y0) or \
-                              (source_image.data['xw'][0] != xw) or \
-                              (source_image.data['yw'][0] != yw) or \
+
+    user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
+    parameters_have_changed = user_view_has_changed or \
                               (source_mandel_raw.data['max_iter'][0] != max_iterations)
     return parameters_have_changed
 
@@ -161,9 +175,8 @@ def update_data():
         2.  if any relevant parameters for the computation of the colormap have changed, apply the colormap to unchanged
             raw mandelbrot set data and save the changed colors to the corresponding data source
     """
-    x0, y0, xw, yw = my_bokeh_utils.get_user_view(plot)
 
-    parameters_have_changed = check_parameters(x0, y0, xw, yw, slider_max_iterations.value)
+    parameters_have_changed = check_parameters(slider_max_iterations.value)
     frequency_has_changed = check_frequency(slider_frequency.value)
 
     if parameters_have_changed:

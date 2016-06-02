@@ -142,7 +142,7 @@ def critical_points(u_sym, v_sym, bounds):
     x_val_lines = [[]]
     y_val_lines = [[]]
 
-    h = get_stepwidth(bounds)
+    h = get_stepwidth(bounds['x_min'], bounds['x_max'])
 
     for x_line in x_lines:
         x_val_line = np.arange(bounds['x_min'],bounds['x_max'],h * .1).tolist()
@@ -163,8 +163,8 @@ def critical_points(u_sym, v_sym, bounds):
     return x_c, y_c, x_val_lines, y_val_lines
 
 
-def get_stepwidth(bounds):
-    return (bounds['x_max'] - bounds['x_min']) / (odesystem_settings.n_sample - 1)
+def get_stepwidth(x_min, x_max):
+    return (x_max - x_min) / (odesystem_settings.n_sample - 1)
 
 
 def critical_points_iso(u_sym, v_sym, bounds):
@@ -178,7 +178,7 @@ def critical_points_iso(u_sym, v_sym, bounds):
     y_min = bounds['y_min']
     y_max = bounds['y_max']
 
-    h = get_stepwidth(bounds)
+    h = get_stepwidth(x_min, x_max)
 
     [x,y] = np.meshgrid(np.arange(x_min,x_max,h),np.arange(y_min,y_max,h))
 

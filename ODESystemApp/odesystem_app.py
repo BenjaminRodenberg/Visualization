@@ -35,28 +35,30 @@ def import_bokeh(relative_path):
 # import local modules
 odesystem_settings = import_bokeh('odesystem_settings.py')
 odesystem_helpers = import_bokeh('odesystem_helpers.py')
+my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 # initialize data source
-source_patches = ColumnDataSource(data=dict(xs=[], ys=[]))
-source_segments = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
-source_basept = ColumnDataSource(data=dict(x=[], y=[]))
-source_streamline = ColumnDataSource(data=dict(x=[], y=[]))
-source_initialvalue = ColumnDataSource(data=dict(x0=[], y0=[]))
-source_critical_pts = ColumnDataSource(data=dict(x=[], y=[]))
-source_critical_lines = ColumnDataSource(data=dict(x_ls=[[]], y_ls=[[]]))
-source_image = ColumnDataSource(data=dict(x0=[None],y0=[None],xw=[None],yw=[None]))
+source_patches = ColumnDataSource(data=dict(xs=[], ys=[]))  # patches defining the arrow tips of the quiver plot
+source_segments = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))  # segments defining the arrow lines of the quiver plot
+source_basept = ColumnDataSource(data=dict(x=[], y=[]))  # points lying in the middle of each arrow defining the point the arrow is referring to
+source_streamline = ColumnDataSource(data=dict(x=[], y=[]))  # streamline data
+source_initialvalue = ColumnDataSource(data=dict(x0=[], y0=[]))  # initial value data (only one point)
+source_critical_pts = ColumnDataSource(data=dict(x=[], y=[]))  # critical point data (multiple points)
+source_critical_lines = ColumnDataSource(data=dict(x_ls=[[]], y_ls=[[]]))  # critical line data (multiple sets of points connecting to lines)
+source_view = ColumnDataSource(data=dict(x_start=[odesystem_settings.x_min],
+                                         x_end=[odesystem_settings.x_max],
+                                         y_start=[odesystem_settings.y_min],
+                                         y_end=[odesystem_settings.y_max]))  # user view information
 
-def get_plot_bounds():
-    x_min = plot.x_range.__getattribute__('start')
-    x_max = plot.x_range.__getattribute__('end')
-    y_min = plot.y_range.__getattribute__('start')
-    y_max = plot.y_range.__getattribute__('end')
-    return {'x_min':x_min,
-            'x_max':x_max,
-            'y_min':y_min,
-            'y_max':y_max}
 
 def init_data():
+    """
+    initializes the data.
+    1. get the ode function components u and v
+    2. get the initial value for the streamline
+    3. compute quiver and streamline
+    :return:
+    """
     u_str = u_input.value
     v_str = v_input.value
     x0 = x0_input.value
@@ -66,6 +68,15 @@ def init_data():
 
 
 def ode_change(attrname, old, new):
+    """
+    called, if the ode changes, i.e. one of the function u or v is modified. If the ode changes the quiver field as well
+    as the streamline change. Additionally the global boolean value update_callback has to be set (this value is used
+    for preventing unnecessary computation if both u and v are changed at the same time).
+    :param attrname:
+    :param old:
+    :param new:
+    :return:
+    """
     global update_callback
     if update_callback:
         u_str = u_input.value
@@ -76,7 +87,14 @@ def ode_change(attrname, old, new):
         update_streamline_data(u_str, v_str, x0, y0)
 
 
-def start_change(attrname, old, new):
+def initial_value_change(attrname, old, new):
+    """
+    called, if the initial value for the streamline changes. The streamline has to by recomputed.
+    :param attrname:
+    :param old:
+    :param new:
+    :return:
+    """
     u_str = u_input.value
     v_str = v_input.value
     x0 = x0_input.value
@@ -84,185 +102,85 @@ def start_change(attrname, old, new):
     update_streamline_data(u_str, v_str, x0, y0)
 
 
+def get_plot_bounds(plot):
+    """
+    helper function returning the bounds of the plot in a dict.
+    :param plot: handle to the bokeh.plotting.Figure
+    :return:
+    """
+    x_min = plot.x_range.start
+    x_max = plot.x_range.end
+    y_min = plot.y_range.start
+    y_max = plot.y_range.end
+    return {'x_min':x_min,
+            'x_max':x_max,
+            'y_min':y_min,
+            'y_max':y_max}
+
+
 def update_streamline_data(u_str, v_str, x0, y0):
+    """
+    updates the bokeh.models.ColumnDataSource holding the streamline data.
+    :param u_str: string, first component of the ode
+    :param v_str: string, second component of the ode
+    :param x0: initial value x for the streamline
+    :param y0: initial value y for the streamline
+    :return:
+    """
     # string parsing
     u_fun, u_sym = odesystem_helpers.parser(u_str)
     v_fun, v_sym = odesystem_helpers.parser(v_str)
     # numerical integration
-    chaotic = (sample_fun_input.value == "dixon")
-    x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, get_plot_bounds(), chaotic)
+    chaotic = (sample_fun_input.value == "dixon") # for the dixon system a special treatment is necessary
+    x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, get_plot_bounds(plot), chaotic)
     # update sources
-    streamline_to_data(x_val, y_val, x0, y0)
+    streamline_to_data(x_val, y_val, x0, y0) # save data to ColumnDataSource
     print "streamline was calculated for initial value (x0,y0)=(%f,%f)" % (x0, y0)
 
 
 def update_quiver_data(u_str, v_str):
+    """
+    updates the bokeh.models.ColumnDataSource_s holding the quiver data and the ciritical points and lines of the ode.
+    :param u_str: string, first component of the ode
+    :param v_str: string, second component of the ode
+    :return:
+    """
     # string parsing
     u_fun, u_sym = odesystem_helpers.parser(u_str)
     v_fun, v_sym = odesystem_helpers.parser(v_str)
-    x_c, y_c, x_lines, y_lines = odesystem_helpers.critical_points(u_sym, v_sym, get_plot_bounds())
+    # compute critical points
+    x_c, y_c, x_lines, y_lines = odesystem_helpers.critical_points(u_sym, v_sym, get_plot_bounds(plot))
     # crating samples
     x_val, y_val, u_val, v_val, h = get_samples(u_fun, v_fun)
     # generating quiver data and updating sources
-    quiver_to_data(x_val, y_val, u_val, v_val, h)
+    ssdict, spdict, sbdict = my_bokeh_utils.quiver_to_data(x_val, y_val, u_val, v_val, h)
+    # save quiver data to respective ColumnDataSource_s
+    source_segments.data = ssdict
+    source_patches.data = spdict
+    source_basept.data = sbdict
+    # save critical point data
     critical_to_data(x_c, y_c, x_lines, y_lines)
 
     print "quiver data was updated for u(x,y) = %s, v(x,y) = %s" % (u_str, v_str)
 
 
-def quiver_to_data(x, y, u, v, h):
-    def __normalize(u, v, h):
-        length = np.sqrt(u ** 2 + v ** 2)
-        u[length > 0] *= 1.0 / length[length > 0] * h * .9
-        v[length > 0] *= 1.0 / length[length > 0] * h * .9
-        u[length == 0] = 0
-        v[length == 0] = 0
-        return u, v
-
-    def quiver_to_segments(x, y, u, v, h):
-        x = x.flatten()
-        y = y.flatten()
-        u = u.flatten()
-        v = v.flatten()
-
-        u, v = __normalize(u, v, h)
-
-        x0 = x - u * .5
-        y0 = y - v * .5
-        x1 = x + u * .5
-        y1 = y + v * .5
-
-        return x0, y0, x1, y1
-
-    def quiver_to_arrowheads(x, y, u, v, h):
-
-        def __t_matrix(translate_x, translate_y):
-            return np.array([[1, 0, translate_x],
-                             [0, 1, translate_y],
-                             [0, 0, 1]])
-
-        def __r_matrix(rotation_angle):
-            c = np.cos(rotation_angle)
-            s = np.sin(rotation_angle)
-            return np.array([[c, -s, 0],
-                             [s, +c, 0],
-                             [0, +0, 1]])
-
-        def __head_template(x0, y0, u, v, type_id, headsize):
-            if type_id is 0:
-                x_patch = 3 * [None]
-                y_patch = 3 * [None]
-
-                x1 = x0 + u
-                x_patch[0] = x1
-                x_patch[1] = x1 - headsize
-                x_patch[2] = x1 - headsize
-
-                y1 = y0 + v
-                y_patch[0] = y1
-                y_patch[1] = y1 + headsize / np.sqrt(3)
-                y_patch[2] = y1 - headsize / np.sqrt(3)
-            elif type_id is 1:
-                x_patch = 4 * [None]
-                y_patch = 4 * [None]
-
-                x1 = x0 + u
-                x_patch[0] = x1
-                x_patch[1] = x1 - headsize
-                x_patch[2] = x1 - headsize / 2
-                x_patch[3] = x1 - headsize
-
-                y1 = y0 + v
-                y_patch[0] = y1
-                y_patch[1] = y1 + headsize / np.sqrt(3)
-                y_patch[2] = y1
-                y_patch[3] = y1 - headsize / np.sqrt(3)
-            else:
-                raise Exception("unknown head type!")
-
-            return x_patch, y_patch
-
-        def __get_patch_data(x0, y0, u, v, headsize):
-
-            def angle_from_xy(x, y):
-                if x == 0:
-                    return np.pi * .5 + int(y <= 0) * np.pi
-                else:
-                    if y >= 0:
-                        if x > 0:
-                            return np.arctan(y / x)
-                        elif x < 0:
-                            return -np.arctan(y / -x) + np.pi
-                        else:
-                            return 1.5 * np.pi
-                    else:
-                        if x > 0:
-                            return -np.arctan(-y / x)
-                        elif x < 0:
-                            return np.arctan(-y / -x) + np.pi
-                        else:
-                            return .5 * np.pi
-
-            angle = angle_from_xy(u, v)
-
-            x_patch, y_patch = __head_template(x0, y0, u, v, type_id=0, headsize=headsize)
-
-            T1 = __t_matrix(-x_patch[0], -y_patch[0])
-            R = __r_matrix(angle)
-            T2 = __t_matrix(x_patch[0], y_patch[0])
-            T = T2.dot(R.dot(T1))
-
-            for i in range(x_patch.__len__()):
-                v_in = np.array([x_patch[i], y_patch[i], 1])
-                v_out = T.dot(v_in)
-                x_patch[i], y_patch[i], tmp = v_out
-
-            return x_patch, y_patch
-
-        x = x.flatten()
-        y = y.flatten()
-        u = u.flatten()
-        v = v.flatten()
-
-        u, v = __normalize(u, v, h)
-
-        n_arrows = x.shape[0]
-        xs = n_arrows * [None]
-        ys = n_arrows * [None]
-
-        headsize = .1 * h
-
-        for i in range(n_arrows):
-            x_patch, y_patch = __get_patch_data(x[i] - .5 * u[i], y[i] - .5 * v[i], u[i], v[i], headsize)
-            xs[i] = x_patch
-            ys[i] = y_patch
-
-        return xs, ys
-
-    x0, y0, x1, y1 = quiver_to_segments(x, y, u, v, h)
-    ssdict = dict(x0=x0, y0=y0, x1=x1, y1=y1)
-    source_segments.data = ssdict
-
-    xs, ys = quiver_to_arrowheads(x, y, u, v, h)
-    spdict = dict(xs=xs, ys=ys)
-    source_patches.data = spdict
-
-    sbdict = dict(x=x.flatten(), y=y.flatten())
-    source_basept.data = sbdict
-
-
 def get_samples(u_fun, v_fun):
-    bounds = get_plot_bounds()
-    h = odesystem_helpers.get_stepwidth(bounds)
-
-    xx = np.arange(bounds['x_min'], bounds['x_max'], h)
-    yy = np.arange(bounds['y_min'], bounds['y_max'], h)
-
+    """
+    compute sample points where the ode is evaluated.
+    :param u_fun: function handle, first component of the ode
+    :param v_fun: function handle, second component of the ode
+    :return:
+    """
+    # compute distance of sample points
+    h = odesystem_helpers.get_stepwidth(source_view.data['x_start'][0], source_view.data['x_end'][0])
+    # create a grid of samples
+    xx = np.arange(source_view.data['x_start'][0], source_view.data['x_end'][0], h)
+    yy = np.arange(source_view.data['y_start'][0], source_view.data['y_end'][0], h)
     x_val, y_val = np.meshgrid(xx, yy)
-
+    # initialize arrays
     v_val = np.empty(x_val.shape)
     u_val = np.empty(x_val.shape)
-
+    # evaluate ode at sample points
     for i in range(x_val.shape[0]):
         for j in range(x_val.shape[1]):
             v_val[i, j] = v_fun(x_val[i, j], y_val[i, j])
@@ -272,17 +190,27 @@ def get_samples(u_fun, v_fun):
 
 
 def streamline_to_data(x_val, y_val, x0, y0):
+    """
+    save streamline to bokeh.models.ColumnDataSource
+    :param x_val: streamline data x
+    :param y_val: streamline data y
+    :param x0: initial value x of streamline
+    :param y0: initial value y of streamline
+    :return:
+    """
     source_initialvalue.data = dict(x0=[x0], y0=[y0])
     source_streamline.data = dict(x=x_val, y=y_val)
 
 
 def critical_to_data(x_c, y_c, x_lines, y_lines):
-    print "line data:"
-    print x_lines
-    print y_lines
-    print "point data:"
-    print x_c
-    print y_c
+    """
+    save critical points and lines to bokeh.models.ColumnDataSource
+    :param x_c: critical points x
+    :param y_c: critical points y
+    :param x_lines: set of lines (multiple points x)
+    :param y_lines: set of lines (multiple points y)
+    :return:
+    """
     source_critical_pts.data = dict(x=x_c, y=y_c)
     source_critical_lines.data = dict(x_ls=x_lines, y_ls=y_lines)
 
@@ -310,21 +238,29 @@ sample_fun_input = Dropdown(label="choose a sample function pair or enter one be
 
 
 def sample_fun_change(self):
+    """
+    called if the sample function is changed. The global variable update_callback is used to prevent triggering the
+    callback function ode_change twice, once for change in u with old v, then for change in v with new u.
+    :param self:
+    :return:
+    """
     global update_callback
+    # get sample function pair (first & second component of ode)
     sample_fun_key = sample_fun_input.value
     sample_fun_u, sample_fun_v = odesystem_settings.sample_system_functions[sample_fun_key]
-    update_callback = False
+    # write new functions to u_input and v_input
+    update_callback = False  # prevent callback
     u_input.value = sample_fun_u
-    update_callback = True
+    update_callback = True  # allow callback
     v_input.value = sample_fun_v
 
 
+# initialize callback behaviour
 sample_fun_input.on_click(sample_fun_change)
-
 u_input.on_change('value', ode_change)
 v_input.on_change('value', ode_change)
-x0_input.on_change('value', start_change)
-y0_input.on_change('value', start_change)
+x0_input.on_change('value', initial_value_change)
+y0_input.on_change('value', initial_value_change)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
@@ -337,6 +273,7 @@ plot = Figure(title_text_font_size="12pt",
               x_range=[odesystem_settings.x_min, odesystem_settings.x_max],
               y_range=[odesystem_settings.y_min, odesystem_settings.y_max]
               )
+# remove grid from plot
 plot.grid[0].grid_line_alpha = 0.0
 plot.grid[1].grid_line_alpha = 0.0
 
@@ -344,27 +281,27 @@ plot.grid[1].grid_line_alpha = 0.0
 plot.segment('x0', 'y0', 'x1', 'y1', source=source_segments)
 plot.patches('xs', 'ys', source=source_patches)
 plot.circle('x', 'y', source=source_basept, color='blue', size=1.5)
+# Plot initial values
 plot.scatter('x0', 'y0', source=source_initialvalue, color='black', legend='(x0,y0)')
+# Plot streamline
 plot.line('x', 'y', source=source_streamline, color='black', legend='streamline')
+# Plot critical points and lines
 plot.scatter('x', 'y', source=source_critical_pts, color='red', legend='critical pts')
 plot.multi_line('x_ls', 'y_ls', source=source_critical_lines, color='red', legend='critical lines')
 
-def refresh_quiver():
-    x0 = plot.x_range.__getattribute__('start')
-    y0 = plot.y_range.__getattribute__('start')
-    xw = plot.x_range.__getattribute__('end') - x0
-    yw = plot.y_range.__getattribute__('end') - y0
 
-    change_param = False
-    change_param = change_param or (source_image.data['x0'][0] != x0)
-    change_param = change_param or (source_image.data['y0'][0] != y0)
-    change_param = change_param or (source_image.data['xw'][0] != xw)
-    change_param = change_param or (source_image.data['yw'][0] != yw)
-    if change_param:
+def refresh_quiver():
+    """
+    periodically called function that updates data with respect to the current user view, if the user view has changed.
+    :return:
+    """
+    user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
+    if user_view_has_changed:
         u_str = u_input.value
         v_str = v_input.value
         update_quiver_data(u_str, v_str)
-        source_image.data = dict(x0=[x0], y0=[y0], xw=[xw], yw=[yw])
+        source_view.data = my_bokeh_utils.get_user_view(plot)
+
 
 # calculate data
 init_data()

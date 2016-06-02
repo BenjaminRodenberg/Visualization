@@ -22,7 +22,7 @@ sample_system_functions = {
     "circular_stable": ("-y", "x-y/10"),
     "circular_critical": ("-y", "x"),
     "circular_unstable": ("-y", "x+y/10"),
-    "non_linear": ("(x-1)*(y-1)", "(x+1)*(y+1)"),
+    "non_linear": ("(x-1)*(y-1)", "(x+1)*(y+1)*(y-1)"),
     "non_linear_orbit": ("y", "(1-x^2)*y -x"),
     "pendulum": ("y","-sin(x)"),
     "dixon": ("(x*(y+2.5))/(x^2+(y+2.5)^2)-x/5.0",

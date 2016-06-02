@@ -1,9 +1,6 @@
 import numpy as np
 import logging
 
-from tables.description import Col
-from tables.tableextension import Col
-
 logging.basicConfig(level=logging.DEBUG)
 
 from bokeh.models.widgets import VBox, HBox, Slider, RadioButtonGroup, TextInput, Panel, Tabs, DateRangeSlider
@@ -24,6 +21,7 @@ def import_bokeh(relative_path):
 ff = import_bokeh('fourier_functions.py')
 ft = import_bokeh('fourier_tex.py')
 fs = import_bokeh('fourier_settings.py')
+my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 
 def update_fourier_coeffs(f, N, t_start, t_end):
@@ -160,35 +158,21 @@ def function_change():
     update_plot(f, N, t_start, t_end)
 
 
-def check_user_view():
-    """
-    checks for a change in the user view that affects the plotting
-    :return: bool that states if any relevant parameter has been changed
-    """
-    user_view_has_changed = (source_view.data['x_start'][0] != plot.x_range.start) or \
-                            (source_view.data['x_end'][0] != plot.x_range.end) or \
-                            (source_view.data['y_start'][0] != plot.y_range.start) or \
-                            (source_view.data['y_end'][0] != plot.y_range.end)
-    return user_view_has_changed
-
-
 def automatic_update():
     """
     Function that is regularly called by the periodic callback. Updates the plots to the current user view.
     """
-    N = int(round(degree.value))  # Get the current slider values
-
-    # read control varoables
-    f = source_f.data['f'][0]
-    t_start = source_periodicity.data['t_start'][0]
-    t_end = source_periodicity.data['t_end'][0]
-
-    user_view_has_changed = check_user_view()
+    user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
     if user_view_has_changed:
-        source_view.data = dict(x_start=[plot.x_range.start],
-                                x_end=[plot.x_range.end],
-                                y_start=[plot.y_range.start],
-                                y_end=[plot.y_range.end])
+
+        source_view.data = my_bokeh_utils.get_user_view(plot)
+
+        # read control variables
+        N = int(round(degree.value))  # Get the current slider values
+        f = source_f.data['f'][0]
+        t_start = source_periodicity.data['t_start'][0]
+        t_end = source_periodicity.data['t_end'][0]
+
         print "updating plot"
         update_plot(f, N, t_start, t_end)
 
