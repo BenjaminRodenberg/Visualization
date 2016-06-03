@@ -35,6 +35,8 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
 - [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
+- [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
+- [ ] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
 
 ### Generate Running version of particular Apps
 - [x] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
@@ -46,6 +48,8 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [x] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [x] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
+- [x] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
+- [ ] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
 - [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
