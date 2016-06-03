@@ -128,8 +128,8 @@ def update_streamline_data(u_str, v_str, x0, y0):
     :return:
     """
     # string parsing
-    u_fun, u_sym = odesystem_helpers.parser(u_str)
-    v_fun, v_sym = odesystem_helpers.parser(v_str)
+    u_fun, u_sym = my_bokeh_utils.string_to_function_parser(u_str,['x','y'])
+    v_fun, v_sym = my_bokeh_utils.string_to_function_parser(v_str,['x','y'])
     # numerical integration
     chaotic = (sample_fun_input.value == "dixon") # for the dixon system a special treatment is necessary
     x_val, y_val = odesystem_helpers.do_integration(x0, y0, u_fun, v_fun, get_plot_bounds(plot), chaotic)
@@ -146,8 +146,8 @@ def update_quiver_data(u_str, v_str):
     :return:
     """
     # string parsing
-    u_fun, u_sym = odesystem_helpers.parser(u_str)
-    v_fun, v_sym = odesystem_helpers.parser(v_str)
+    u_fun, u_sym = my_bokeh_utils.string_to_function_parser(u_str,['x','y'])
+    v_fun, v_sym = my_bokeh_utils.string_to_function_parser(v_str,['x','y'])
     # compute critical points
     x_c, y_c, x_lines, y_lines = odesystem_helpers.critical_points(u_sym, v_sym, get_plot_bounds(plot))
     # crating samples
@@ -171,22 +171,15 @@ def get_samples(u_fun, v_fun):
     :param v_fun: function handle, second component of the ode
     :return:
     """
-    # compute distance of sample points
-    h = odesystem_helpers.get_stepwidth(source_view.data['x_start'][0], source_view.data['x_end'][0])
     # create a grid of samples
-    xx = np.arange(source_view.data['x_start'][0], source_view.data['x_end'][0], h)
-    yy = np.arange(source_view.data['y_start'][0], source_view.data['y_end'][0], h)
+    xx, hx = np.linspace(source_view.data['x_start'][0], source_view.data['x_end'][0], odesystem_settings.n_sample, retstep=True)
+    yy, hy = np.linspace(source_view.data['y_start'][0], source_view.data['y_end'][0], odesystem_settings.n_sample, retstep=True)
     x_val, y_val = np.meshgrid(xx, yy)
-    # initialize arrays
-    v_val = np.empty(x_val.shape)
-    u_val = np.empty(x_val.shape)
-    # evaluate ode at sample points
-    for i in range(x_val.shape[0]):
-        for j in range(x_val.shape[1]):
-            v_val[i, j] = v_fun(x_val[i, j], y_val[i, j])
-            u_val[i, j] = u_fun(x_val[i, j], y_val[i, j])
+    # evaluate ode
+    u_val = u_fun(x_val, y_val)
+    v_val = v_fun(x_val, y_val)
 
-    return x_val, y_val, u_val, v_val, h
+    return x_val, y_val, u_val, v_val, hx
 
 
 def streamline_to_data(x_val, y_val, x0, y0):

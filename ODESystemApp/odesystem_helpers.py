@@ -17,15 +17,6 @@ def import_bokeh(relative_path):
 odesystem_settings = import_bokeh('odesystem_settings.py')
 
 
-def parser(fun_str):
-    from sympy import sympify, lambdify
-    from sympy.abc import x,y
-
-    fun_sym = sympify(fun_str)
-    fun_lam = lambdify([x, y], fun_sym)
-    return fun_lam, fun_sym
-
-
 def do_integration(x0, y0, u, v, bounds, chaotic):
     f = lambda t,x:[u(x[0], x[1]), v(x[0], x[1])]
     init = [x0,y0]
@@ -142,10 +133,8 @@ def critical_points(u_sym, v_sym, bounds):
     x_val_lines = [[]]
     y_val_lines = [[]]
 
-    h = get_stepwidth(bounds['x_min'], bounds['x_max'])
-
     for x_line in x_lines:
-        x_val_line = np.arange(bounds['x_min'],bounds['x_max'],h * .1).tolist()
+        x_val_line = np.linspace(bounds['x_min'],bounds['x_max'],odesystem_settings.n_sample * 10).tolist()
         y_val_line = []
         for x_val in x_val_line:
             y_val_line.append(x_line(x_val))
@@ -154,40 +143,13 @@ def critical_points(u_sym, v_sym, bounds):
 
     for y_line in y_lines:
         x_val_line = []
-        y_val_line = np.arange(bounds['y_min'],bounds['y_max'],h * .1).tolist()
+        y_val_line = np.linspace(bounds['y_min'],bounds['y_max'],odesystem_settings.n_sample * 10).tolist()
         for y_val in y_val_line:
             x_val_line.append(y_line(y_val))
         x_val_lines.append(x_val_line)
         y_val_lines.append(y_val_line)
 
     return x_c, y_c, x_val_lines, y_val_lines
-
-
-def get_stepwidth(x_min, x_max):
-    return (x_max - x_min) / (odesystem_settings.n_sample - 1)
-
-
-def critical_points_iso(u_sym, v_sym, bounds):
-    from sympy.abc import x,y
-    from sympy import lambdify
-
-    potential = lambdify([x,y],u_sym**2+v_sym**2)
-
-    x_min = bounds['x_min']
-    x_max = bounds['x_max']
-    y_min = bounds['y_min']
-    y_max = bounds['y_max']
-
-    h = get_stepwidth(x_min, x_max)
-
-    [x,y] = np.meshgrid(np.arange(x_min,x_max,h),np.arange(y_min,y_max,h))
-
-    samples = potential(x,y)
-
-    x_c = x[abs(samples)<10**-6]
-    y_c = y[abs(samples)<10**-6]
-
-    return x_c, y_c
 
 
 
