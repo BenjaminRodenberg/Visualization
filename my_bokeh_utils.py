@@ -1,4 +1,7 @@
 import bokeh
+import sympy
+from sympy import sympify, lambdify
+import numpy as np
 
 def check_user_view(view_data, plot):
     """
@@ -31,11 +34,19 @@ def get_user_view(plot):
     return dict(x_start=[x_start],y_start=[y_start],x_end=[x_end],y_end=[y_end])
 
 
-def quiver_to_data(x, y, u, v, h):
+def quiver_to_data(x, y, u, v, h, do_normalization=True, fix_at_middle=True):
     def __normalize(u, v, h):
         length = np.sqrt(u ** 2 + v ** 2)
-        u[length > 0] *= 1.0 / length[length > 0] * h * .9
-        v[length > 0] *= 1.0 / length[length > 0] * h * .9
+        max_length = np.max(length)
+        if do_normalization:
+            u[length > 0] *= 1.0 / length[length > 0] * h * .9
+            v[length > 0] *= 1.0 / length[length > 0] * h * .9
+        elif(max_length is not 0):
+            u[length > 0] *= 1.0 / max_length * h * .9
+            v[length > 0] *= 1.0 / max_length * h * .9
+        else:
+            u[:] = 0
+            v[:] = 0
         u[length == 0] = 0
         v[length == 0] = 0
         return u, v
@@ -48,10 +59,16 @@ def quiver_to_data(x, y, u, v, h):
 
         u, v = __normalize(u, v, h)
 
-        x0 = x - u * .5
-        y0 = y - v * .5
-        x1 = x + u * .5
-        y1 = y + v * .5
+        x0 = x
+        y0 = y
+        x1 = x + u
+        y1 = y + v
+
+        if fix_at_middle:
+            x0 -= u * .5
+            y0 -= v * .5
+            x1 -= u * .5
+            y1 -= v * .5
 
         return x0, y0, x1, y1
 
@@ -152,11 +169,16 @@ def quiver_to_data(x, y, u, v, h):
         ys = n_arrows * [None]
 
         headsize = .1 * h
-
-        for i in range(n_arrows):
-            x_patch, y_patch = __get_patch_data(x[i] - .5 * u[i], y[i] - .5 * v[i], u[i], v[i], headsize)
-            xs[i] = x_patch
-            ys[i] = y_patch
+        if fix_at_middle:
+            for i in range(n_arrows):
+                x_patch, y_patch = __get_patch_data(x[i] - .5 * u[i], y[i] - .5 * v[i], u[i], v[i], headsize)
+                xs[i] = x_patch
+                ys[i] = y_patch
+        else:
+            for i in range(n_arrows):
+                x_patch, y_patch = __get_patch_data(x[i], y[i], u[i], v[i], headsize)
+                xs[i] = x_patch
+                ys[i] = y_patch
 
         return xs, ys
 
@@ -168,3 +190,34 @@ def quiver_to_data(x, y, u, v, h):
     sbdict = dict(x=x.flatten(), y=y.flatten())
 
     return ssdict, spdict, sbdict
+
+
+def string_to_function_parser(fun_str,args):
+    """
+    converts a string to a lambda function.
+    :param fun_str: string representation of the function
+    :param args: symbolic arguments that will be turned into lambda function arguments
+    :return:
+    """
+
+    fun_sym = sympify(fun_str)
+    fun_lam = sym_to_function_parser(fun_sym,args)
+
+    return fun_lam, fun_sym
+
+
+def sym_to_function_parser(fun_sym,args):
+    """
+    converts a symbolic expression to a lambda function. The function handles constant and zero symbolic input such that
+    on numpy.array input a numpy.array with identical size is returned.
+    :param fun_sym: symbolic expression
+    :param args: symbols turned into function input arguments
+    :return:
+    """
+
+    if fun_sym.is_constant():
+        fun_lam = lambda *x: np.ones_like(x[0]) * float(fun_sym)
+    else:
+        fun_lam = lambdify(args, fun_sym, modules=['numpy'])
+
+    return fun_lam
