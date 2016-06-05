@@ -53,6 +53,19 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
+### Put Apps on Webpage
+- [ ] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
+- [x] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
+- [x] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [x] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
+- [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
+- [x] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
+- [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
+- [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
+- [ ] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
+
 ### Embedding
 The next task is embedding the apps, which are currently running with the Bokeh GUI into html pages. We will wait for
 Bokeh version 0.12 -> templating functionality for the bokeh server will be added. See [here](http://nbviewer.jupyter.org/github/bokeh/bokeh-notebooks/blob/master/tutorial/08%20-%20server.ipynb).

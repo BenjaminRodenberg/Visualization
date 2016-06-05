@@ -19,6 +19,7 @@ in the browser.
 - [x] publish app on the internet.
 - [x] publish app with run_apps.py script on top level!
 - [x] Update to Bokeh 0.11
+- [ ] Speed up app, **currently to slow for publication!**
 - [ ] proper documentation
 - [ ] Find another (more complicated) BVP which can be solved with this method
 - [ ] Add code for embedding

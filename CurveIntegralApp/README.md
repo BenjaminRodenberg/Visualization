@@ -16,6 +16,7 @@ in the browser.
 - [x] first Prototype
 - [ ] Add sample curves and functions
 - [ ] Improve GUI
+- [ ] make app ready for **publication**
 - [ ] Make it fast
 - [ ] proper documentation
 - [ ] Add code for embedding.

@@ -23,3 +23,4 @@ in the browser.
 - [x] generate running prototype
 - [ ] refactor code.
 - [ ] improve layout
+- [ ] make app ready for **publication**
