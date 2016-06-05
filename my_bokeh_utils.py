@@ -2,6 +2,8 @@ import bokeh
 from sympy import sympify, lambdify
 import numpy as np
 from bokeh.models import ColumnDataSource
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 
