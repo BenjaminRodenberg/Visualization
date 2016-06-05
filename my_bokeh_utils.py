@@ -1,7 +1,10 @@
 import bokeh
-import sympy
 from sympy import sympify, lambdify
 import numpy as np
+from bokeh.models import ColumnDataSource
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+
 
 def check_user_view(view_data, plot):
     """
@@ -26,12 +29,12 @@ def get_user_view(plot):
     :param plot: a bokeh.plotting.Figure
     :return: a dict that can be used for a bokeh.models.ColumnDataSource
     """
-    x_start = plot.x_range.start # origin x
+    x_start = plot.x_range.start  # origin x
     y_start = plot.y_range.start  # origin y
     x_end = plot.x_range.end  # final x
     y_end = plot.y_range.end  # final y
 
-    return dict(x_start=[x_start],y_start=[y_start],x_end=[x_end],y_end=[y_end])
+    return dict(x_start=[x_start], y_start=[y_start], x_end=[x_end], y_end=[y_end])
 
 
 def quiver_to_data(x, y, u, v, h, do_normalization=True, fix_at_middle=True):
@@ -41,7 +44,7 @@ def quiver_to_data(x, y, u, v, h, do_normalization=True, fix_at_middle=True):
         if do_normalization:
             u[length > 0] *= 1.0 / length[length > 0] * h * .9
             v[length > 0] *= 1.0 / length[length > 0] * h * .9
-        elif(max_length is not 0):
+        elif (max_length is not 0):
             u[length > 0] *= 1.0 / max_length * h * .9
             v[length > 0] *= 1.0 / max_length * h * .9
         else:
@@ -192,7 +195,7 @@ def quiver_to_data(x, y, u, v, h, do_normalization=True, fix_at_middle=True):
     return ssdict, spdict, sbdict
 
 
-def string_to_function_parser(fun_str,args):
+def string_to_function_parser(fun_str, args):
     """
     converts a string to a lambda function.
     :param fun_str: string representation of the function
@@ -201,12 +204,12 @@ def string_to_function_parser(fun_str,args):
     """
 
     fun_sym = sympify(fun_str)
-    fun_lam = sym_to_function_parser(fun_sym,args)
+    fun_lam = sym_to_function_parser(fun_sym, args)
 
     return fun_lam, fun_sym
 
 
-def sym_to_function_parser(fun_sym,args):
+def sym_to_function_parser(fun_sym, args):
     """
     converts a symbolic expression to a lambda function. The function handles constant and zero symbolic input such that
     on numpy.array input a numpy.array with identical size is returned.
@@ -221,3 +224,52 @@ def sym_to_function_parser(fun_sym,args):
         fun_lam = lambdify(args, fun_sym, modules=['numpy'])
 
     return fun_lam
+
+
+def get_contour_data(X, Y, Z, isovalue=None):
+    if isovalue is None:
+        cs = plt.contour(X, Y, Z)
+    else:
+        cs = plt.contour(X, Y, Z, isovalue)
+
+    xs = []
+    ys = []
+    xt = []
+    yt = []
+    col = []
+    text = []
+    isolevelid = 0
+    for isolevel in cs.collections:
+        isocol = isolevel.get_color()[0]
+        thecol = 3 * [None]
+        theiso = str(cs.get_array()[isolevelid])
+        isolevelid += 1
+        for i in range(3):
+            thecol[i] = int(255 * isocol[i])
+        thecol = '#%02x%02x%02x' % (thecol[0], thecol[1], thecol[2])
+
+        for path in isolevel.get_paths():
+            v = path.vertices
+            x = v[:, 0]
+            y = v[:, 1]
+            xs.append(x.tolist())
+            ys.append(y.tolist())
+            xt.append(x[len(x) / 2])
+            yt.append(y[len(y) / 2])
+            text.append(theiso)
+            col.append(thecol)
+
+    source = ColumnDataSource(data={'xs': xs, 'ys': ys, 'line_color': col,'xt':xt,'yt':yt,'text':text})
+    return source
+
+
+def find_closest_on_iso(x0,y0,g):
+    # objective function = distance function to original point (x0,y0)
+    f = lambda x: (x[0] - x0) ** 2 + (x[1] - y0) ** 2
+    df = lambda x: np.array([2 * (x[0] - x0), 2 * (x[1] - y0)])
+    # constraint g(x,y) == 0
+    cons = ({'type': 'eq', 'fun': lambda x: g(x[0], x[1])})
+    # minimize distance to original point under the constraint g(x,y) == 0
+    x, y = minimize(f, [x0, y0], constraints=cons, jac=df)['x']
+
+    return x, y

@@ -20,4 +20,6 @@ http://localhost:5006/lagrange_app
 in the browser.
 
 ##ToDos
-- [ ] generate running prototype
+- [x] generate running prototype
+- [ ] refactor code.
+- [ ] improve layout

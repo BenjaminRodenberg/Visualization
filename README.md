@@ -49,7 +49,7 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [x] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
 - [x] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
-- [ ] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
+- [x] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
 - [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
