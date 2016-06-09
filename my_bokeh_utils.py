@@ -3,6 +3,7 @@ from sympy import sympify, lambdify
 import numpy as np
 from bokeh.models import ColumnDataSource
 import matplotlib as mpl
+from tables.description import Col
 
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -229,43 +230,6 @@ def sym_to_function_parser(fun_sym, args):
     return fun_lam
 
 
-def get_contour_data(X, Y, Z, isovalue=None):
-    if isovalue is None:
-        cs = plt.contour(X, Y, Z)
-    else:
-        cs = plt.contour(X, Y, Z, isovalue)
-
-    xs = []
-    ys = []
-    xt = []
-    yt = []
-    col = []
-    text = []
-    isolevelid = 0
-    for isolevel in cs.collections:
-        isocol = isolevel.get_color()[0]
-        thecol = 3 * [None]
-        theiso = str(cs.get_array()[isolevelid])
-        isolevelid += 1
-        for i in range(3):
-            thecol[i] = int(255 * isocol[i])
-        thecol = '#%02x%02x%02x' % (thecol[0], thecol[1], thecol[2])
-
-        for path in isolevel.get_paths():
-            v = path.vertices
-            x = v[:, 0]
-            y = v[:, 1]
-            xs.append(x.tolist())
-            ys.append(y.tolist())
-            xt.append(x[len(x) / 2])
-            yt.append(y[len(y) / 2])
-            text.append(theiso)
-            col.append(thecol)
-
-    source = ColumnDataSource(data={'xs': xs, 'ys': ys, 'line_color': col, 'xt': xt, 'yt': yt, 'text': text})
-    return source
-
-
 def find_closest_on_iso(x0, y0, g):
     # objective function = distance function to original point (x0,y0)
     f = lambda x: (x[0] - x0) ** 2 + (x[1] - y0) ** 2
@@ -279,37 +243,147 @@ def find_closest_on_iso(x0, y0, g):
 
 
 class Interactor:
+    """
+    adds a click interactor to a given plot. This interactor can detect, if a position in the plot is clicked on, return
+    that position and call a respective callback function, if a point is clicked.
+    """
     def __init__(self, plot, square_size=5):
-        # handle to the plot linked to the interactor
+        """
+        :param plot: plot where the contour is plotted
+        :param square_size: size of the square in pixels. This determines the possible accuracy for detection of user
+        input
+        """
         self._plot = plot
-        # square size in pixels
         self._square_size = square_size
         # create invisible pseudo squares recognizing, if they are clicked on
         self._pseudo_square = plot.square(x='x', y='y', color=None, line_color=None,
                                           name='pseudo_square',
                                           size=self._square_size)
-
         # set highlighting behaviour of pseudo squares to stay invisible
         renderer = plot.select(name="pseudo_square")[0]
         renderer.nonselection_glyph = renderer.glyph._clone()
 
     def update_to_user_view(self):
-        # stepwidth in coordinate system of the plot
+        """
+        updates the interactor on user view change.
+        """
+        # stepwidth in coordinate system of the plot (in pixels)
         dx = (self._plot.plot_width - 2 * self._plot.min_border) / self._square_size + 1
         dy = (self._plot.plot_height - 2 * self._plot.min_border) / self._square_size + 1
         # generate mesh
         x_small, \
-        y_small = np.meshgrid(np.linspace(self._plot.x_range.start, self._plot.x_range.end,dx),
-                              np.linspace(self._plot.y_range.start, self._plot.y_range.end,dy))
+        y_small = np.meshgrid(np.linspace(self._plot.x_range.start, self._plot.x_range.end, dx),
+                              np.linspace(self._plot.y_range.start, self._plot.y_range.end, dy))
         # save mesh to data source
         self._pseudo_square.data_source.data = dict(x=x_small.ravel().tolist(),
                                                     y=y_small.ravel().tolist())
 
     def on_click(self, callback_function):
+        """
+        sets a callback function to be called, if the interactor is clicked on
+        :param callback_function: callback function
+        :return:
+        """
         self._pseudo_square.data_source.on_change('selected', callback_function)
 
-    def clicked_point(self, id):
-        x_coor = self._pseudo_square.data_source.data['x'][id['1d']['indices'][0]]
-        y_coor = self._pseudo_square.data_source.data['y'][id['1d']['indices'][0]]
+    def clicked_point(self):
+        """
+        returnes the currently clicked on point in the local coordinate system of self._plot
+        :return:
+        """
+        print
+        x_coor = self._pseudo_square.data_source.data['x'][self._pseudo_square.data_source.selected['1d']['indices'][0]]
+        y_coor = self._pseudo_square.data_source.data['y'][self._pseudo_square.data_source.selected['1d']['indices'][0]]
         return x_coor, y_coor
 
+
+class Contour:
+    """
+    adds a contour plot to a given plot. MatPlotLibs contour plot is utilized for computing the contour data. That data
+    is plotted using bokehs multi_line function. Optionally the user can add labels to the contour data using bokehs
+    text function.
+    """
+    def __init__(self, plot, add_label=False, line_color='line_color', **kwargs):
+        """
+        :param plot: plot where the contour is plotted
+        :param add_label: bool to define whether labels are added to the contour
+        :param line_color: defining line color, if no line color is supplied, the default line color scheme from
+        matplotlib is used
+        :param kwargs: additional bokeh line plotting arguments like width, style ect...
+        """
+        self._plot = plot
+        self._source = ColumnDataSource(data=dict(xs=[], ys=[], xt=[], yt=[], text=[], line_color=[]))
+        self._contour_plot = self._plot.multi_line(xs='xs', ys='ys', line_color=line_color, **kwargs)
+        self._add_label = add_label
+        if self._add_label:
+            self._text_label = self._plot.text(x='xt', y='yt', text='text', text_baseline='middle',
+                                               text_align='center')
+
+    def compute_contour_data(self, f, isovalue=None):
+        """
+        computes and updates contour data for the contour plot of this object w.r.t. current user view of the plot
+        :param f: function to be considered for the contour
+        :param isovalue: plotted isovalues. if no isovalue is provided default matplotlib settings are applied
+        """
+
+        # number of pixels in each direction of the plot
+        nx = (self._plot.plot_width - 2 * self._plot.min_border) + 1
+        ny = (self._plot.plot_height - 2 * self._plot.min_border) + 1
+        # generate mesh
+        x, y = np.meshgrid(np.linspace(self._plot.x_range.start, self._plot.x_range.end, nx),
+                           np.linspace(self._plot.y_range.start, self._plot.y_range.end, ny))
+        # evaluate function of grid
+        z = f(x, y)
+        # compute contour data
+        data_contour, data_contour_label = self.__get_contour_data(x, y, z, isovalue=isovalue)
+        # update data on contour plot
+        self._contour_plot.data_source.data = data_contour
+        if self._add_label:
+            # update contour labels
+            self._text_label.data_source.data = data_contour_label
+
+    def __get_contour_data(self, x_grid, y_grid, z_grid, isovalue=None):
+        """
+        wrapper for matplotlib function. Extracting contour information into bokeh compatible data type.
+        :param x_grid: grid of x values
+        :param y_grid: grid of y values
+        :param z_grid: function evaluation matching to x,y grid
+        :param isovalue: isovalues to be extracted from contour plot, if no isovalue is provided default matplotlib
+        settings are applied
+        :return: two dicts, one holding contour information, one holding labelling information
+        """
+        if isovalue is None:
+            cs = plt.contour(x_grid, y_grid, z_grid)
+        else:
+            cs = plt.contour(x_grid, y_grid, z_grid, isovalue)
+
+        xs = []
+        ys = []
+        xt = []
+        yt = []
+        col = []
+        text = []
+        isolevelid = 0
+        for isolevel in cs.collections:
+            isocol = isolevel.get_color()[0]
+            thecol = 3 * [None]
+            theiso = str(cs.get_array()[isolevelid])
+            isolevelid += 1
+            for i in range(3):
+                thecol[i] = int(255 * isocol[i])
+            thecol = '#%02x%02x%02x' % (thecol[0], thecol[1], thecol[2])
+
+            for path in isolevel.get_paths():
+                v = path.vertices
+                x = v[:, 0]
+                y = v[:, 1]
+                xs.append(x.tolist())
+                ys.append(y.tolist())
+                xt.append(x[len(x) / 2])
+                yt.append(y[len(y) / 2])
+                text.append(theiso)
+                col.append(thecol)
+
+        data_contour = {'xs': xs, 'ys': ys, 'line_color': col}
+        data_contour_label = {'xt': xt, 'yt': yt, 'text': text}
+        return data_contour, data_contour_label
