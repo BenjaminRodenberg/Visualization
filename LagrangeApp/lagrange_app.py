@@ -107,7 +107,7 @@ plot.patches('xs', 'ys', source=source_constraint_grad, color='red')
 plot.cross(x='x', y='y', color='red', size=10, line_width=2, source=source_mark)
 
 
-def on_selection_change(*unused):
+def on_selection_change(attr,old,new):
     """
     called if the by click selected point changes
     """
@@ -146,7 +146,7 @@ def compute_click_data():
     source_constraint_grad.data = compute_gradient_data(dg, x_mark, y_mark)
 
 
-def on_function_change(*unused):
+def on_function_change(attr,old,new):
     """
     called if one of the input functions changes
     """
