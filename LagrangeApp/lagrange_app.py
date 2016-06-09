@@ -21,7 +21,6 @@ from bokeh.io import curdoc
 
 import numpy as np
 
-
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
     import imp
@@ -41,7 +40,6 @@ source_isolevel_grad = ColumnDataSource(data=dict(x=[], y=[], x0=[], y0=[], x1=[
 source_constraint = ColumnDataSource(data=dict(xs=[], ys=[], line_colors=[]))  # multilines drawing isocontour g(x,y)=0
 source_constraint_grad = ColumnDataSource(data=dict(x=[], y=[], x0=[], y0=[], x1=[], y1=[], xs=[], ys=[]))
 source_mark = ColumnDataSource(data=dict(x=[],y=[]))
-source_pseudo_grid = ColumnDataSource(data=dict(x=[], y=[]))
 source_view = ColumnDataSource(data=dict(x_start=[lagrange_settings.x_min],
                                          x_end=[lagrange_settings.x_max],
                                          y_start=[lagrange_settings.y_min],
@@ -50,13 +48,13 @@ source_view = ColumnDataSource(data=dict(x_start=[lagrange_settings.x_min],
 
 def init_data():
     f, _ = my_bokeh_utils.string_to_function_parser(f_input.value,['x','y'])
-    source_contour.data = get_contour_data(f)
+    source_contour.data = compute_contour_data(f)
     g, _ = my_bokeh_utils.string_to_function_parser(g_input.value,['x','y'])
-    source_constraint.data = get_contour_data(g,[0])
-    update_pseudo_grid_data()
+    source_constraint.data = compute_contour_data(g, [0])
+    interactor.update_to_user_view()
 
 
-def get_contour_data(f, isovalue=None):
+def compute_contour_data(f, isovalue=None):
     x, y = np.meshgrid(np.linspace(plot.x_range.start, plot.x_range.end, lagrange_settings.res_x),
                        np.linspace(plot.y_range.start, plot.y_range.end, lagrange_settings.res_y))
 
@@ -67,7 +65,7 @@ def get_contour_data(f, isovalue=None):
     return source.data
 
 
-def get_gradient_data(df, x0, y0):
+def compute_gradient_data(df, x0, y0):
     dfx_val, dfy_val = df(x0,y0)
     ssdict, spdict, _ = my_bokeh_utils.quiver_to_data(x=np.array(x0),
                                                       y=np.array(y0),
@@ -81,17 +79,6 @@ def get_gradient_data(df, x0, y0):
                 x0=ssdict['x0'], y0=ssdict['y0'],
                 x1=ssdict['x1'], y1=ssdict['y1'],
                 xs=spdict['xs'], ys=spdict['ys'])
-
-
-def update_pseudo_grid_data():
-    x_small, \
-    y_small = np.meshgrid(np.linspace(plot.x_range.start, plot.x_range.end,
-                                      (lagrange_settings.res_x - 2 * plot.min_border) / lagrange_settings.sq_size + 1),
-                          np.linspace(plot.y_range.start, plot.y_range.end,
-                                      (lagrange_settings.res_y - 2 * plot.min_border) / lagrange_settings.sq_size + 1))
-
-    source_pseudo_grid.data = dict(x=x_small.ravel().tolist(),
-                                   y=y_small.ravel().tolist())
 
 
 # initialize plot
@@ -121,21 +108,16 @@ plot.segment('x0', 'y0', 'x1', 'y1', source=source_constraint_grad, color='red')
 plot.patches('xs', 'ys', source=source_constraint_grad, color='red')
 # Plot mark at position on constraint function
 plot.cross(x='x',y='y', color='red', size=10, line_width=2, source=source_mark)
-# create invisible pseudo squares recognizing, if they are clicked on
-sq = plot.square(x='x', y='y', color=None, line_color=None, source=source_pseudo_grid, name='pseudo_sq', size=lagrange_settings.sq_size)
-# set highlighting behaviour of pseudo squares to stay invisible
-renderer = plot.select(name="pseudo_sq")[0]
-renderer.nonselection_glyph=renderer.glyph._clone()
 
 
 def on_selection_change(attr, old, new):
-    x_coor = source_pseudo_grid.data['x'][new['1d']['indices'][0]]
-    y_coor = source_pseudo_grid.data['y'][new['1d']['indices'][0]]
+    x_coor, y_coor = interactor.clicked_point(new)
 
     # todo save original and gradient functions to data source!
     f, f_sym = my_bokeh_utils.string_to_function_parser(f_input.value,['x','y'])
     g, g_sym = my_bokeh_utils.string_to_function_parser(g_input.value,['x','y'])
 
+    # calculate gradient function
     from sympy import diff
     dg_list = []
     df_list = []
@@ -147,14 +129,15 @@ def on_selection_change(attr, old, new):
     dg = lambda x, y: [_(x, y) for _ in dg_list]
     df = lambda x, y: [_(x, y) for _ in df_list]
 
+    # detect clicked point
     print "clicked point: (%f,%f)" %(x_coor,y_coor)
     x_close, y_close = my_bokeh_utils.find_closest_on_iso(x_coor,y_coor,g)
     print "closest point on g: (%f,%f)" % (x_close, y_close)
     isovalue = f(x_close, y_close)
     print isovalue
-    source_isolevel.data = get_contour_data(f,[isovalue])
-    source_isolevel_grad.data = get_gradient_data(df, x_close, y_close)
-    source_constraint_grad.data = get_gradient_data(dg, x_close, y_close)
+    source_isolevel.data = compute_contour_data(f, [isovalue])
+    source_isolevel_grad.data = compute_gradient_data(df, x_close, y_close)
+    source_constraint_grad.data = compute_gradient_data(dg, x_close, y_close)
 
     source_mark.data = dict(x=[x_close],y=[y_close])
 
@@ -168,7 +151,7 @@ def on_function_change(attr, old, new):
     y_mark = source_mark.data['y']
     if len(x_mark) > 0:
         isovalue = f(x_mark[0], y_mark[0])
-        source_isolevel.data = get_contour_data(f, [isovalue])
+        source_isolevel.data = compute_contour_data(f, [isovalue])
 
         from sympy import diff
         dg_list = []
@@ -180,17 +163,12 @@ def on_function_change(attr, old, new):
             df_list.append(my_bokeh_utils.sym_to_function_parser(dfds_sym, ['x', 'y']))
         dg = lambda x, y: [_(x, y) for _ in dg_list]
         df = lambda x, y: [_(x, y) for _ in df_list]
-        source_isolevel_grad.data = get_gradient_data(df, x_mark[0], y_mark[0])
-        source_constraint_grad.data = get_gradient_data(dg, x_mark[0], y_mark[0])
+        source_isolevel_grad.data = compute_gradient_data(df, x_mark[0], y_mark[0])
+        source_constraint_grad.data = compute_gradient_data(dg, x_mark[0], y_mark[0])
 
-    source_contour.data = get_contour_data(f)
-    source_constraint.data = get_contour_data(g, [0])
-    update_pseudo_grid_data()
+    source_contour.data = compute_contour_data(f)
+    source_constraint.data = compute_contour_data(g, [0])
     source_view.data = my_bokeh_utils.get_user_view(plot)
-
-
-# adds callback function to taptool, if one of the pseudo squares is selected, call on_selection_change
-sq.data_source.on_change('selected', on_selection_change)
 
 
 def refresh_contour():
@@ -207,20 +185,25 @@ def refresh_contour():
         y_mark = source_mark.data['y']
         if len(x_mark) > 0:
             isovalue = f(x_mark[0], y_mark[0])
-            source_isolevel.data = get_contour_data(f, [isovalue])
+            source_isolevel.data = compute_contour_data(f, [isovalue])
 
-        source_contour.data = get_contour_data(f)
-        source_constraint.data = get_contour_data(g,[0])
-        update_pseudo_grid_data()
+        source_contour.data = compute_contour_data(f)
+        source_constraint.data = compute_contour_data(g, [0])
+        interactor.update_to_user_view()
         source_view.data = my_bokeh_utils.get_user_view(plot)
 
 
-f_input = TextInput(value=lagrange_settings.f_init,
-                    title="f(x,y):")
-g_input = TextInput(value=lagrange_settings.g_init,
-                    title="g(x,y):")
+# object that detects, if a position in the plot is clicked on
+interactor = my_bokeh_utils.Interactor(plot)
+# adds callback function to interactor, if position in plot is clicked, call on_selection_change
+interactor.on_click(on_selection_change)
 
+# text input window for objective function f(x,y) to be optimized
+f_input = TextInput(value=lagrange_settings.f_init, title="f(x,y):")
 f_input.on_change('value',on_function_change)
+
+# text input window for side condition g(x,y)=0
+g_input = TextInput(value=lagrange_settings.g_init, title="g(x,y):")
 g_input.on_change('value',on_function_change)
 
 # calculate data

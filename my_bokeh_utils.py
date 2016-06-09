@@ -3,6 +3,7 @@ from sympy import sympify, lambdify
 import numpy as np
 from bokeh.models import ColumnDataSource
 import matplotlib as mpl
+
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
@@ -261,11 +262,11 @@ def get_contour_data(X, Y, Z, isovalue=None):
             text.append(theiso)
             col.append(thecol)
 
-    source = ColumnDataSource(data={'xs': xs, 'ys': ys, 'line_color': col,'xt':xt,'yt':yt,'text':text})
+    source = ColumnDataSource(data={'xs': xs, 'ys': ys, 'line_color': col, 'xt': xt, 'yt': yt, 'text': text})
     return source
 
 
-def find_closest_on_iso(x0,y0,g):
+def find_closest_on_iso(x0, y0, g):
     # objective function = distance function to original point (x0,y0)
     f = lambda x: (x[0] - x0) ** 2 + (x[1] - y0) ** 2
     df = lambda x: np.array([2 * (x[0] - x0), 2 * (x[1] - y0)])
@@ -275,3 +276,40 @@ def find_closest_on_iso(x0,y0,g):
     x, y = minimize(f, [x0, y0], constraints=cons, jac=df)['x']
 
     return x, y
+
+
+class Interactor:
+    def __init__(self, plot, square_size=5):
+        # handle to the plot linked to the interactor
+        self._plot = plot
+        # square size in pixels
+        self._square_size = square_size
+        # create invisible pseudo squares recognizing, if they are clicked on
+        self._pseudo_square = plot.square(x='x', y='y', color=None, line_color=None,
+                                          name='pseudo_square',
+                                          size=self._square_size)
+
+        # set highlighting behaviour of pseudo squares to stay invisible
+        renderer = plot.select(name="pseudo_square")[0]
+        renderer.nonselection_glyph = renderer.glyph._clone()
+
+    def update_to_user_view(self):
+        # stepwidth in coordinate system of the plot
+        dx = (self._plot.plot_width - 2 * self._plot.min_border) / self._square_size + 1
+        dy = (self._plot.plot_height - 2 * self._plot.min_border) / self._square_size + 1
+        # generate mesh
+        x_small, \
+        y_small = np.meshgrid(np.linspace(self._plot.x_range.start, self._plot.x_range.end,dx),
+                              np.linspace(self._plot.y_range.start, self._plot.y_range.end,dy))
+        # save mesh to data source
+        self._pseudo_square.data_source.data = dict(x=x_small.ravel().tolist(),
+                                                    y=y_small.ravel().tolist())
+
+    def on_click(self, callback_function):
+        self._pseudo_square.data_source.on_change('selected', callback_function)
+
+    def clicked_point(self, id):
+        x_coor = self._pseudo_square.data_source.data['x'][id['1d']['indices'][0]]
+        y_coor = self._pseudo_square.data_source.data['y'][id['1d']['indices'][0]]
+        return x_coor, y_coor
+
