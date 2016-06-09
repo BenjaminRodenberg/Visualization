@@ -1,5 +1,5 @@
 import bokeh
-from sympy import sympify, lambdify
+from sympy import sympify, lambdify, diff
 import numpy as np
 from bokeh.models import ColumnDataSource
 import matplotlib as mpl
@@ -228,6 +228,22 @@ def sym_to_function_parser(fun_sym, args):
         fun_lam = lambdify(args, fun_sym, modules=['numpy'])
 
     return fun_lam
+
+
+def compute_gradient(fun_sym, args):
+    """
+    computes the gradient of fun_sym w.r.t. every symbol in args
+    :param fun_sym: scalar function
+    :param args: arguments to build derivatives
+    :return:
+    """
+    df_sym = []
+    for s in args:
+        dfds_sym = diff(fun_sym, s)
+        df_sym.append(sym_to_function_parser(dfds_sym, args))
+    df = lambda x, y: [_(x, y) for _ in df_sym]
+
+    return df, df_sym
 
 
 def find_closest_on_iso(x0, y0, g):

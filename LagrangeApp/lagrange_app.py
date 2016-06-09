@@ -45,6 +45,9 @@ source_view = ColumnDataSource(data=dict(x_start=[lagrange_settings.x_min],
 
 
 def init_data():
+    """
+    initializes the plots and interactor
+    """
     f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
     contour_f.compute_contour_data(f)
     g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
@@ -53,13 +56,20 @@ def init_data():
 
 
 def compute_gradient_data(df, x0, y0):
+    """
+    compues the relevant data for the gradient plot
+    :param df: function to be evaluated
+    :param x0: base point x
+    :param y0: base point y
+    :return: a dict holding the relevant data
+    """
     dfx_val, dfy_val = df(x0, y0)
     ssdict, spdict, _ = my_bokeh_utils.quiver_to_data(x=np.array(x0),
                                                       y=np.array(y0),
                                                       u=np.array(dfx_val),
                                                       v=np.array(dfy_val),
                                                       h=(source_view.data['x_end'][0] - source_view.data['x_start'][
-                                                          0]) / 10.0,
+                                                          0]) / 5.0,
                                                       do_normalization=True,
                                                       fix_at_middle=False)
 
@@ -88,91 +98,80 @@ contour_f0 = my_bokeh_utils.Contour(plot, add_label=True, line_color='black', li
 # Plot constraint function contour g(x,y)=0
 contour_g = my_bokeh_utils.Contour(plot, line_color='red', line_width=2, legend='g(x,y) = 0')
 # Plot corresponding tangent vector
-plot.segment('x0', 'y0', 'x1', 'y1', source=source_isolevel_grad, color='black')
+plot.segment('x0', 'y0', 'x1', 'y1', line_width=2, source=source_isolevel_grad, color='black')
 plot.patches('xs', 'ys', source=source_isolevel_grad, color='black')
 # Plot corresponding tangent vector
-plot.segment('x0', 'y0', 'x1', 'y1', source=source_constraint_grad, color='red')
+plot.segment('x0', 'y0', 'x1', 'y1', line_width=2, source=source_constraint_grad, color='red')
 plot.patches('xs', 'ys', source=source_constraint_grad, color='red')
 # Plot mark at position on constraint function
 plot.cross(x='x', y='y', color='red', size=10, line_width=2, source=source_mark)
 
 
-def on_selection_change(attr, old, new):
-    x_coor, y_coor = interactor.clicked_point()
-
-    # todo save original and gradient functions to data source!
-    f, f_sym = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
-    g, g_sym = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
-
-    # calculate gradient function
-    from sympy import diff
-    dg_list = []
-    df_list = []
-    for s in ['x', 'y']:
-        dgds_sym = diff(g_sym, s)
-        dfds_sym = diff(f_sym, s)
-        dg_list.append(my_bokeh_utils.sym_to_function_parser(dgds_sym, ['x', 'y']))
-        df_list.append(my_bokeh_utils.sym_to_function_parser(dfds_sym, ['x', 'y']))
-    dg = lambda x, y: [_(x, y) for _ in dg_list]
-    df = lambda x, y: [_(x, y) for _ in df_list]
-
+def on_selection_change(*unused):
+    """
+    called if the by click selected point changes
+    """
     # detect clicked point
-    print "clicked point: (%f,%f)" % (x_coor, y_coor)
+    x_coor, y_coor = interactor.clicked_point()
+    # get constraint function
+    g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
+    # project point onto constraint
     x_close, y_close = my_bokeh_utils.find_closest_on_iso(x_coor, y_coor, g)
-    print "closest point on g: (%f,%f)" % (x_close, y_close)
-    isovalue = f(x_close, y_close)
-    print isovalue
-    contour_f0.compute_contour_data(f, [isovalue])
-    source_isolevel_grad.data = compute_gradient_data(df, x_close, y_close)
-    source_constraint_grad.data = compute_gradient_data(dg, x_close, y_close)
-
+    # save to mark
     source_mark.data = dict(x=[x_close], y=[y_close])
+    # update influenced data
+    compute_click_data()
 
 
-def on_function_change(attr, old, new):
-    # todo save original and gradient functions to data source!
+def compute_click_data():
+    """
+    computes relevant data for the position clicked on:
+    1. gradients of objective function f(x,y) and constraint function g(x,y)
+    2. contour lines running through click location
+    """
+    # get objective function and constraint function
     f, f_sym = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
     g, g_sym = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
+    # compute gradients
+    df, _ = my_bokeh_utils.compute_gradient(f_sym, ['x', 'y'])
+    dg, _ = my_bokeh_utils.compute_gradient(g_sym, ['x', 'y'])
+    # compute isovalue on click location
+    x_mark = source_mark.data['x'][0]
+    y_mark = source_mark.data['y'][0]
+    isovalue = f(x_mark, y_mark)
+    # update contour running through isovalue
+    contour_f0.compute_contour_data(f, [isovalue])
+    # save gradient data
+    source_isolevel_grad.data = compute_gradient_data(df, x_mark, y_mark)
+    source_constraint_grad.data = compute_gradient_data(dg, x_mark, y_mark)
 
-    x_mark = source_mark.data['x']
-    y_mark = source_mark.data['y']
-    if len(x_mark) > 0:
-        isovalue = f(x_mark[0], y_mark[0])
-        contour_f0.compute_contour_data(f,isovalue=[isovalue])
 
-        from sympy import diff
-        dg_list = []
-        df_list = []
-        for s in ['x', 'y']:
-            dgds_sym = diff(g_sym, s)
-            dfds_sym = diff(f_sym, s)
-            dg_list.append(my_bokeh_utils.sym_to_function_parser(dgds_sym, ['x', 'y']))
-            df_list.append(my_bokeh_utils.sym_to_function_parser(dfds_sym, ['x', 'y']))
-        dg = lambda x, y: [g_component(x, y) for g_component in dg_list]
-        df = lambda x, y: [f_component(x, y) for f_component in df_list]
-        source_isolevel_grad.data = compute_gradient_data(df, x_mark[0], y_mark[0])
-        source_constraint_grad.data = compute_gradient_data(dg, x_mark[0], y_mark[0])
-
+def on_function_change(*unused):
+    """
+    called if one of the input functions changes
+    """
+    # get new functions
+    f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
+    g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
+    # has any point been marked?
+    if len(source_mark.data['x']) > 0:
+        compute_click_data()
+    # update contour data
     contour_f.compute_contour_data(f)
     contour_g.compute_contour_data(g,isovalue=[0])
-    source_view.data = my_bokeh_utils.get_user_view(plot)
 
 
 def refresh_contour():
     """
     periodically called function that updates data with respect to the current user view, if the user view has changed.
-    :return:
     """
     user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
     if user_view_has_changed:
         f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
         g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
 
-        x_mark = source_mark.data['x']
-        y_mark = source_mark.data['y']
-        if len(x_mark) > 0:
-            isovalue = f(x_mark[0], y_mark[0])
-            contour_f0.compute_contour_data(f, [isovalue])
+        if len(source_mark.data['x']) > 0: # has any point been marked?
+            compute_click_data()
 
         contour_f.compute_contour_data(f)
         contour_g.compute_contour_data(g, [0])
