@@ -415,6 +415,16 @@ class Quiver:
     """
 
     def __init__(self, plot, fix_at_middle=True, **kwargs):
+        """
+        creates the quiver object for the plot. For a quiver plot we need the following ingredients:
+        1. segments for the arrow shaft
+        2. patches for the arrow tips
+        (3. points marking the base position of the arrow)
+        :param plot: referenced plot
+        :param fix_at_middle: states wheather the arrows are fixed at the middle or at the beginning to the reference
+        point
+        :param kwargs: additional arguments passed to the bokeh plotting functions, e.g. color, line width etc
+        """
         self._plot = plot
         self._segments = self._plot.segment('x0', 'y0', 'x1', 'y1', **kwargs)
         self._patches = self._plot.patches('xs', 'ys', **kwargs)
@@ -423,6 +433,16 @@ class Quiver:
             self._base = self._plot.circle('x', 'y', size=1.5, **kwargs)
 
     def compute_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1, scaling=.9, normalize=True):
+        """
+        computes and updates the quiver data for the given quiver field.
+        :param x_grid: x positions on the grid
+        :param y_grid: y positions on the grid
+        :param u_grid: x components of the arrows
+        :param v_grid: y components of the arrows
+        :param h: length of one arrow
+        :param scaling: scaling of the length w.r.t. normalization
+        :param normalize: normalize to length
+        """
         # compute quiver data
         x_grid = np.array(x_grid)
         y_grid = np.array(y_grid)
@@ -435,18 +455,14 @@ class Quiver:
             elif (len(x_grid.shape) == 2):
                 h = x_grid[0, 1] - x_grid[0, 0]
 
-        data_segments, data_patches, data_base = self.__get_quiver_data(x_grid, y_grid, u_grid, v_grid, h=h,
-                                                                        scaling=scaling, normalize=normalize)
+        data_segments, data_patches, data_base = self.__quiver_to_data(x_grid, y_grid, u_grid, v_grid,
+                                                                       h=h, do_normalization=normalize,
+                                                                       fix_at_middle=self._fix_at_middle)
         # update data on quiver plot
         self._segments.data_source.data = data_segments
         self._patches.data_source.data = data_patches
         if self._fix_at_middle:
             self._base.data_source.data = data_base
-
-    def __get_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1, scaling=.9, normalize=True):
-
-        return self.__quiver_to_data(x_grid, y_grid, u_grid, v_grid, h=h, do_normalization=normalize,
-                                     fix_at_middle=self._fix_at_middle)
 
     def __quiver_to_data(self, x, y, u, v, h, do_normalization=True, fix_at_middle=True):
         def __normalize(u, v, h):
