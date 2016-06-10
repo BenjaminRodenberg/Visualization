@@ -13,6 +13,7 @@ from scipy.optimize import minimize
 
 def quiver_to_data(x, y, u, v, h, do_normalization=True, fix_at_middle=True):
     warn("quiver to data is deprecated! Use Quiver object instead!")
+
     def __normalize(u, v, h):
         length = np.sqrt(u ** 2 + v ** 2)
         max_length = np.max(length)
@@ -265,6 +266,7 @@ class Interactor:
     adds a click interactor to a given plot. This interactor can detect, if a position in the plot is clicked on, return
     that position and call a respective callback function, if a point is clicked.
     """
+
     def __init__(self, plot, square_size=5):
         """
         :param plot: plot where the contour is plotted
@@ -321,6 +323,7 @@ class Contour:
     is plotted using bokehs multi_line function. Optionally the user can add labels to the contour data using bokehs
     text function.
     """
+
     def __init__(self, plot, add_label=False, line_color='line_color', **kwargs):
         """
         :param plot: plot where the contour is plotted
@@ -405,28 +408,45 @@ class Contour:
         data_contour_label = {'xt': xt, 'yt': yt, 'text': text}
         return data_contour, data_contour_label
 
+
 class Quiver:
     """
     adds a quiver plot to the given bokeh.Figure
     """
-    def __init__(self, plot):
-        self._plot = plot
-        self._segments = self._plot.segment('x0', 'y0', 'x1', 'y1')
-        self._patches = self._plot.patches('xs','ys')
-        self._base = self._plot.circle('x', 'y', color='blue', size=1.5)
 
-    def compute_quiver_data(self, x_grid, y_grid, u_grid, v_grid, scaling=.9, normalize=True, fix_at_middle=True):
+    def __init__(self, plot, fix_at_middle=True, **kwargs):
+        self._plot = plot
+        self._segments = self._plot.segment('x0', 'y0', 'x1', 'y1', **kwargs)
+        self._patches = self._plot.patches('xs', 'ys', **kwargs)
+        self._fix_at_middle = fix_at_middle
+        if self._fix_at_middle:
+            self._base = self._plot.circle('x', 'y', size=1.5, **kwargs)
+
+    def compute_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1, scaling=.9, normalize=True):
         # compute quiver data
-        data_segments, data_patches, data_base = self.__get_quiver_data(x_grid, y_grid, u_grid, v_grid, scaling=scaling, normalize=normalize, fix_at_middle=fix_at_middle)
+        x_grid = np.array(x_grid)
+        y_grid = np.array(y_grid)
+        u_grid = np.array(u_grid)
+        v_grid = np.array(v_grid)
+
+        if (x_grid.size > 1):
+            if (len(x_grid.shape) == 1):
+                h = x_grid[1] - x_grid[0]
+            elif (len(x_grid.shape) == 2):
+                h = x_grid[0, 1] - x_grid[0, 0]
+
+        data_segments, data_patches, data_base = self.__get_quiver_data(x_grid, y_grid, u_grid, v_grid, h=h,
+                                                                        scaling=scaling, normalize=normalize)
         # update data on quiver plot
         self._segments.data_source.data = data_segments
         self._patches.data_source.data = data_patches
-        self._base.data_source.data = data_base
+        if self._fix_at_middle:
+            self._base.data_source.data = data_base
 
-    def __get_quiver_data(self, x_grid, y_grid, u_grid, v_grid, scaling=.9, normalize=True, fix_at_middle=True):
+    def __get_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1, scaling=.9, normalize=True):
 
-        dx = x_grid[0,1]-x_grid[0,0]
-        return self.__quiver_to_data(x_grid, y_grid, u_grid, v_grid, h=scaling*dx, do_normalization=normalize, fix_at_middle=fix_at_middle)
+        return self.__quiver_to_data(x_grid, y_grid, u_grid, v_grid, h=h, do_normalization=normalize,
+                                     fix_at_middle=self._fix_at_middle)
 
     def __quiver_to_data(self, x, y, u, v, h, do_normalization=True, fix_at_middle=True):
         def __normalize(u, v, h):

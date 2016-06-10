@@ -22,6 +22,7 @@ in the browser.
 ##ToDos
 - [x] generate running prototype
 - [x] refactor code.
+- [x] Use Quiver object for gradients.
 - [ ] add some sample functions
 - [ ] add text info with function value (+feedback if min/max reached?)
 - [ ] select tapSelect, wheelZoom, Pan by default, hide toolbar & logo (activation of tools not possible with version 0.11 upcoming 0.12?)

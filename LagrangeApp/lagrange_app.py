@@ -35,8 +35,6 @@ my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 lagrange_settings = import_bokeh('lagrange_settings.py')
 
 # initialize data source
-source_isolevel_grad = ColumnDataSource(data=dict(x=[], y=[], x0=[], y0=[], x1=[], y1=[], xs=[], ys=[]))
-source_constraint_grad = ColumnDataSource(data=dict(x=[], y=[], x0=[], y0=[], x1=[], y1=[], xs=[], ys=[]))
 source_mark = ColumnDataSource(data=dict(x=[], y=[]))
 source_view = ColumnDataSource(data=dict(x_start=[lagrange_settings.x_min],
                                          x_end=[lagrange_settings.x_max],
@@ -51,19 +49,20 @@ def init_data():
     f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
     contour_f.compute_contour_data(f)
     g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
-    contour_g.compute_contour_data(g,isovalue=[0])
+    contour_g.compute_contour_data(g, isovalue=[0])
     interactor.update_to_user_view()
 
 
-def compute_gradient_data(df, x0, y0):
+def get_samples(df, x0, y0):
     """
     compues the relevant data for the gradient plot
     :param df: function to be evaluated
     :param x0: base point x
     :param y0: base point y
-    :return: a dict holding the relevant data
+    :return: samples of df on x0, y0
     """
     dfx_val, dfy_val = df(x0, y0)
+    '''
     ssdict, spdict, _ = my_bokeh_utils.quiver_to_data(x=np.array(x0),
                                                       y=np.array(y0),
                                                       u=np.array(dfx_val),
@@ -72,11 +71,8 @@ def compute_gradient_data(df, x0, y0):
                                                           0]) / 5.0,
                                                       do_normalization=True,
                                                       fix_at_middle=False)
-
-    return dict(x=[x0], y=[y0],
-                x0=ssdict['x0'], y0=ssdict['y0'],
-                x1=ssdict['x1'], y1=ssdict['y1'],
-                xs=spdict['xs'], ys=spdict['ys'])
+    '''
+    return np.array(x0), np.array(y0), np.array(dfx_val), np.array(dfy_val)
 
 
 # initialize plot
@@ -98,16 +94,14 @@ contour_f0 = my_bokeh_utils.Contour(plot, add_label=True, line_color='black', li
 # Plot constraint function contour g(x,y)=0
 contour_g = my_bokeh_utils.Contour(plot, line_color='red', line_width=2, legend='g(x,y) = 0')
 # Plot corresponding tangent vector
-plot.segment('x0', 'y0', 'x1', 'y1', line_width=2, source=source_isolevel_grad, color='black')
-plot.patches('xs', 'ys', source=source_isolevel_grad, color='black')
+quiver_isolevel = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='black')
 # Plot corresponding tangent vector
-plot.segment('x0', 'y0', 'x1', 'y1', line_width=2, source=source_constraint_grad, color='red')
-plot.patches('xs', 'ys', source=source_constraint_grad, color='red')
+quiver_constraint = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='red')
 # Plot mark at position on constraint function
 plot.cross(x='x', y='y', color='red', size=10, line_width=2, source=source_mark)
 
 
-def on_selection_change(attr,old,new):
+def on_selection_change(attr, old, new):
     """
     called if the by click selected point changes
     """
@@ -142,11 +136,14 @@ def compute_click_data():
     # update contour running through isovalue
     contour_f0.compute_contour_data(f, [isovalue])
     # save gradient data
-    source_isolevel_grad.data = compute_gradient_data(df, x_mark, y_mark)
-    source_constraint_grad.data = compute_gradient_data(dg, x_mark, y_mark)
+    h = (source_view.data['x_end'][0] - source_view.data['x_start'][0]) / 5.0
+    x, y, u, v = get_samples(df, x_mark, y_mark)
+    quiver_isolevel.compute_quiver_data(x, y, u, v, h=h, scaling=1)
+    x, y, u, v = get_samples(dg, x_mark, y_mark)
+    quiver_constraint.compute_quiver_data(x, y, u, v, h=h, scaling=1)
 
 
-def on_function_change(attr,old,new):
+def on_function_change(attr, old, new):
     """
     called if one of the input functions changes
     """
@@ -158,7 +155,7 @@ def on_function_change(attr,old,new):
         compute_click_data()
     # update contour data
     contour_f.compute_contour_data(f)
-    contour_g.compute_contour_data(g,isovalue=[0])
+    contour_g.compute_contour_data(g, isovalue=[0])
 
 
 def refresh_contour():
@@ -170,7 +167,7 @@ def refresh_contour():
         f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
         g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
 
-        if len(source_mark.data['x']) > 0: # has any point been marked?
+        if len(source_mark.data['x']) > 0:  # has any point been marked?
             compute_click_data()
 
         contour_f.compute_contour_data(f)
