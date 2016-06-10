@@ -65,6 +65,7 @@ def init_data():
     y0 = y0_input.value
     update_quiver_data(u_str, v_str)
     update_streamline_data(u_str, v_str, x0, y0)
+    interactor.update_to_user_view()
 
 
 def ode_change(attrname, old, new):
@@ -97,8 +98,7 @@ def initial_value_change(attrname, old, new):
     """
     u_str = u_input.value
     v_str = v_input.value
-    x0 = x0_input.value
-    y0 = y0_input.value
+    x0, y0 = interactor.clicked_point()
     update_streamline_data(u_str, v_str, x0, y0)
 
 
@@ -178,6 +178,14 @@ def get_samples(u_fun, v_fun):
     # evaluate ode
     u_val = u_fun(x_val, y_val)
     v_val = v_fun(x_val, y_val)
+    # detect nan values and eliminate them
+    u_val[u_val != u_val] = 0
+    v_val[v_val != v_val] = 0
+    # detect inf values and make them finite
+    u_val[u_val == np.inf] =  10**10
+    v_val[v_val == np.inf] =  10**10
+    u_val[u_val == -np.inf] = -10 ** 10
+    v_val[v_val == -np.inf] = -10 ** 10
 
     return x_val, y_val, u_val, v_val, hx
 
@@ -208,28 +216,6 @@ def critical_to_data(x_c, y_c, x_lines, y_lines):
     source_critical_lines.data = dict(x_ls=x_lines, y_ls=y_lines)
 
 
-# initialize controls
-# text input for input of the ode system [u,v] = [x',y']
-u_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][0], title="u(x,y):")
-v_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][1], title="v(x,y):")
-
-# slider input for initial value [x,y](t=0) = [x0,y0]
-x0_input = Slider(title="x0",
-                  value=odesystem_settings.x0_input_init,
-                  start=odesystem_settings.x_min,
-                  end=odesystem_settings.x_max,
-                  step=odesystem_settings.x0_step)
-y0_input = Slider(title="y0",
-                  value=odesystem_settings.y0_input_init,
-                  start=odesystem_settings.y_min,
-                  end=odesystem_settings.y_max,
-                  step=odesystem_settings.y0_step)
-
-# dropdown menu for selecting one of the sample functions
-sample_fun_input = Dropdown(label="choose a sample function pair or enter one below",
-                            menu=odesystem_settings.sample_system_names)
-
-
 def sample_fun_change(self):
     """
     called if the sample function is changed. The global variable update_callback is used to prevent triggering the
@@ -248,15 +234,22 @@ def sample_fun_change(self):
     v_input.value = sample_fun_v
 
 
-# initialize callback behaviour
-sample_fun_input.on_click(sample_fun_change)
-u_input.on_change('value', ode_change)
-v_input.on_change('value', ode_change)
-x0_input.on_change('value', initial_value_change)
-y0_input.on_change('value', initial_value_change)
+def refresh_quiver():
+    """
+    periodically called function that updates data with respect to the current user view, if the user view has changed.
+    :return:
+    """
+    user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
+    if user_view_has_changed:
+        u_str = u_input.value
+        v_str = v_input.value
+        update_quiver_data(u_str, v_str)
+        source_view.data = my_bokeh_utils.get_user_view(plot)
+        interactor.update_to_user_view()
+
 
 # initialize plot
-toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
+toolset = "crosshair,pan,reset,resize,save,wheel_zoom,tap"
 # Generate a figure container
 plot = Figure(title_text_font_size="12pt",
               plot_height=400,
@@ -282,19 +275,35 @@ plot.line('x', 'y', source=source_streamline, color='black', legend='streamline'
 plot.scatter('x', 'y', source=source_critical_pts, color='red', legend='critical pts')
 plot.multi_line('x_ls', 'y_ls', source=source_critical_lines, color='red', legend='critical lines')
 
+# initialize controls
+# text input for input of the ode system [u,v] = [x',y']
+u_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][0], title="u(x,y):")
+v_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][1], title="v(x,y):")
 
-def refresh_quiver():
-    """
-    periodically called function that updates data with respect to the current user view, if the user view has changed.
-    :return:
-    """
-    user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
-    if user_view_has_changed:
-        u_str = u_input.value
-        v_str = v_input.value
-        update_quiver_data(u_str, v_str)
-        source_view.data = my_bokeh_utils.get_user_view(plot)
+# slider input for initial value [x,y](t=0) = [x0,y0]
+x0_input = Slider(title="x0",
+                  value=odesystem_settings.x0_input_init,
+                  start=odesystem_settings.x_min,
+                  end=odesystem_settings.x_max,
+                  step=odesystem_settings.x0_step)
+y0_input = Slider(title="y0",
+                  value=odesystem_settings.y0_input_init,
+                  start=odesystem_settings.y_min,
+                  end=odesystem_settings.y_max,
+                  step=odesystem_settings.y0_step)
 
+# dropdown menu for selecting one of the sample functions
+sample_fun_input = Dropdown(label="choose a sample function pair or enter one below",
+                            menu=odesystem_settings.sample_system_names)
+
+# Interactor for entering starting point of initial condition
+interactor = my_bokeh_utils.Interactor(plot)
+
+# initialize callback behaviour
+sample_fun_input.on_click(sample_fun_change)
+u_input.on_change('value', ode_change)
+v_input.on_change('value', ode_change)
+interactor.on_click(initial_value_change)
 
 # calculate data
 init_data()
@@ -308,15 +317,7 @@ streamline_controls = VBoxForm(
     children=[VBox(width=ww,height=50),x0_input, y0_input,VBox(width=ww,height=10)],
     width=ww)
 
-# Panels for sample functions or default functions
-function_panel = Panel(child=function_controls, title='choose function')
-streamline_panel = Panel(child=streamline_controls, title='modify streamline')
-# Add panels to tabs
-tabs = VBox(
-    children=[Tabs(tabs=[function_panel, streamline_panel])],
-    width=ww)
-
 # refresh quiver field all 100ms
 curdoc().add_periodic_callback(refresh_quiver, 100)
 # make layout
-curdoc().add_root(VBoxForm(children=[HBox(children=[plot, tabs])]))
+curdoc().add_root(VBoxForm(children=[HBox(children=[plot, function_controls])]))

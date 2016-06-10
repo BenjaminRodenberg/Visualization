@@ -52,7 +52,6 @@ def do_integration(x0, y0, u, v, bounds, chaotic):
         x,y = solver.y
         sol.append([x, y])
         n_step += 1
-        print n_step
 
     sol = np.array(sol)
 
