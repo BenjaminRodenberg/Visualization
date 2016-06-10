@@ -227,7 +227,7 @@ def sample_fun_change(self):
     v_input.value = sample_fun_v
 
 
-def refresh_quiver():
+def refresh_user_view():
     """
     periodically called function that updates data with respect to the current user view, if the user view has changed.
     :return:
@@ -236,7 +236,10 @@ def refresh_quiver():
     if user_view_has_changed:
         u_str = u_input.value
         v_str = v_input.value
+        x_mark = source_initialvalue.data['x0'][0]
+        y_mark = source_initialvalue.data['y0'][0]
         update_quiver_data(u_str, v_str)
+        update_streamline_data(u_str, v_str, x_mark, y_mark)
         source_view.data = my_bokeh_utils.get_user_view(plot)
         interactor.update_to_user_view()
 
@@ -308,7 +311,7 @@ streamline_controls = VBoxForm(
     children=[VBox(width=ww,height=50),x0_input, y0_input,VBox(width=ww,height=10)],
     width=ww)
 
-# refresh quiver field all 100ms
-curdoc().add_periodic_callback(refresh_quiver, 100)
+# refresh quiver field and streamline all 100ms
+curdoc().add_periodic_callback(refresh_user_view, 100)
 # make layout
 curdoc().add_root(VBoxForm(children=[HBox(children=[plot, function_controls])]))
