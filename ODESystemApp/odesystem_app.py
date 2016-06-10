@@ -58,8 +58,8 @@ def init_data():
     """
     u_str = u_input.value
     v_str = v_input.value
-    x0 = x0_input.value
-    y0 = y0_input.value
+    x0 = odesystem_settings.x0_input_init
+    y0 = odesystem_settings.y0_input_init
     update_quiver_data(u_str, v_str)
     update_streamline_data(u_str, v_str, x0, y0)
     interactor.update_to_user_view()
@@ -79,8 +79,8 @@ def ode_change(attrname, old, new):
     if update_callback:
         u_str = u_input.value
         v_str = v_input.value
-        x0 = x0_input.value
-        y0 = y0_input.value
+        x0 = source_initialvalue.data['x0'][0]
+        y0 = source_initialvalue.data['y0'][0]
         update_quiver_data(u_str, v_str)
         update_streamline_data(u_str, v_str, x0, y0)
 
@@ -274,18 +274,6 @@ plot.multi_line('x_ls', 'y_ls', source=source_critical_lines, color='red', legen
 u_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][0], title="u(x,y):")
 v_input = TextInput(value=odesystem_settings.sample_system_functions[odesystem_settings.init_fun_key][1], title="v(x,y):")
 
-# slider input for initial value [x,y](t=0) = [x0,y0]
-x0_input = Slider(title="x0",
-                  value=odesystem_settings.x0_input_init,
-                  start=odesystem_settings.x_min,
-                  end=odesystem_settings.x_max,
-                  step=odesystem_settings.x0_step)
-y0_input = Slider(title="y0",
-                  value=odesystem_settings.y0_input_init,
-                  start=odesystem_settings.y_min,
-                  end=odesystem_settings.y_max,
-                  step=odesystem_settings.y0_step)
-
 # dropdown menu for selecting one of the sample functions
 sample_fun_input = Dropdown(label="choose a sample function pair or enter one below",
                             menu=odesystem_settings.sample_system_names)
@@ -306,9 +294,6 @@ init_data()
 ww=400
 function_controls = VBoxForm(
     children=[sample_fun_input,VBox(width=ww,height=20), u_input, v_input,VBox(width=ww,height=20)],
-    width=ww)
-streamline_controls = VBoxForm(
-    children=[VBox(width=ww,height=50),x0_input, y0_input,VBox(width=ww,height=10)],
     width=ww)
 
 # refresh quiver field and streamline all 100ms

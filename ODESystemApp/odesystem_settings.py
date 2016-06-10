@@ -46,8 +46,5 @@ resolution = (x_max - x_min) / (n_sample-1)
 # defines initial starting point of streamline
 x0_input_init=-2.0
 y0_input_init=-4.0
-# stepwidth of sliders controlling starting point of streamline
-x0_step=.1
-y0_step=.1
 #maximum number of integration steps for streamline
 streamline_integration_steps = 1000
