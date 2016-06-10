@@ -38,9 +38,6 @@ odesystem_helpers = import_bokeh('odesystem_helpers.py')
 my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 # initialize data source
-source_patches = ColumnDataSource(data=dict(xs=[], ys=[]))  # patches defining the arrow tips of the quiver plot
-source_segments = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))  # segments defining the arrow lines of the quiver plot
-source_basept = ColumnDataSource(data=dict(x=[], y=[]))  # points lying in the middle of each arrow defining the point the arrow is referring to
 source_streamline = ColumnDataSource(data=dict(x=[], y=[]))  # streamline data
 source_initialvalue = ColumnDataSource(data=dict(x0=[], y0=[]))  # initial value data (only one point)
 source_critical_pts = ColumnDataSource(data=dict(x=[], y=[]))  # critical point data (multiple points)
@@ -152,12 +149,8 @@ def update_quiver_data(u_str, v_str):
     x_c, y_c, x_lines, y_lines = odesystem_helpers.critical_points(u_sym, v_sym, get_plot_bounds(plot))
     # crating samples
     x_val, y_val, u_val, v_val, h = get_samples(u_fun, v_fun)
-    # generating quiver data and updating sources
-    ssdict, spdict, sbdict = my_bokeh_utils.quiver_to_data(x_val, y_val, u_val, v_val, h)
-    # save quiver data to respective ColumnDataSource_s
-    source_segments.data = ssdict
-    source_patches.data = spdict
-    source_basept.data = sbdict
+    # update quiver w.r.t. samples
+    quiver.compute_quiver_data(x_val, y_val, u_val, v_val, normalize=True)
     # save critical point data
     critical_to_data(x_c, y_c, x_lines, y_lines)
 
@@ -264,9 +257,7 @@ plot.grid[0].grid_line_alpha = 0.0
 plot.grid[1].grid_line_alpha = 0.0
 
 # Plot the direction field
-plot.segment('x0', 'y0', 'x1', 'y1', source=source_segments)
-plot.patches('xs', 'ys', source=source_patches)
-plot.circle('x', 'y', source=source_basept, color='blue', size=1.5)
+quiver = my_bokeh_utils.Quiver(plot)
 # Plot initial values
 plot.scatter('x0', 'y0', source=source_initialvalue, color='black', legend='(x0,y0)')
 # Plot streamline
