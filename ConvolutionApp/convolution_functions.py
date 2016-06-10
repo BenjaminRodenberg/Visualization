@@ -9,7 +9,6 @@ import numpy as np
 #==============================================================================
 # The window function
 #==============================================================================
-from sqlalchemy.dialects.postgresql.base import array
 
 
 def window(x):

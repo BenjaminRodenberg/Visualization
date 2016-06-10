@@ -14,6 +14,7 @@ in the browser.
 
 ##ToDos
 - [x] first Prototype
+- [ ] update quiver to Quiver object
 - [ ] Add sample curves and functions
 - [ ] Improve GUI
 - [ ] make app ready for **publication**

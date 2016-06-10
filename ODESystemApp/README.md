@@ -24,5 +24,7 @@ in your browser to use the app in it.
 - [x] Adjust to user's view (if function is updated)
 - [x] proper documentation
 - [x] Adjust to user's view (as often as possible in a performant way)
+- [x] Add clickable initial condition
+- [x] Change quiver plotting to use Quiver object
 - [ ] Try to improve speed
 - [ ] Add code for embedding.

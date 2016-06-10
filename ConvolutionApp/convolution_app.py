@@ -55,7 +55,7 @@ function1_input = TextInput(value=convolution_settings.function1_input_init, tit
 # text input for the second function to be convolved
 function2_input = TextInput(value=convolution_settings.function1_input_init, title="my second function:")
 
-
+# todo refactor this function!
 def update_data():
     # Get the current slider values
     x_value = x_value_input.value
@@ -86,6 +86,7 @@ def update_data():
     source_xmarker.data = dict(x=[x_value, x_value], y=[y_value, 0])
 
 
+# todo function really needed?
 def input_change(attrname, old, new):
     update_data()
 
@@ -100,6 +101,7 @@ def type_input_change(self):
     update_data()
 
 
+# todo function really needed?
 def x_input_change(attrname, old, new):
     input_change(attrname, old, new)
 

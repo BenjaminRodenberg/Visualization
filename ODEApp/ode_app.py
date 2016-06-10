@@ -41,6 +41,7 @@ solvers = RadioButtonGroup(labels=ode_settings.solver_labels, active=ode_setting
 odes = RadioButtonGroup(labels=ode_settings.odetype_labels, active=ode_settings.odetype_init)
 
 
+# todo refactor! BLOB
 def update_data(attrname, old, new):
     # default values for ODEs...
     timespan = ode_settings.max_time

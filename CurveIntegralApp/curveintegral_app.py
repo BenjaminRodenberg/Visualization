@@ -152,7 +152,7 @@ def update_integral_data(u_str, v_str, cx_str, cy_str):
 
     from scipy.integrate import odeint
 
-    integral = y=odeint(f_I,0,t)
+    integral = odeint(f_I,0,t)
 
     source_integral.data = dict(t=t.tolist(),
                                 integral=integral.tolist(),
@@ -188,9 +188,9 @@ def parameter_change(attr, old, new):
 
 def get_samples(u_fun, v_fun):
     """
-    compute sample points where the ode is evaluated.
-    :param u_fun: function handle, first component of the ode
-    :param v_fun: function handle, second component of the ode
+    compute sample points where the vector function is evaluated.
+    :param u_fun: function handle, first component of the function
+    :param v_fun: function handle, second component of the function
     :return:
     """
     # create a grid of samples
