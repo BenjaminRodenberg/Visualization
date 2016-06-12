@@ -7,7 +7,7 @@ res_y = res_x
 sq_size = 10
 
 f_init = "x ** 2 + y ** 3"
-g_init = "x ** 2 + y ** 2 - 1"
+g_init = "x ** 2 + y ** 2 - 1/4"
 
 # list defining the dropdown menu.
 # the tuples have the following meaning: (<name in dropdown menu>, <key for sample_system_functions>)
@@ -31,8 +31,8 @@ sample_functions_f = {
 }
 
 sample_functions_g = {
-    "circle":"x^2+y^2-1",
-    "ellipsis": "x^2+4*y^2-1",
-    "sin_curve": "sin(x)-y",
+    "circle":"x^2+y^2-1/4",
+    "ellipsis": "x^2+4*y^2-1/4",
+    "sin_curve": "1/2*sin(5*x)-y",
     "hyperbola": "x^2-y^2-1/4"
 }
