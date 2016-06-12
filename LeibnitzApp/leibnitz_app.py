@@ -16,6 +16,9 @@ from bokeh.io import curdoc
 
 import numpy as np
 
+global update_callback
+update_callback = True
+
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
     import imp
@@ -27,29 +30,12 @@ def import_bokeh(relative_path):
 # import local modules
 leibnitz_settings = import_bokeh('leibnitz_settings.py')
 lf = import_bokeh('leibnitz_functions.py')
-
-# initialize data source
-source_curve = ColumnDataSource(data=dict(x=[], y=[]))
-source_point = ColumnDataSource(data=dict(x=[], y=[]))
-source_sector = ColumnDataSource(data=dict(x=[], y=[]))
-source_lines = ColumnDataSource(data=dict(x_start=[], y_start=[], x_end=[], y_end=[]))
-source_text = ColumnDataSource(data=dict(area=[]))
-
-# initialize controls
-# slider controlling the current parameter t
-t_value_input = Slider(title="parameter t", name='parameter t', value=leibnitz_settings.t_value_init,
-                       start=leibnitz_settings.t_value_min, end=leibnitz_settings.t_value_max,
-                       step=leibnitz_settings.t_value_step)
-# text input for the x component of the curve
-x_component_input = TextInput(value=leibnitz_settings.x_component_input_msg, title="curve x")
-# text input for the y component of the curve
-y_component_input = TextInput(value=leibnitz_settings.y_component_input_msg, title="curve y")
-
+my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 def update_curve():
     # parse x and y component
-    f_x = lf.parser(x_component_input.value)
-    f_y = lf.parser(y_component_input.value)
+    f_x, _ = my_bokeh_utils.string_to_function_parser(x_component_input.value,['t'])
+    f_y, _ = my_bokeh_utils.string_to_function_parser(y_component_input.value,['t'])
 
     t = np.linspace(leibnitz_settings.t_value_min, leibnitz_settings.t_value_max, leibnitz_settings.resolution) # evaluation interval
 
@@ -63,10 +49,8 @@ def update_curve():
 def update_point():
     # Get the current slider value
     t0 = t_value_input.value
-    f_x_str = x_component_input.value
-    f_y_str = y_component_input.value
-    f_x = lf.parser(f_x_str)
-    f_y = lf.parser(f_y_str)
+    f_x, f_x_sym = my_bokeh_utils.string_to_function_parser(x_component_input.value, ['t'])
+    f_y, f_y_sym = my_bokeh_utils.string_to_function_parser(y_component_input.value, ['t'])
 
     t_min = leibnitz_settings.t_value_min
 
@@ -82,9 +66,7 @@ def update_point():
     x0 = f_x(t0)
     y0 = f_y(t0)
 
-    area = lf.calc_area(f_x_str, f_y_str, t0)
-
-
+    area = lf.calc_area(f_x_sym, f_y_sym, t0)
 
     # saving data to plot
     source_point.data = dict(x=[x0], y=[y0])
@@ -96,17 +78,49 @@ def update_point():
 
 
 def curve_change(attrname, old, new):
-    update_curve()
-    update_point()
+    global update_callback
+    if update_callback:
+        update_curve()
+        update_point()
+
+def sample_curve_change(self):
+    global update_callback
+    # get sample function pair (first & second component of ode)
+    sample_curve_key = sample_curve_input.value
+    sample_curve_x_component, sample_curve_y_component = leibnitz_settings.sample_curves[sample_curve_key]
+    # write new functions to u_input and v_input
+    update_callback = False  # prevent callback
+    x_component_input.value = sample_curve_x_component
+    update_callback = True  # allow callback
+    y_component_input.value = sample_curve_y_component
 
 def t_value_change(attrname, old, new):
     update_point()
 
 
-# setup events
+# initialize data source
+source_curve = ColumnDataSource(data=dict(x=[], y=[]))
+source_point = ColumnDataSource(data=dict(x=[], y=[]))
+source_sector = ColumnDataSource(data=dict(x=[], y=[]))
+source_lines = ColumnDataSource(data=dict(x_start=[], y_start=[], x_end=[], y_end=[]))
+source_text = ColumnDataSource(data=dict(area=[]))
+
+# initialize controls
+# slider controlling the current parameter t
+t_value_input = Slider(title="parameter t", name='parameter t', value=leibnitz_settings.t_value_init,
+                       start=leibnitz_settings.t_value_min, end=leibnitz_settings.t_value_max,
+                       step=leibnitz_settings.t_value_step)
 t_value_input.on_change('value', t_value_change)
+# text input for the x component of the curve
+x_component_input = TextInput(value=leibnitz_settings.x_component_input_msg, title="curve x")
 x_component_input.on_change('value', curve_change)
+# text input for the y component of the curve
+y_component_input = TextInput(value=leibnitz_settings.y_component_input_msg, title="curve y")
 y_component_input.on_change('value', curve_change)
+# dropdown menu for selecting one of the sample curves
+sample_curve_input = Dropdown(label="choose a sample function pair or enter one below",
+                              menu=leibnitz_settings.sample_curve_names)
+sample_curve_input.on_click(sample_curve_change)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
@@ -130,7 +144,7 @@ update_curve()
 update_point()
 
 # lists all the controls in our app
-controls = VBoxForm(children=[t_value_input,HBox(width=400,children=[x_component_input, y_component_input])])
+controls = VBoxForm(children=[t_value_input,sample_curve_input,HBox(width=400,children=[x_component_input, y_component_input])])
 
 # make layout
-curdoc().add_root(VBox(children=[plot, controls]))
+curdoc().add_root(HBox(children=[plot, controls]))

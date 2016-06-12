@@ -61,10 +61,10 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
 - [x] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
-- [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
+- [x] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
 - [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
-- [ ] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
+- [x] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
 
 ### Embedding
 The next task is embedding the apps, which are currently running with the Bokeh GUI into html pages. We will wait for

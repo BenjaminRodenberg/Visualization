@@ -24,7 +24,7 @@ in the browser.
 - [x] refactor code.
 - [x] Use Quiver object for gradients.
 - [x] add some sample functions
+- [x] improve layout
+- [x] make app ready for **publication**
 - [ ] add text info with function value (+feedback if min/max reached?)
 - [ ] select tapSelect, wheelZoom, Pan by default, hide toolbar & logo (activation of tools not possible with version 0.11 upcoming 0.12?)
-- [ ] improve layout
-- [ ] make app ready for **publication**

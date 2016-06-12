@@ -18,8 +18,8 @@ in the browser.
 
 - [x] add computation of area
 - [x] also write down currently computed area
-- [ ] revise first draft
-- [ ] make app ready for **publication**
+- [x] revise first draft
+- [x] add some nice default examples (can be chosen with dropdown)
+- [x] make app ready for **publication**
 - [ ] add advanced controls (custom parameter range)
 - [ ] proper documentation
-- [ ] add some nice default examples (can be chosen with dropdown)
