@@ -75,32 +75,6 @@ def get_samples(df, x0, y0):
     return np.array(x0), np.array(y0), np.array(dfx_val), np.array(dfy_val)
 
 
-# initialize plot
-toolset = ["crosshair,pan,reset,resize,save,wheel_zoom,tap"]
-# Generate a figure container for the field
-plot = Figure(title_text_font_size="12pt",
-              plot_height=lagrange_settings.res_x,
-              plot_width=lagrange_settings.res_y,
-              tools=toolset,
-              title="Vector valued function",
-              x_range=[lagrange_settings.x_min, lagrange_settings.x_max],
-              y_range=[lagrange_settings.y_min, lagrange_settings.y_max]
-              )
-
-# Plot contour of f(x,y)
-contour_f = my_bokeh_utils.Contour(plot, line_color='grey', line_width=1)
-# Plot active isolevel f(x,y)=v
-contour_f0 = my_bokeh_utils.Contour(plot, add_label=True, line_color='black', line_width=2, legend='f(x,y) = v')
-# Plot constraint function contour g(x,y)=0
-contour_g = my_bokeh_utils.Contour(plot, line_color='red', line_width=2, legend='g(x,y) = 0')
-# Plot corresponding tangent vector
-quiver_isolevel = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='black')
-# Plot corresponding tangent vector
-quiver_constraint = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='red')
-# Plot mark at position on constraint function
-plot.cross(x='x', y='y', color='red', size=10, line_width=2, source=source_mark)
-
-
 def on_selection_change(attr, old, new):
     """
     called if the by click selected point changes
@@ -143,18 +117,53 @@ def compute_click_data():
     quiver_constraint.compute_quiver_data(x, y, u, v, h=h, scaling=1)
 
 
-def on_function_change(attr, old, new):
+def sample_fun_input_f_changed(self):
     """
-    called if one of the input functions changes
+    called if the sample function is changed.
+    :param self:
+    :return:
+    """
+    sample_fun_key = sample_fun_input_f.value
+    sample_fun_f = lagrange_settings.sample_functions_f[sample_fun_key]
+    # write new functions to f_input, this triggers the callback of f_input
+    f_input.value = sample_fun_f
+
+
+def sample_fun_input_g_changed(self):
+    """
+    called if the sample function is changed.
+    :param self:
+    :return:
+    """
+    sample_fun_key = sample_fun_input_g.value
+    sample_fun_g = lagrange_settings.sample_functions_g[sample_fun_key]
+    # write new functions to g_input, this triggers the callback of f_input
+    g_input.value = sample_fun_g
+
+
+def f_changed(attr, old, new):
+    """
+    called if f input function changes
     """
     # get new functions
     f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
-    g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
     # has any point been marked?
     if len(source_mark.data['x']) > 0:
         compute_click_data()
     # update contour data
     contour_f.compute_contour_data(f)
+
+
+def g_changed(attr, old, new):
+    """
+    called if g input function changes
+    """
+    # get new functions
+    g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
+    # has any point been marked?
+    if len(source_mark.data['x']) > 0:
+        compute_click_data()
+    # update contour data
     contour_g.compute_contour_data(g, isovalue=[0])
 
 
@@ -176,6 +185,30 @@ def refresh_contour():
         source_view.data = my_bokeh_utils.get_user_view(plot)
 
 
+# initialize plot
+toolset = ["crosshair,pan,reset,resize,save,wheel_zoom,tap"]
+# Generate a figure container for the field
+plot = Figure(title_text_font_size="12pt",
+              plot_height=lagrange_settings.res_x,
+              plot_width=lagrange_settings.res_y,
+              tools=toolset,
+              title="Optimization with side condition",
+              x_range=[lagrange_settings.x_min, lagrange_settings.x_max],
+              y_range=[lagrange_settings.y_min, lagrange_settings.y_max])
+
+# Plot contour of f(x,y)
+contour_f = my_bokeh_utils.Contour(plot, line_color='grey', line_width=1)
+# Plot active isolevel f(x,y)=v
+contour_f0 = my_bokeh_utils.Contour(plot, add_label=True, line_color='black', line_width=2, legend='f(x,y) = v')
+# Plot constraint function contour g(x,y)=0
+contour_g = my_bokeh_utils.Contour(plot, line_color='red', line_width=2, legend='g(x,y) = 0')
+# Plot corresponding tangent vector
+quiver_isolevel = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='black')
+# Plot corresponding tangent vector
+quiver_constraint = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='red')
+# Plot mark at position on constraint function
+plot.cross(x='x', y='y', color='red', size=10, line_width=2, source=source_mark)
+
 # object that detects, if a position in the plot is clicked on
 interactor = my_bokeh_utils.Interactor(plot)
 # adds callback function to interactor, if position in plot is clicked, call on_selection_change
@@ -183,11 +216,21 @@ interactor.on_click(on_selection_change)
 
 # text input window for objective function f(x,y) to be optimized
 f_input = TextInput(value=lagrange_settings.f_init, title="f(x,y):")
-f_input.on_change('value', on_function_change)
+f_input.on_change('value', f_changed)
+
+# dropdown menu for selecting one of the sample functions
+sample_fun_input_f = Dropdown(label="choose a sample function f(x,y) or enter one below",
+                              menu=lagrange_settings.sample_f_names)
+sample_fun_input_f.on_click(sample_fun_input_f_changed)
 
 # text input window for side condition g(x,y)=0
 g_input = TextInput(value=lagrange_settings.g_init, title="g(x,y):")
-g_input.on_change('value', on_function_change)
+g_input.on_change('value', g_changed)
+
+# dropdown menu for selecting one of the sample functions
+sample_fun_input_g = Dropdown(label="choose a sample function g(x,y) or enter one below",
+                              menu=lagrange_settings.sample_g_names)
+sample_fun_input_g.on_click(sample_fun_input_g_changed)
 
 # calculate data
 init_data()
@@ -195,4 +238,7 @@ init_data()
 # refresh quiver field all 100ms
 curdoc().add_periodic_callback(refresh_contour, 100)
 # make layout
-curdoc().add_root(VBoxForm(children=[HBox(children=[plot, VBox(children=[f_input, g_input])])]))
+curdoc().add_root(VBoxForm(children=[HBox(children=[plot, VBox(children=[sample_fun_input_f,
+                                                                         f_input,
+                                                                         sample_fun_input_g,
+                                                                         g_input])])]))
