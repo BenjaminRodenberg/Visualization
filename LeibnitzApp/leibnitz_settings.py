@@ -20,17 +20,17 @@ resolution = 100
 sample_curve_names = [
     ("circle", "circle"),
     ("shifted circle", "shift_circle"),
-    ("kardioide", "kardioide"),
-    ("zycloide", "zycloide")
+    ("cardioid", "cardioid"),
+    ("cycloid", "cycloid")
 ]
 
 sample_curves = {
     "circle": ("sin(2*pi*t)", "cos(2*pi*t)"),
     "shift_circle": ("1+sin(2*pi*t)", "1+cos(2*pi*t)"),
-    "kardioide": ("cos(2*pi*t)*(1+cos(2*pi*t))", "sin(2*pi*t)*(1+cos(2*pi*t))"),
-    "zycloide": ("1/5*(8*pi*t-sin(8*pi*t))", "1/5*(1-cos(8*pi*t))")
+    "cardioid": ("cos(2*pi*t)*(1+cos(2*pi*t))", "sin(2*pi*t)*(1+cos(2*pi*t))"),
+    "cycloid": ("1/5*(8*pi*t-sin(8*pi*t))", "1/5*(1-cos(8*pi*t))")
 }
 
 # function input
-x_component_input_msg = sample_curves["kardioide"][0]
-y_component_input_msg = sample_curves["kardioide"][1]
+x_component_input_msg = sample_curves["cardioid"][0]
+y_component_input_msg = sample_curves["cardioid"][1]
