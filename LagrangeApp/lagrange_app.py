@@ -238,7 +238,16 @@ init_data()
 # refresh quiver field all 100ms
 curdoc().add_periodic_callback(refresh_contour, 100)
 # make layout
-curdoc().add_root(VBoxForm(children=[HBox(children=[plot, VBox(children=[sample_fun_input_f,
-                                                                         f_input,
-                                                                         sample_fun_input_g,
-                                                                         g_input])])]))
+curdoc().add_root(VBoxForm(children=[HBox(children=[plot,
+                                                    VBox(children=[VBox(height=50),
+                                                                   VBox(children=[sample_fun_input_f,
+                                                                                 VBox(height=10),
+                                                                                  f_input]),
+                                                                   VBox(height=50),
+                                                                   VBox(children=[sample_fun_input_g,
+                                                                                  VBox(height=10),
+                                                                                  g_input])
+                                                                   ])
+                                                    ])
+                                     ])
+                  )
