@@ -148,7 +148,7 @@ def f_changed(attr, old, new):
     # get new functions
     f, _ = my_bokeh_utils.string_to_function_parser(f_input.value, ['x', 'y'])
     # has any point been marked?
-    if len(source_mark.data['x']) > 0:
+    if len(source_mark.data['x']) > 0: # projected point does not change, just recompute isocontour on f
         compute_click_data()
     # update contour data
     contour_f.compute_contour_data(f)
@@ -161,8 +161,8 @@ def g_changed(attr, old, new):
     # get new functions
     g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
     # has any point been marked?
-    if len(source_mark.data['x']) > 0:
-        compute_click_data()
+    if len(source_mark.data['x']) > 0: # use clicked on point to recompute projection and recomput isocontour on f
+        on_selection_change(None,None,None)
     # update contour data
     contour_g.compute_contour_data(g, isovalue=[0])
 
