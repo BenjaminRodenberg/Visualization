@@ -32,5 +32,5 @@ sample_curves = {
 }
 
 # function input
-x_component_input_msg = sample_curves["kartioide"][0]
-y_component_input_msg = sample_curves["kartioide"][1]
+x_component_input_msg = sample_curves["kardioide"][0]
+y_component_input_msg = sample_curves["kardioide"][1]
