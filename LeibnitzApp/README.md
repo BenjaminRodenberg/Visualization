@@ -21,5 +21,6 @@ in the browser.
 - [x] revise first draft
 - [x] add some nice default examples (can be chosen with dropdown)
 - [x] make app ready for **publication**
+- [ ] add support for dynamic user view update
 - [ ] add advanced controls (custom parameter range)
 - [ ] proper documentation

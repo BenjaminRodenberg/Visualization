@@ -18,6 +18,7 @@ in your browser to use the app in it.
 - [x] Add analytical solution
 - [x] Modify App to support non-homogeneous Dirichlet BC in the analytical solution
 - [ ] proper documentation
+- [ ] Add automatic refresh on zooming
 - [ ] Add symplectic integrator (e.g. Leapfrog)
 - [ ] Add "PLAY" button for continuous time.
 - [ ] Add code for embedding.
