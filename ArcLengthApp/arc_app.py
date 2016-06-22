@@ -9,12 +9,15 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, HBox, Dropdown, TextInput
+from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, HBox, Dropdown, TextInput, CheckboxGroup
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
 import numpy as np
+
+global update_callback
+update_callback = True
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
@@ -30,13 +33,22 @@ arc_functions = import_bokeh('arc_functions.py')
 
 # initialize data source
 source_curve = ColumnDataSource(data=dict(x=[], y=[]))
-source_point = ColumnDataSource(data=dict(x=[], y=[]))
-source_patches = ColumnDataSource(data=dict(xs=[], ys=[]))
-source_segments = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
+
+# plotting for normal parametrization
+source_point_normal = ColumnDataSource(data=dict(x=[], y=[]))
+source_patches_normal = ColumnDataSource(data=dict(xs=[], ys=[]))
+source_segments_normal = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
+
+# plotting for arc length parametrization
+source_point_arc = ColumnDataSource(data=dict(x=[], y=[]))
+source_patches_arc = ColumnDataSource(data=dict(xs=[], ys=[]))
+source_segments_arc = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
 
 # initialize controls
 # choose between original and arc length parametrization
-parametrization_input = RadioButtonGroup(labels=['original','arc length'],active=0)
+parametrization_input = CheckboxGroup(labels=['show original parametrization',
+                                              'show arc length parametrization'],
+                                      active=[0,1])
 # slider controlling the current parameter t
 t_value_input = Slider(title="parameter t", name='parameter t', value=arc_settings.t_value_init,
                        start=arc_settings.t_value_min, end=arc_settings.t_value_max,
@@ -45,6 +57,9 @@ t_value_input = Slider(title="parameter t", name='parameter t', value=arc_settin
 x_component_input = TextInput(value=arc_settings.x_component_input_msg, title="curve x")
 # text input for the y component of the curve
 y_component_input = TextInput(value=arc_settings.y_component_input_msg, title="curve y")
+# dropdown menu for selecting one of the sample curves
+sample_curve_input = Dropdown(label="choose a sample function pair or enter one below",
+                              menu=arc_settings.sample_curve_names)
 
 
 def update_curve():
@@ -88,9 +103,19 @@ def get_parameter(parametrization_type):
 
     return t0
 
-def update_point():
-    # Get the current slider value
-    parametrization_type = parametrization_input.active
+
+def update_points():
+    source_point_normal.data = dict(x=[], y=[])
+    source_point_arc.data = dict(x=[], y=[])
+    for i in parametrization_input.active:
+        if i == 0:
+            source_point_normal.data = update_point(0)
+        elif i == 1:
+            source_point_arc.data = update_point(1)
+
+
+def update_point(parametrization_type):
+
     t0 = get_parameter(parametrization_type)
 
     f_x_str = x_component_input.value
@@ -101,12 +126,22 @@ def update_point():
     x0 = f_x(t0)
     y0 = f_y(t0)
 
-    # saving data to plot
-    source_point.data = dict(x=[x0], y=[y0])
+    point_dict = dict(x=[x0], y=[y0])
+
+    return point_dict
 
 
-def update_tangent():
-    parametrization_type = parametrization_input.active
+def update_tangents():
+    source_segments_normal.data, source_patches_normal.data = dict(xs=[], ys=[]), dict(x0=[], y0=[], x1=[], y1=[])
+    source_segments_arc.data, source_patches_arc.data = dict(xs=[], ys=[]), dict(x0=[], y0=[], x1=[], y1=[])
+    for i in parametrization_input.active:
+        if i == 0:
+            source_segments_normal.data, source_patches_normal.data = update_tangent(0)
+        elif i == 1:
+            source_segments_arc.data, source_patches_arc.data = update_tangent(1)
+
+
+def update_tangent(parametrization_type):
     t0 = get_parameter(parametrization_type)
 
     f_x_str = x_component_input.value
@@ -119,22 +154,35 @@ def update_tangent():
 
     segments, patches = arc_functions.calculate_arrow_data(x,y,u,v)
 
-    source_segments.data = segments
-    source_patches.data = patches
+    return segments, patches
+
+
+def sample_curve_change(self):
+    global update_callback
+    # get sample function pair (first & second component of ode)
+    sample_curve_key = sample_curve_input.value
+    sample_curve_x_component, sample_curve_y_component = arc_settings.sample_curves[sample_curve_key]
+    # write new functions to u_input and v_input
+    update_callback = False  # prevent callback
+    x_component_input.value = sample_curve_x_component
+    update_callback = True  # allow callback
+    y_component_input.value = sample_curve_y_component
 
 
 def curve_change(attrname, old, new):
-    update_curve()
-    update_point()
-    update_tangent()
+    global update_callback
+    if update_callback:
+        update_curve()
+        update_points()
+        update_tangents()
 
 def t_value_change(attrname, old, new):
-    update_point()
-    update_tangent()
+    update_points()
+    update_tangents()
 
 def parametrization_change(self):
-    update_point()
-    update_tangent()
+    update_points()
+    update_tangents()
 
 
 # setup events
@@ -142,6 +190,7 @@ t_value_input.on_change('value', t_value_change)
 x_component_input.on_change('value', curve_change)
 y_component_input.on_change('value', curve_change)
 parametrization_input.on_click(parametrization_change)
+sample_curve_input.on_click(sample_curve_change)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
@@ -153,19 +202,22 @@ plot = Figure(title_text_font_size="12pt", plot_height=400, plot_width=400, tool
 
 # Plot the line by the x,y values in the source property
 plot.line('x', 'y', source=source_curve, line_width=3, line_alpha=1, color='black', legend='curve')
-plot.scatter('x', 'y', source=source_point, color='blue', legend='point at t')
-
-# Plot Tangent
-plot.segment('x0', 'y0', 'x1', 'y1', source=source_segments)
-plot.patches('xs', 'ys', source=source_patches)
+# Plots related to normal length parametrization
+plot.scatter('x', 'y', source=source_point_normal, color='blue', legend='original parametrization')
+plot.segment('x0', 'y0', 'x1', 'y1', color='blue', source=source_segments_normal)
+plot.patches('xs', 'ys', color='blue', source=source_patches_normal)
+# Plots related to arc length parametrization
+plot.scatter('x', 'y', source=source_point_arc, color='red', legend='arc length parametrization')
+plot.segment('x0', 'y0', 'x1', 'y1', color='red', source=source_segments_arc)
+plot.patches('xs', 'ys', color='red', source=source_patches_arc)
 
 # calculate data
 update_curve()
-update_point()
-update_tangent()
+update_points()
+update_tangents()
 
 # lists all the controls in our app
-controls = VBoxForm(children=[parametrization_input,t_value_input,HBox(width=400,children=[x_component_input, y_component_input])])
+controls = VBoxForm(children=[parametrization_input,t_value_input,sample_curve_input,HBox(width=400,children=[x_component_input, y_component_input])])
 
 # make layout
 curdoc().add_root(VBox(children=[plot, controls]))
