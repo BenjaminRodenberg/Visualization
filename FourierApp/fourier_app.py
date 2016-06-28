@@ -3,7 +3,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import VBox, HBox, Slider, RadioButtonGroup, TextInput, Panel, Tabs, DateRangeSlider
+from bokeh.models.widgets import VBox, HBox, Slider, RadioButtonGroup, TextInput, Panel, Tabs
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc

@@ -21,4 +21,5 @@ in the browser.
 - [x] add support for dynamic user view update
 - [x] Add quiver field to ode app?
 - [x] proper documentation
+- [ ] Add Leapfrog for oszi, exclude for others! [here](https://de.wikipedia.org/wiki/Leapfrog-Verfahren#Darstellung_als_Mehrschrittverfahren)
 - [ ] Add code for embedding.

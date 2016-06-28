@@ -19,6 +19,7 @@ import numpy as np
 global update_callback
 update_callback = True
 
+
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
     import imp
@@ -32,12 +33,14 @@ leibnitz_settings = import_bokeh('leibnitz_settings.py')
 lf = import_bokeh('leibnitz_functions.py')
 my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
+
 def update_curve():
     # parse x and y component
-    f_x, _ = my_bokeh_utils.string_to_function_parser(x_component_input.value,['t'])
-    f_y, _ = my_bokeh_utils.string_to_function_parser(y_component_input.value,['t'])
+    f_x, _ = my_bokeh_utils.string_to_function_parser(x_component_input.value, ['t'])
+    f_y, _ = my_bokeh_utils.string_to_function_parser(y_component_input.value, ['t'])
 
-    t = np.linspace(leibnitz_settings.t_value_min, leibnitz_settings.t_value_max, leibnitz_settings.resolution) # evaluation interval
+    t = np.linspace(leibnitz_settings.t_value_min, leibnitz_settings.t_value_max,
+                    leibnitz_settings.resolution)  # evaluation interval
 
     x = f_x(t)
     y = f_y(t)
@@ -54,7 +57,7 @@ def update_point():
 
     t_min = leibnitz_settings.t_value_min
 
-    t = np.linspace(t_min , t0,
+    t = np.linspace(t_min, t0,
                     leibnitz_settings.resolution)  # evaluation interval
 
     x = f_x(t)
@@ -70,11 +73,11 @@ def update_point():
 
     # saving data to plot
     source_point.data = dict(x=[x0], y=[y0])
-    source_sector.data = dict(x=x,y=y)
-    source_lines.data = dict(x_start=[0,f_x(t_min)], y_start=[0,f_y(t_min)],
-                             x_end = [0,f_x(t0)], y_end=[0,f_y(t0)])
-    source_text.data = dict(x=[f_x(t0)],y=[f_y(t0)],
-                            text=[str(round(area,2))],text_color=['blue'])
+    source_sector.data = dict(x=x, y=y)
+    source_lines.data = dict(x_start=[0, f_x(t_min)], y_start=[0, f_y(t_min)],
+                             x_end=[0, f_x(t0)], y_end=[0, f_y(t0)])
+    source_text.data = dict(x=[f_x(t0)], y=[f_y(t0)],
+                            text=[str(round(area, 2))], text_color=['blue'])
 
 
 def curve_change(attrname, old, new):
@@ -82,6 +85,7 @@ def curve_change(attrname, old, new):
     if update_callback:
         update_curve()
         update_point()
+
 
 def sample_curve_change(self):
     global update_callback
@@ -93,6 +97,7 @@ def sample_curve_change(self):
     x_component_input.value = sample_curve_x_component
     update_callback = True  # allow callback
     y_component_input.value = sample_curve_y_component
+
 
 def t_value_change(attrname, old, new):
     update_point()
@@ -133,18 +138,19 @@ plot = Figure(title_text_font_size="12pt", plot_height=400, plot_width=400, tool
 # Plot the line by the x,y values in the source property
 plot.line('x', 'y', source=source_curve, line_width=3, line_alpha=1, color='black', legend='curve')
 plot.scatter('x', 'y', source=source_point, color='blue', legend='point at t')
-plot.scatter([0],[0], color='black', marker='x')
+plot.scatter([0], [0], color='black', marker='x')
 pat = plot.patch('x', 'y', source=source_sector, fill_color='blue', fill_alpha=.2, legend='area')
 plot.line('x_start', 'y_start', source=source_lines, line_width=1, line_alpha=1, color='blue')
 plot.line('x_end', 'y_end', source=source_lines, line_width=1, line_alpha=1, color='blue')
-plot.text('x','y',text='text',text_color='text_color',source=source_text)
+plot.text('x', 'y', text='text', text_color='text_color', source=source_text)
 
 # calculate data
 update_curve()
 update_point()
 
 # lists all the controls in our app
-controls = VBoxForm(children=[t_value_input,sample_curve_input,HBox(width=400,children=[x_component_input, y_component_input])])
+controls = VBoxForm(
+    children=[t_value_input, sample_curve_input, HBox(width=400, children=[x_component_input, y_component_input])])
 
 # make layout
 curdoc().add_root(HBox(children=[plot, controls]))

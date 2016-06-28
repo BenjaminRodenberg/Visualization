@@ -14,7 +14,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, HBox, TextInput, Panel, Tabs, Dropdown, VBoxForm, VBox
+from bokeh.models.widgets import HBox, TextInput, Dropdown, VBoxForm, VBox
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
