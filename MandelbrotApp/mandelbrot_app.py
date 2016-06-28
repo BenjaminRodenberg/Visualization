@@ -3,8 +3,8 @@ from __future__ import division
 import logging
 import numpy as np
 
-from bokeh.models.widgets import VBox, Slider
-from bokeh.models import ColumnDataSource, PrintfTickFormatter
+from bokeh.models.widgets import Slider
+from bokeh.models import ColumnDataSource, PrintfTickFormatter, VBox
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 

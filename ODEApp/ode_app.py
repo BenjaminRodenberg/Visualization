@@ -7,8 +7,8 @@ Created on Sat Jul 11 22:04:14 2015
 import logging
 import numpy as np
 
-from bokeh.models.widgets import HBox, VBox, Slider, RadioButtonGroup
-from bokeh.models import ColumnDataSource
+from bokeh.models.widgets import Slider, RadioButtonGroup
+from bokeh.models import ColumnDataSource, HBox, VBox
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 

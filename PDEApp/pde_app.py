@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import numpy as np
 
-from bokeh.models.widgets import HBox, Slider, RadioButtonGroup, VBoxForm, TextInput
-from bokeh.models import ColumnDataSource
+from bokeh.models.widgets import Slider, RadioButtonGroup, TextInput
+from bokeh.models import ColumnDataSource, HBox, VBoxForm
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
