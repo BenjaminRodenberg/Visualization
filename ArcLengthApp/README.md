@@ -4,5 +4,5 @@ App, that visualizes the difference of a curve with arbitrary vs. arc length par
 
 - [x] change dropdown menu for parametrization type to checkboxes. Allows for better comparison, if normal parametrization is red and arc length blue. Let both parametrizations evolve simultanously.
 - [x] add some sample functions
+- [x] make app ready for **publication**
 - [ ] add support for dynamic user view update
-- [ ] make app ready for **publication**

@@ -9,7 +9,8 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, HBox, Dropdown, TextInput, CheckboxGroup
+from bokeh.models.widgets import VBox, Slider, RadioButtonGroup, VBoxForm, HBox, Dropdown, TextInput, CheckboxGroup, \
+    Panel, Tabs
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
@@ -18,6 +19,7 @@ import numpy as np
 
 global update_callback
 update_callback = True
+
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
@@ -48,7 +50,7 @@ source_segments_arc = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
 # choose between original and arc length parametrization
 parametrization_input = CheckboxGroup(labels=['show original parametrization',
                                               'show arc length parametrization'],
-                                      active=[0,1])
+                                      active=[0, 1])
 # slider controlling the current parameter t
 t_value_input = Slider(title="parameter t", name='parameter t', value=arc_settings.t_value_init,
                        start=arc_settings.t_value_min, end=arc_settings.t_value_max,
@@ -67,7 +69,7 @@ def update_curve():
     f_x = arc_functions.parser(x_component_input.value)
     f_y = arc_functions.parser(y_component_input.value)
 
-    t = np.linspace(arc_settings.t_value_min, arc_settings.t_value_max, arc_settings.resolution) # evaluation interval
+    t = np.linspace(arc_settings.t_value_min, arc_settings.t_value_max, arc_settings.resolution)  # evaluation interval
 
     x = f_x(t)
     y = f_y(t)
@@ -77,10 +79,10 @@ def update_curve():
 
 
 def get_parameter(parametrization_type):
-    if parametrization_type == 0: # normal parametrization
+    if parametrization_type == 0:  # normal parametrization
         # Get the current slider value
         t0 = t_value_input.value
-    elif parametrization_type == 1: # arc length parametrization
+    elif parametrization_type == 1:  # arc length parametrization
         f_x_str = x_component_input.value
         f_y_str = y_component_input.value
         f_x_sym = arc_functions.sym_parser(f_x_str)
@@ -93,13 +95,13 @@ def get_parameter(parametrization_type):
         df_x = lambdify(t, df_x_sym, ['numpy'])
         df_y = lambdify(t, df_y_sym, ['numpy'])
         # compute arc length
-        arc_length = arc_functions.arclength(df_x,df_y,arc_settings.t_value_max)
+        arc_length = arc_functions.arclength(df_x, df_y, arc_settings.t_value_max)
         # map input interval [t_value_min,t_value_max] to [0,arc_length]
-        width_t = (arc_settings.t_value_max-arc_settings.t_value_min)
-        t_fraction = (t_value_input.value - arc_settings.t_value_min)/ width_t
+        width_t = (arc_settings.t_value_max - arc_settings.t_value_min)
+        t_fraction = (t_value_input.value - arc_settings.t_value_min) / width_t
         t_arc_length = t_fraction * arc_length
         # compute corresponding value on original parametrization
-        t0 = arc_functions.s_inverse(df_x,df_y,t_arc_length)
+        t0 = arc_functions.s_inverse(df_x, df_y, t_arc_length)
 
     return t0
 
@@ -115,7 +117,6 @@ def update_points():
 
 
 def update_point(parametrization_type):
-
     t0 = get_parameter(parametrization_type)
 
     f_x_str = x_component_input.value
@@ -147,12 +148,12 @@ def update_tangent(parametrization_type):
     f_x_str = x_component_input.value
     f_y_str = y_component_input.value
 
-    x,y,u,v = arc_functions.calculate_tangent(f_x_str, f_y_str, t0)
+    x, y, u, v = arc_functions.calculate_tangent(f_x_str, f_y_str, t0)
 
-    if parametrization_type == 1: # arc length parametrization
-        u,v = arc_functions.normalize(u,v)
+    if parametrization_type == 1:  # arc length parametrization
+        u, v = arc_functions.normalize(u, v)
 
-    segments, patches = arc_functions.calculate_arrow_data(x,y,u,v)
+    segments, patches = arc_functions.calculate_arrow_data(x, y, u, v)
 
     return segments, patches
 
@@ -176,9 +177,11 @@ def curve_change(attrname, old, new):
         update_points()
         update_tangents()
 
+
 def t_value_change(attrname, old, new):
     update_points()
     update_tangents()
+
 
 def parametrization_change(self):
     update_points()
@@ -217,7 +220,23 @@ update_points()
 update_tangents()
 
 # lists all the controls in our app
-controls = VBoxForm(children=[parametrization_input,t_value_input,sample_curve_input,HBox(width=400,children=[x_component_input, y_component_input])])
+parametrization_panel = Panel(child=VBox(children=[parametrization_input,
+                                                   t_value_input]),
+                              title='Parametrization')
+
+curve_panel = Panel(child=VBox(children=[sample_curve_input,
+                                         HBox(width=400,
+                                              children=[x_component_input,
+                                                        y_component_input])]),
+title = 'Curve')
+
+controls = Tabs(tabs=[parametrization_panel, curve_panel])
 
 # make layout
-curdoc().add_root(VBox(children=[plot, controls]))
+curdoc().add_root(HBox(children=[plot, VBox(children=[Tabs(tabs=[curve_panel]),
+                                                      Tabs(tabs=[parametrization_panel])
+                                                      ]
+                                            )
+                                 ]
+                       )
+                  )
