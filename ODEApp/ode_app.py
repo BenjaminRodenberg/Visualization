@@ -12,21 +12,30 @@ from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
+
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
 def import_bokeh(relative_path):
     import imp
     import os
     app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir+'/'+relative_path)
+    return imp.load_source('', app_root_dir + '/' + relative_path)
+
+
 # import local modules
 ode_fun = import_bokeh('ode_functions.py')
 ode_settings = import_bokeh('ode_settings.py')
+my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 logging.basicConfig(level=logging.DEBUG)
 
 # initialize data source
 source_num = ColumnDataSource(data=dict(t_num=[], x_num=[]))
 source_ref = ColumnDataSource(data=dict(t_ref=[], x_ref=[]))
+source_view = ColumnDataSource(data=dict(x_start=[ode_settings.min_time],
+                                         y_start=[ode_settings.min_y],
+                                         x_end=[ode_settings.max_time],
+                                         y_end=[ode_settings.max_y],
+                                         ))
 
 # initialize controls
 # slider controlling stepsize of the solver
@@ -41,47 +50,62 @@ solvers = RadioButtonGroup(labels=ode_settings.solver_labels, active=ode_setting
 odes = RadioButtonGroup(labels=ode_settings.odetype_labels, active=ode_settings.odetype_init)
 
 
-# todo refactor! BLOB
-def update_data(attrname, old, new):
-    # default values for ODEs...
-    timespan = ode_settings.max_time
-    # available ODEs
-    ode_library = ode_settings.ode_library
-    # respective reference solutions
-    ref_library = ode_settings.ref_library
-    # available solvers
-    solver_library = ode_settings.solver_library
+def compute_numerical_solution(ode_id, solver_id, x0, h):
+    # get solver to be used
+    solver = ode_settings.solver_library[solver_id]
+    # get ode function handle
+    ode = ode_settings.ode_library[ode_id]
 
-    # Get the current slider values
-    h = stepsize.value
-    x0 = startvalue.value
-    solver = solver_library[solvers.active]
-    ode = ode_library[odes.active]
-    ref = ref_library[odes.active]
-
-    if odes.active == 3:
-        x0 = np.array([x0,0])
+    if odes.active == 3:  # special treatment for oszillator ode. Adding second component equal to zero.
+        x0 = np.array([x0, 0])
     else:
         x0 = np.array([x0])
 
-    # solve ode with numerical scheme
-    [t_num, x_num] = solver(ode, x0, h, timespan)
-    [t_ref, x_ref] = ode_fun.ref_sol(ref, x0, timespan)
-    # save data
-    x_num = x_num[0,:] # only take first line of solutions
+    t1 = source_view.data['x_end'][0]
+
+    [t_num, x_num] = solver(ode, x0, h, t1)
+
+    x_num = x_num[0, :]  # only take first line of solutions
     x_num = x_num.tolist()
     t_num = t_num.tolist()
+
+    return dict(x_num=x_num, t_num=t_num)
+
+
+def compute_reference_solution(ode_id, x0):
+    # get reference solution function handle
+    ref = ode_settings.ref_library[ode_id]
+
+    t1 = source_view.data['x_end'][0]
+    t0 = max([source_view.data['x_start'][0], 0])
+
+    [t_ref, x_ref] = ode_fun.ref_sol(ref, x0, t_min=t0, t_max=t1, n_samples=1000)
+
     x_ref = x_ref.tolist()
     t_ref = t_ref.tolist()
-    # save lists to data sources
-    source_num.data = dict(x_num=x_num, t_num=t_num)
-    source_ref.data = dict(x_ref=x_ref, t_ref=t_ref)
 
-    print "data was updated with parameters: h=" + str(h) + " and x0=" + str(x0)
+    return dict(x_ref=x_ref, t_ref=t_ref)
+
+
+def update_data(attrname, old, new):
+    # update data sources
+    source_num.data = compute_numerical_solution(odes.active, solvers.active, startvalue.value, stepsize.value)
+    source_ref.data = compute_reference_solution(odes.active, startvalue.value)
 
 
 def init_data():
     update_data(None, None, None)
+
+
+def refresh_user_view():
+    """
+    periodically called function that updates data with respect to the current user view, if the user view has changed.
+    :return:
+    """
+    user_view_has_changed = my_bokeh_utils.check_user_view(source_view.data, plot)
+    if user_view_has_changed:
+        source_view.data = my_bokeh_utils.get_user_view(plot)
+        update_data(None, None, None)
 
 
 # event registration
@@ -109,7 +133,7 @@ plot.line('t_num', 'x_num', source=source_num,
           color='red',
           line_dash=[4, 4]
           )
-plot.circle('t_num','x_num', source=source_num,
+plot.circle('t_num', 'x_num', source=source_num,
             color='red',
             legend='numerical solution'
             )
@@ -125,9 +149,11 @@ init_data()
 
 # lists all the controls in our app
 controls = VBox(
-    children=[VBox(height=100),stepsize, startvalue, HBox(children=[solvers],width=400), HBox(children=[odes],width=400)],
+    children=[VBox(height=100), stepsize, startvalue, HBox(children=[solvers], width=400),
+              HBox(children=[odes], width=400)],
     width=350
 )
 
+curdoc().add_periodic_callback(refresh_user_view, 100)
 # make layout
-curdoc().add_root(HBox(children=[plot, controls],width=750))
+curdoc().add_root(HBox(children=[plot, controls], width=750))

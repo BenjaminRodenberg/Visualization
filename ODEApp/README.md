@@ -18,7 +18,7 @@ in the browser.
 - [x] Add oszillator ODE
 - [x] publish this to the internet
 - [x] Update to Bokeh 0.11
-- [ ] add support for dynamic user view update
+- [x] add support for dynamic user view update
 - [ ] Add quiver field to ode app?
 - [ ] proper documentation
 - [ ] Add code for embedding.

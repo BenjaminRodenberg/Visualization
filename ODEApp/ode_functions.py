@@ -1,10 +1,12 @@
+from __future__ import division
+
 import numpy as np
 import scipy as sp
 from scipy.optimize import newton
 from scipy.optimize import fsolve
 
 
-def dahlquist(t, x, lam): # dahlquist test equation
+def dahlquist(t, x, lam):  # dahlquist test equation
     dx = lam * x
     return dx
 
@@ -38,28 +40,19 @@ def logistic_equation_ref(t, x0, k, G):
 
 
 def oscillator_equation(t, x, omega):
-    A = np.array([[0,1],[-omega**2,0]])
-    dx = np.dot(A,x)
+    A = np.array([[0, 1], [-omega ** 2, 0]])
+    dx = np.dot(A, x)
     return dx
 
 
-def oscillator_equation_ref(t, x0, omega):
-    x = x0[0]*np.exp(1j*omega*t)+ x0[1]*np.exp(-1j*omega*t)
-    return float(np.real(x))
+def oscillator_equation_ref(t, x0, omega, v0=0):
+    x = x0 * np.exp(1j * omega * t) + v0 * np.exp(-1j * omega * t)
+    return np.real(x)
 
 
-def ref_sol(f_ref,x0,timespan):
-    h = float(timespan) / 1000.0
-    n = int(np.ceil(timespan / h))
-    t_ref = np.empty(n + 1)
-    x_ref = np.empty(n + 1)
-
-    t_ref[0] = 0
-    x_ref[0] = x0[0]
-    for k in range(n):
-        t_ref[k + 1] = (k + 1) * h
-        x_ref[k + 1] = f_ref(t_ref[k + 1], x0)
-
+def ref_sol(f_ref, x0, t_min = 0, t_max = 1, n_samples = 1000):
+    t_ref = np.linspace(t_min, t_max, n_samples)
+    x_ref = f_ref(t_ref, x0)
     return t_ref, x_ref
 
 
@@ -69,11 +62,11 @@ def expl_euler(f, x0, h, timespan):
     x = np.empty([x0.shape[0], n + 1])
 
     t[0] = 0
-    x[:,0] = x0
+    x[:, 0] = x0
     for k in range(n):
-        dx = f(t[k], x[:,k])
+        dx = f(t[k], x[:, k])
         t[k + 1] = (k + 1) * h
-        x[:,k + 1] = x[:,k] + dx * h
+        x[:, k + 1] = x[:, k] + dx * h
 
     return t, x
 
