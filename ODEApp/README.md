@@ -19,6 +19,6 @@ in the browser.
 - [x] publish this to the internet
 - [x] Update to Bokeh 0.11
 - [x] add support for dynamic user view update
-- [ ] Add quiver field to ode app?
-- [ ] proper documentation
+- [x] Add quiver field to ode app?
+- [x] proper documentation
 - [ ] Add code for embedding.

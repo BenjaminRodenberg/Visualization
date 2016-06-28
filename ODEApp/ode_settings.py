@@ -13,8 +13,13 @@ min_time = 0 # DONT CHANGE THIS!
 max_y = 3.5
 min_y = -1.5
 
+# number of evaluated points for quiver field in each dimension
+n_sample = 21
+
 #plot settings
 title = "Numerical ODE Solving"
+x_res = 400
+y_res = 400
 
 #constants for dahlquist test equation
 dahlquist_lambda = -5   # parameter y'=lambda*y
@@ -35,6 +40,8 @@ ref_library = [lambda t, x0: ode_fun.dahlquist_ref(t, x0, dahlquist_lambda),
                lambda t, x0: ode_fun.logistic_equation_ref(t, x0, logistic_k, logistic_g),
                lambda t, x0: ode_fun.definition_area_ref(t, x0),
                lambda t, x0: ode_fun.oscillator_equation_ref(t,x0, oscillator_omega)]
+
+oszillator_id = 3
 
 #available solvers
 solver_library = [lambda f, x0, h, timespan: ode_fun.expl_euler(f, x0, h, timespan),

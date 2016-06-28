@@ -26,7 +26,7 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 
 ### Proper Documentation & Refactoring (state: running version with nice functionality)
 - [ ] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
-- [ ] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
+- [x] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
 - [x] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [x] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
