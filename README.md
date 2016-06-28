@@ -67,8 +67,12 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
 
 ### Embedding
-The next task is embedding the apps, which are currently running with the Bokeh GUI into html pages. We will wait for
-Bokeh version 0.12 -> templating functionality for the bokeh server will be added. See [here](http://nbviewer.jupyter.org/github/bokeh/bokeh-notebooks/blob/master/tutorial/08%20-%20server.ipynb).
+
+
+### Bokeh version 0.12 possible improvements
+- selected tools can be preset (less user interaction needed). See [here](http://bokeh.pydata.org/en/latest/docs/user_guide/tools.html#setting-the-active-tools)
+- 3D plots can be integrated. See [here](https://demo.bokehplots.com/apps/surface3d)
+- embedding the apps, which are currently running with the Bokeh GUI, into html pages. Use new templating functionality for the bokeh server will be added. See [here](http://nbviewer.jupyter.org/github/bokeh/bokeh-notebooks/blob/master/tutorial/08%20-%20server.ipynb).
 
 ### Virtual machine
 - [x] Get VM running
