@@ -29,22 +29,22 @@ def shootAlpha(alpha):
 #   time t are returned.
 #   The initial velocity, stopping criteria, step width... are hard coded!
 #==============================================================================
-    h = .001;
-    v0= 10;
+    h = .001
+    v0= 10
     
     #initial conditions 
-    rx0=0.0;
-    ry0=0.0;
-    vx0=v0*np.cos(alpha*2*np.pi/360.0);
-    vy0=v0*np.sin(alpha*2*np.pi/360.0);    
-    x=np.array([rx0,ry0,vx0,vy0]);
-    x.shape=(4,1);
-    t=np.array([0]);
+    rx0=0.0
+    ry0=0.0
+    vx0=v0*np.cos(alpha*2*np.pi/360.0)
+    vy0=v0*np.sin(alpha*2*np.pi/360.0)
+    x=np.array([rx0,ry0,vx0,vy0])
+    x.shape=(4,1)
+    t=np.array([0])
     
     while x[1,-1]>0 or x[3,-1]>0 : #has not hit ground with negative vy
-        [t,x]=explEulerStep(shootODE,t,x,h);
+        [t,x]=explEulerStep(shootODE,t,x,h)
         
-    return t,x;
+    return t,x
         
 def explEulerStep(f,t,x,h):
 #==============================================================================
