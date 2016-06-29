@@ -166,4 +166,5 @@ update_data()
 # make layout
 curdoc().add_root(layout(children=[[plot],
                                    [widgetbox(buttonShort, buttonFar)],
-                                   [widgetbox(data_table)]]))
+                                   [widgetbox(data_table)]],
+                         sizing_mode='fixed'))
