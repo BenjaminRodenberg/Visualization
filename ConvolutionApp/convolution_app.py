@@ -9,8 +9,9 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, RadioButtonGroup, Dropdown, TextInput
-from bokeh.models import ColumnDataSource, VBox, VBoxForm, HBox
+from bokeh.models.widgets import Slider, Dropdown, TextInput
+from bokeh.models import ColumnDataSource, HBox
+from bokeh.layouts import widgetbox
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -133,7 +134,7 @@ plot.patch('x', 'y_neg', source=source_overlay, fill_color='red', fill_alpha=.2)
 update_data()
 
 # lists all the controls in our app
-controls = VBoxForm(children=[VBox(height=40),x_value_input, function_type, function1_input, function2_input])
+controls = widgetbox(x_value_input, function_type, function1_input, function2_input, width=400)
 
 # make layout
 curdoc().add_root(HBox(children=[plot, controls], height=400, width=800))

@@ -10,7 +10,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from bokeh.models.widgets import Slider, Dropdown, TextInput
-from bokeh.models import ColumnDataSource, VBoxForm, HBox
+from bokeh.models import ColumnDataSource
+from bokeh.layouts import widgetbox, row, column
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -149,8 +150,7 @@ update_curve()
 update_point()
 
 # lists all the controls in our app
-controls = VBoxForm(
-    children=[t_value_input, sample_curve_input, HBox(width=400, children=[x_component_input, y_component_input])])
+controls = widgetbox(t_value_input, sample_curve_input, x_component_input, y_component_input)
 
 # make layout
-curdoc().add_root(HBox(children=[plot, controls]))
+curdoc().add_root(row(plot, controls))

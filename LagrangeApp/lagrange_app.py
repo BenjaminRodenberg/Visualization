@@ -15,7 +15,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from bokeh.models.widgets import TextInput, Dropdown
-from bokeh.models import ColumnDataSource, HBox, VBoxForm, VBox
+from bokeh.models import ColumnDataSource
+from bokeh.layouts import widgetbox, row
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -62,16 +63,6 @@ def get_samples(df, x0, y0):
     :return: samples of df on x0, y0
     """
     dfx_val, dfy_val = df(x0, y0)
-    '''
-    ssdict, spdict, _ = my_bokeh_utils.quiver_to_data(x=np.array(x0),
-                                                      y=np.array(y0),
-                                                      u=np.array(dfx_val),
-                                                      v=np.array(dfy_val),
-                                                      h=(source_view.data['x_end'][0] - source_view.data['x_start'][
-                                                          0]) / 5.0,
-                                                      do_normalization=True,
-                                                      fix_at_middle=False)
-    '''
     return np.array(x0), np.array(y0), np.array(dfx_val), np.array(dfy_val)
 
 
@@ -81,14 +72,16 @@ def on_selection_change(attr, old, new):
     """
     # detect clicked point
     x_coor, y_coor = interactor.clicked_point()
-    # get constraint function
-    g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
-    # project point onto constraint
-    x_close, y_close = my_bokeh_utils.find_closest_on_iso(x_coor, y_coor, g)
-    # save to mark
-    source_mark.data = dict(x=[x_close], y=[y_close])
-    # update influenced data
-    compute_click_data()
+
+    if x_coor is not None:
+        # get constraint function
+        g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
+        # project point onto constraint
+        x_close, y_close = my_bokeh_utils.find_closest_on_iso(x_coor, y_coor, g)
+        # save to mark
+        source_mark.data = dict(x=[x_close], y=[y_close])
+        # update influenced data
+        compute_click_data()
 
 
 def compute_click_data():
@@ -161,7 +154,7 @@ def g_changed(attr, old, new):
     # get new functions
     g, _ = my_bokeh_utils.string_to_function_parser(g_input.value, ['x', 'y'])
     # has any point been marked?
-    if len(source_mark.data['x']) > 0: # use clicked on point to recompute projection and recomput isocontour on f
+    if len(source_mark.data['x']) > 0: # use clicked on point to recompute projection and recompute isocontour on f
         on_selection_change(None,None,None)
     # update contour data
     contour_g.compute_contour_data(g, isovalue=[0])
@@ -238,16 +231,4 @@ init_data()
 # refresh quiver field all 100ms
 curdoc().add_periodic_callback(refresh_contour, 100)
 # make layout
-curdoc().add_root(VBoxForm(children=[HBox(children=[plot,
-                                                    VBox(children=[VBox(height=50),
-                                                                   VBox(children=[sample_fun_input_f,
-                                                                                 VBox(height=10),
-                                                                                  f_input]),
-                                                                   VBox(height=50),
-                                                                   VBox(children=[sample_fun_input_g,
-                                                                                  VBox(height=10),
-                                                                                  g_input])
-                                                                   ])
-                                                    ])
-                                     ])
-                  )
+curdoc().add_root(row(plot,widgetbox(sample_fun_input_f,f_input,sample_fun_input_g,g_input)))

@@ -275,8 +275,10 @@ class Interactor:
         """
         self._plot = plot
         self._square_size = square_size
+        interactor_source = ColumnDataSource(data=dict(x=[],y=[]))
         # create invisible pseudo squares recognizing, if they are clicked on
         self._pseudo_square = plot.square(x='x', y='y', color=None, line_color=None,
+                                          source=interactor_source,
                                           name='pseudo_square',
                                           size=self._square_size)
         # set highlighting behaviour of pseudo squares to stay invisible
@@ -308,13 +310,17 @@ class Interactor:
 
     def clicked_point(self):
         """
-        returnes the currently clicked on point in the local coordinate system of self._plot
+        returns the currently clicked on point in the local coordinate system of self._plot
         :return:
         """
-        print
-        x_coor = self._pseudo_square.data_source.data['x'][self._pseudo_square.data_source.selected['1d']['indices'][0]]
-        y_coor = self._pseudo_square.data_source.data['y'][self._pseudo_square.data_source.selected['1d']['indices'][0]]
-        return x_coor, y_coor
+        print "HERE"
+        if len(self._pseudo_square.data_source.selected['1d']['indices']) > 0:
+            id = self._pseudo_square.data_source.selected['1d']['indices'][0]
+            x_coor = self._pseudo_square.data_source.data['x'][id]
+            y_coor = self._pseudo_square.data_source.data['y'][id]
+            return x_coor, y_coor
+        else:
+            return None, None
 
 
 class Contour:
@@ -333,11 +339,14 @@ class Contour:
         :param kwargs: additional bokeh line plotting arguments like width, style ect...
         """
         self._plot = plot
-        self._contour_plot = self._plot.multi_line(xs='xs', ys='ys', line_color=line_color, **kwargs)
+        contour_source = ColumnDataSource(data=dict(xs=[], ys=[], line_color=[]))
+        self._contour_plot = self._plot.multi_line(xs='xs', ys='ys', line_color=line_color, source=contour_source,
+                                                   **kwargs)
         self._add_label = add_label
         if self._add_label:
+            label_source = ColumnDataSource(data=dict(xt=[], yt=[], text=[]))
             self._text_label = self._plot.text(x='xt', y='yt', text='text', text_baseline='middle',
-                                               text_align='center')
+                                               text_align='center', source=label_source)
 
     def compute_contour_data(self, f, isovalue=None):
         """
@@ -426,11 +435,14 @@ class Quiver:
         :param kwargs: additional arguments passed to the bokeh plotting functions, e.g. color, line width etc
         """
         self._plot = plot
-        self._segments = self._plot.segment('x0', 'y0', 'x1', 'y1', **kwargs)
-        self._patches = self._plot.patches('xs', 'ys', **kwargs)
+        segment_source = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
+        patch_source = ColumnDataSource(data=dict(xs=[], ys=[]))
+        self._segments = self._plot.segment(x0='x0', y0='y0', x1='x1', y1='y1', source=segment_source, **kwargs)
+        self._patches = self._plot.patches(xs='xs', ys='ys', source=patch_source, **kwargs)
         self._fix_at_middle = fix_at_middle
         if self._fix_at_middle:
-            self._base = self._plot.circle('x', 'y', size=1.5, **kwargs)
+            base_source = ColumnDataSource(data=dict(x=[], y=[]))
+            self._base = self._plot.circle(x='x', y='y', source=base_source, size=1.5, **kwargs)
 
     def compute_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1, scaling=.9, normalize=True):
         """

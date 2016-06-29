@@ -4,9 +4,10 @@ import logging
 import numpy as np
 
 from bokeh.models.widgets import Slider
-from bokeh.models import ColumnDataSource, PrintfTickFormatter, VBox
+from bokeh.models import ColumnDataSource, PrintfTickFormatter
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
+from bokeh.layouts import column
 
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
@@ -200,4 +201,4 @@ slider_frequency.on_change('value', update_colormap)
 # update picture all 100 ms w.r.t current view
 curdoc().add_periodic_callback(update_data, mandelbrot_settings.update_time)
 # make layout
-curdoc().add_root(VBox(children=[plot, slider_max_iterations, slider_frequency]))
+curdoc().add_root(column(plot, slider_max_iterations, slider_frequency))

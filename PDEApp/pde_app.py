@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import numpy as np
 
-from bokeh.models.widgets import Slider, RadioButtonGroup, TextInput
-from bokeh.models import ColumnDataSource, HBox, VBoxForm
+from bokeh.models import ColumnDataSource, Slider, RadioButtonGroup, TextInput
+from bokeh.layouts import widgetbox, row, column, Spacer
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -191,13 +191,7 @@ plot.circle('x', 'u', source=plot_data_num,
 init_pde()
 
 # lists all the controls in our app
-controls = VBoxForm(children=[initial_condition,
-                              time_slider,
-                              h_slider,
-                              k_slider,
-                              HBox(children=[pde_type, solver_type],
-                                   width=300)],
-                    width=400)
+controls = column(initial_condition,time_slider,h_slider,k_slider,row(widgetbox(pde_type), Spacer(sizing_mode='stretch_both'), widgetbox(solver_type),width=400),width=400)
 
 # make layout
-curdoc().add_root(HBox(children=[plot,controls],width=800))
+curdoc().add_root(row(plot,controls,width=800))

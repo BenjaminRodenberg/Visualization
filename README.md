@@ -21,6 +21,7 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 ### Next Tasks
 - [x] Refactor identical code from different apps into one script in Visualization. Possible parts of the code: Sympy parsing, bokeh interaction, quiver function
 - [x] add streaming data update for user view. [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
+- [x] update layouts to version 0.12
 - [ ] do documentation & Refactoring, where possible.
 - [ ] do documentation on Bokeh with example App. Slides? Link to Webpage Tutorial and some additional remarks?
 

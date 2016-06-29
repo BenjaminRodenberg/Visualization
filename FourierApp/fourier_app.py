@@ -1,10 +1,13 @@
 import numpy as np
 import logging
 
+from astropy.convolution.tests.test_convolve_kernels import width
+
 logging.basicConfig(level=logging.DEBUG)
 
 from bokeh.models.widgets import Slider, RadioButtonGroup, TextInput, Panel, Tabs
-from bokeh.models import ColumnDataSource, VBox, HBox
+from bokeh.models import ColumnDataSource
+from bokeh.layouts import widgetbox, column, row
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -193,8 +196,8 @@ sample_function_type = RadioButtonGroup(labels=fs.function_names, active=fs.func
 
 # here one can choose arbitrary input function
 default_function_input = TextInput(value=fs.function_input_init)
-default_function_period_start = TextInput(title='start', value=fs.timeinterval_start_init)
-default_function_period_end = TextInput(title='end', value=fs.timeinterval_end_init)
+default_function_period_start = TextInput(title='period start', value=fs.timeinterval_start_init)
+default_function_period_end = TextInput(title='period end', value=fs.timeinterval_end_init)
 
 # slider controlling degree of the fourier series
 degree = Slider(title="degree", name='degree', value=fs.degree_init, start=fs.degree_min,
@@ -237,14 +240,9 @@ plot.patch('x_patch', 'y_patch', source=source_interval_patch, alpha=.2)
 plot.line('x_min', 'y_minmax', source=source_interval_bound)
 plot.line('x_max', 'y_minmax', source=source_interval_bound)
 
-sample_controls = VBox(width=400,
-                       children=[sample_function_type])
+sample_controls = widgetbox(sample_function_type)
 
-default_controls = VBox(width=400,
-                        children=[default_function_input,
-                                  HBox(width=400,
-                                       children=[VBox(width=20), default_function_period_start, VBox(width=10),
-                                                 default_function_period_end, VBox(width=20)])])
+default_controls = column(default_function_input,default_function_period_start,default_function_period_end)
 
 # Panels for sample functions or default functions
 sample_funs = Panel(child=sample_controls, title='sample function')
@@ -254,11 +252,7 @@ fun_tabs = Tabs(tabs=[sample_funs, default_funs])
 fun_tabs.on_change('active', type_input_change)  # add callback for panel tabs
 
 # lists all the controls in our app
-controls = HBox(width=400,
-                children=[VBox(),
-                          VBox(children=[HBox(children=[degree], height=50),
-                                         HBox(children=[fun_tabs], height=100)]),
-                          VBox()])
+controls = column(degree,fun_tabs)
 
 # initialize data
 function_change()
@@ -266,4 +260,4 @@ function_change()
 # regularly update user view
 curdoc().add_periodic_callback(automatic_update, 100)
 # make layout
-curdoc().add_root(VBox(children=[plot, controls], height=550, width=400))
+curdoc().add_root(row(plot, controls, height=600, width=800))

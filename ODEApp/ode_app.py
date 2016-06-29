@@ -7,10 +7,10 @@ Created on Sat Jul 11 22:04:14 2015
 import logging
 import numpy as np
 
-from bokeh.models.widgets import Slider, RadioButtonGroup
-from bokeh.models import ColumnDataSource, HBox, VBox
+from bokeh.models import ColumnDataSource, Slider, RadioButtonGroup
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
+from bokeh.layouts import row, column, widgetbox
 
 
 # all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
@@ -227,12 +227,8 @@ quiver = my_bokeh_utils.Quiver(plot)
 init_data()
 
 # lists all the controls in our app
-controls = VBox(
-    children=[VBox(height=100), stepsize, startvalue, HBox(children=[solvers], width=400),
-              HBox(children=[odes], width=400)],
-    width=350
-)
+controls = widgetbox(stepsize, startvalue, solvers, odes, sizing_mode='stretch_both', width=400)
 
 curdoc().add_periodic_callback(refresh_user_view, 100)
 # make layout
-curdoc().add_root(HBox(children=[plot, controls], width=750))
+curdoc().add_root(column(plot, controls))

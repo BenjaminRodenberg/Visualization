@@ -14,8 +14,8 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import HBox, TextInput, Dropdown, VBoxForm, VBox
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, TextInput, Dropdown
+from bokeh.layouts import widgetbox, row, column
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -291,12 +291,9 @@ interactor.on_click(initial_value_change)
 init_data()
 
 # lists all the controls in our app associated with the default_funs panel
-ww=400
-function_controls = VBoxForm(
-    children=[sample_fun_input,VBox(width=ww,height=20), u_input, v_input,VBox(width=ww,height=20)],
-    width=ww)
+function_controls = widgetbox(sample_fun_input, u_input, v_input,width=400)
 
 # refresh quiver field and streamline all 100ms
 curdoc().add_periodic_callback(refresh_user_view, 100)
 # make layout
-curdoc().add_root(VBoxForm(children=[HBox(children=[plot, function_controls])]))
+curdoc().add_root(column(plot, function_controls))
