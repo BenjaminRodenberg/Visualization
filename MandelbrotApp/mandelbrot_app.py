@@ -9,20 +9,14 @@ from bokeh.plotting import Figure
 from bokeh.io import curdoc
 from bokeh.layouts import column
 
-
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-mandel = import_bokeh('mandel.py')
-mandel_colormap = import_bokeh('mandel_colormap.py')
-mandelbrot_settings = import_bokeh('mandelbrot_settings.py')
-my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
+import mandel
+import mandel_colormap
+import mandelbrot_settings
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import my_bokeh_utils
 
 logging.basicConfig(level=logging.DEBUG)
 

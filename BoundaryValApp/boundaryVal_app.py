@@ -1,48 +1,12 @@
-from bokeh.models import ColumnDataSource, Button, VBox, HBox, DataTable, TableColumn
+from bokeh.models import ColumnDataSource, Button, DataTable, TableColumn
 from bokeh.plotting import Figure, curdoc
-from bokeh.layouts import widgetbox
+from bokeh.layouts import widgetbox, column, layout
 
 import numpy as np
 
-
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-from tables.description import Col
-
-
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-bv_math = import_bokeh('boundaryVal_math.py')
-bv_help = import_bokeh('boundaryVal_helper.py')
-bv_settings = import_bokeh('boundaryVal_settings.py')
-
-
-def shootChange(attrname, old, new):
-    print "shootChange(...) called..."
-    if buttonShortSameFar.active is 1:
-        print "doing nothing!"
-        print "shootChange(...) exited!"
-        return
-    if buttonShortSameFar.active is 0:
-        print "shoot shorter!"
-        shootShorter()
-    elif buttonShortSameFar.active is 2:
-        print "shoot further!"
-        shootFurther()
-    else:
-        print "unknown shooting!"
-
-    print "new alpha = %d " % app_data.data['alpha'][0]
-    print "new alpha_left = %d " % app_data.data['alpha_left'][0]
-    print "new alpha_right = %d " % app_data.data['alpha_right'][0]
-    buttonShortSameFar.active = 1
-    buttonShortSameFar.labels[1] = str(app_data.data['alpha'][0])
-    print "shootChange(...) exited!"
+import boundaryVal_math as bv_math
+import boundaryVal_helper as bv_help
+import boundaryVal_settings as bv_settings
 
 
 def shootFurther():
@@ -96,12 +60,14 @@ def update_data():
     datatable_data = source_datatable.data
 
     global target_position
+    source_datatable.data = dict(shot_alpha=[app_data.data['alpha'][0]],
+                                 shot_error=[x[0,-1]-target_position])
+    '''
     datatable_data['shot_alpha'].append(app_data.data['alpha'][0])
-    datatable_data['shot_error'].append(abs(x[0,-1]-target_position))
-
-    source_datatable.data = dict(shot_alpha=[app_data.data['alpha'][0]],#datatable_data['shot_alpha'],
-                                 shot_error=[abs(x[0,-1]-target_position)])#datatable_data['shot_error'])
-    print source_datatable.data
+    datatable_data['shot_error'].append(x[0,-1]-target_position)
+    source_datatable.data = dict(shot_alpha=datatable_data['shot_alpha'],
+                                 shot_error=datatable_data['shot_error'])
+    '''
 
     rx = x[0, :]
     ry = x[1, :]
@@ -143,22 +109,10 @@ source_datatable = ColumnDataSource(data=dict(shot_alpha=[], shot_error=[]))
 app_data = ColumnDataSource(data=dict(alpha=[bv_settings.alpha_init], alpha_left=[bv_settings.alpha_left],
                                       alpha_right=[bv_settings.alpha_right]))
 
-# initialize controls
-# slider controlling alpha of the the shooter
-# obj.alphaSlider = Slider(title="Abschusswinkel",
-#                          name='alphaSlider',
-#                          value=bv_settings.alpha_init,
-#                          start=bv_settings.alpha_min,
-#                          end=bv_settings.alpha_max,
-#                          step=bv_settings.alpha_step
-#                          )
-# buttons for shooting shorter or further
 buttonShort = Button(label="shoot shorter")
 buttonShort.on_click(shootShorter)
 buttonFar = Button(label="shoot further")
 buttonFar.on_click(shootFurther)
-# buttonShortSameFar = RadioButtonGroup(labels=bv_settings.button_labels, active=bv_settings.button_init)
-# buttonShortSameFar.on_change('active', shootChange)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
@@ -199,18 +153,17 @@ target_position = np.random.rand() * 10
 bv_help.drawTargetAt(plot, target_position)
 bv_help.drawCannon(plot)
 
-# lists all the controls in our app
-controls = VBox(children=[buttonShort, buttonFar])
-
 columns = [
     TableColumn(field="shot_alpha", title="Alpha"),
     TableColumn(field="shot_error", title="Error")
 ]
 
-data_table = DataTable(source=source_datatable, columns=columns, width=400)
+data_table = DataTable(source=source_datatable, columns=columns, width=350, height=50)
 
 # calculate data
 update_data()
 
 # make layout
-curdoc().add_root(VBox(children=[plot, widgetbox(buttonShort, buttonFar, data_table,width=400)]))
+curdoc().add_root(layout(children=[[plot],
+                                   [widgetbox(buttonShort, buttonFar)],
+                                   [widgetbox(data_table)]]))

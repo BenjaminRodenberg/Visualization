@@ -4,8 +4,7 @@ Created on Thu Jul 30 18:03:09 2015
 @author: benjamin
 """
 
-import numpy as np
-from sympy import sympify, lambdify
+from sympy import lambdify
 from sympy.core import diff
 from scipy.integrate.quadpack import quad
 

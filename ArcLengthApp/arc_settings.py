@@ -1,7 +1,5 @@
 __author__ = 'benjamin'
 
-import numpy as np
-
 # general settings
 # visu
 x_min_view=-2

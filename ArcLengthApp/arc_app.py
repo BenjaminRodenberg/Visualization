@@ -9,31 +9,26 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, RadioButtonGroup, Dropdown, TextInput, CheckboxGroup, \
-    Panel, Tabs
+from bokeh.models.widgets import Slider, Dropdown, TextInput, CheckboxGroup
 from bokeh.models import ColumnDataSource
-from bokeh.layouts import widgetbox, row, column
+from bokeh.layouts import widgetbox, row
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
 import numpy as np
 
+import arc_settings
+import arc_functions
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import my_bokeh_utils
+
 global update_callback
 update_callback = True
 
 
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-arc_settings = import_bokeh('arc_settings.py')
-arc_functions = import_bokeh('arc_functions.py')
-my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 # initialize data source
 source_curve = ColumnDataSource(data=dict(x=[], y=[]))

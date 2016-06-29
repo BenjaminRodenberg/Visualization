@@ -17,17 +17,8 @@ from bokeh.layouts import widgetbox, row, column, Spacer
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-pde_settings = import_bokeh('pde_settings.py')
-pde_functions = import_bokeh('pde_functions.py')
+import pde_settings
+import pde_functions
 
 # initialize data source
 plot_data_num = ColumnDataSource(data=dict(x=[], u=[]))
@@ -191,7 +182,7 @@ plot.circle('x', 'u', source=plot_data_num,
 init_pde()
 
 # lists all the controls in our app
-controls = column(initial_condition,time_slider,h_slider,k_slider,row(widgetbox(pde_type), Spacer(sizing_mode='stretch_both'), widgetbox(solver_type),width=400),width=400)
+controls = widgetbox(initial_condition,time_slider,h_slider,k_slider,pde_type, solver_type,width=400)
 
 # make layout
 curdoc().add_root(row(plot,controls,width=800))

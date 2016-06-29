@@ -17,23 +17,17 @@ from bokeh.io import curdoc
 
 import numpy as np
 
+import leibnitz_settings
+import leibnitz_functions as lf
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import my_bokeh_utils
+
+
 global update_callback
 update_callback = True
-
-
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-leibnitz_settings = import_bokeh('leibnitz_settings.py')
-lf = import_bokeh('leibnitz_functions.py')
-my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
-
 
 def update_curve():
     # parse x and y component

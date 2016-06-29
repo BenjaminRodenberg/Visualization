@@ -9,25 +9,15 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-from bokeh.models.widgets import Slider, Dropdown, TextInput
-from bokeh.models import ColumnDataSource, HBox
-from bokeh.layouts import widgetbox
+from bokeh.models import ColumnDataSource, Slider, Dropdown, TextInput
+from bokeh.layouts import widgetbox, row
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
 import numpy as np
 
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-convolution_settings = import_bokeh('convolution_settings.py')
-convolution_functions = import_bokeh('convolution_functions.py')
+import convolution_settings
+import convolution_functions
 
 global update_is_enabled
 
@@ -137,4 +127,4 @@ update_data()
 controls = widgetbox(x_value_input, function_type, function1_input, function2_input, width=400)
 
 # make layout
-curdoc().add_root(HBox(children=[plot, controls], height=400, width=800))
+curdoc().add_root(row(plot, controls, width=800))

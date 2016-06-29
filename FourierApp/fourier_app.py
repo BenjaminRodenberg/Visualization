@@ -11,20 +11,13 @@ from bokeh.layouts import widgetbox, column, row
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
-
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-ff = import_bokeh('fourier_functions.py')
-ft = import_bokeh('fourier_tex.py')
-fs = import_bokeh('fourier_settings.py')
-my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
+import fourier_functions as ff
+import fourier_settings as fs
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import my_bokeh_utils
 
 
 def update_fourier_coeffs(f, N, t_start, t_end):

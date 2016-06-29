@@ -22,18 +22,13 @@ from bokeh.io import curdoc
 
 import numpy as np
 
+import lagrange_settings
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import my_bokeh_utils
 
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
-lagrange_settings = import_bokeh('lagrange_settings.py')
 
 # initialize data source
 source_mark = ColumnDataSource(data=dict(x=[], y=[]))

@@ -2,17 +2,6 @@ __author__ = 'benjamin'
 
 import numpy as np
 
-# all imports have to be done using absolute imports -> that's a bug of bokeh which is know and will be fixed.
-def import_bokeh(relative_path):
-    import imp
-    import os
-    app_root_dir = os.path.dirname(os.path.realpath(__file__))
-    return imp.load_source('', app_root_dir + '/' + relative_path)
-
-
-# import local modules
-cf = import_bokeh('convolution_functions.py')
-
 # general settings
 # visu
 x_min_view=-2
