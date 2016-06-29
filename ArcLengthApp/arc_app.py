@@ -29,34 +29,6 @@ global update_callback
 update_callback = True
 
 
-
-# initialize data source
-source_curve = ColumnDataSource(data=dict(x=[], y=[]))
-
-# plotting for normal parametrization
-source_point_normal = ColumnDataSource(data=dict(x=[], y=[]))
-
-# plotting for arc length parametrization
-source_point_arc = ColumnDataSource(data=dict(x=[], y=[]))
-
-# initialize controls
-# choose between original and arc length parametrization
-parametrization_input = CheckboxGroup(labels=['show original parametrization',
-                                              'show arc length parametrization'],
-                                      active=[0, 1])
-# slider controlling the current parameter t
-t_value_input = Slider(title="parameter t", name='parameter t', value=arc_settings.t_value_init,
-                       start=arc_settings.t_value_min, end=arc_settings.t_value_max,
-                       step=arc_settings.t_value_step)
-# text input for the x component of the curve
-x_component_input = TextInput(value=arc_settings.x_component_input_msg, title="curve x")
-# text input for the y component of the curve
-y_component_input = TextInput(value=arc_settings.y_component_input_msg, title="curve y")
-# dropdown menu for selecting one of the sample curves
-sample_curve_input = Dropdown(label="choose a sample function pair or enter one below",
-                              menu=arc_settings.sample_curve_names)
-
-
 def update_curve():
     # parse x and y component
     f_x = arc_functions.parser(x_component_input.value)
@@ -126,25 +98,28 @@ def update_point(parametrization_type):
 
 
 def update_tangents():
-    for i in parametrization_input.active:
-        if i == 0:
-            update_tangent(0)
-        elif i == 1:
-            update_tangent(1)
+
+    quiver[1].clear_quiver_data()
+    for i in range(2):
+        is_active = i in parametrization_input.active
+        update_tangent(i,is_active)
 
 
-def update_tangent(parametrization_type):
-    t0 = get_parameter(parametrization_type)
+def update_tangent(parametrization_type, is_active):
+    if is_active:
+        t0 = get_parameter(parametrization_type)
 
-    f_x_str = x_component_input.value
-    f_y_str = y_component_input.value
+        f_x_str = x_component_input.value
+        f_y_str = y_component_input.value
 
-    x, y, u, v = arc_functions.calculate_tangent(f_x_str, f_y_str, t0)
+        x, y, u, v = arc_functions.calculate_tangent(f_x_str, f_y_str, t0)
 
-    if parametrization_type == 1:  # arc length parametrization
-        quiver[parametrization_type].compute_quiver_data(x, y, u, v, normalize=True)
-    elif parametrization_type == 0:
-        quiver[parametrization_type].compute_quiver_data(x, y, u, v, normalize=False)
+        if parametrization_type == 1:  # arc length parametrization
+            quiver[parametrization_type].compute_quiver_data(x, y, u, v, normalize=True)
+        elif parametrization_type == 0:
+            quiver[parametrization_type].compute_quiver_data(x, y, u, v, normalize=False)
+    else:
+        quiver[parametrization_type].clear_quiver_data()
 
 
 def sample_curve_change(self):
@@ -177,12 +152,38 @@ def parametrization_change(self):
     update_tangents()
 
 
-# setup events
-t_value_input.on_change('value', t_value_change)
-x_component_input.on_change('value', curve_change)
-y_component_input.on_change('value', curve_change)
+# initialize data source for line plot
+source_curve = ColumnDataSource(data=dict(x=[], y=[]))
+
+# plotting for normal parametrization
+source_point_normal = ColumnDataSource(data=dict(x=[], y=[]))
+
+# plotting for arc length parametrization
+source_point_arc = ColumnDataSource(data=dict(x=[], y=[]))
+
+
+# initialize controls
+# choose between original and arc length parametrization
+parametrization_input = CheckboxGroup(labels=['show original parametrization',
+                                              'show arc length parametrization'],
+                                      active=[0, 1])
 parametrization_input.on_click(parametrization_change)
+# slider controlling the current parameter t
+t_value_input = Slider(title="parameter t", name='parameter t', value=arc_settings.t_value_init,
+                       start=arc_settings.t_value_min, end=arc_settings.t_value_max,
+                       step=arc_settings.t_value_step)
+t_value_input.on_change('value', t_value_change)
+# text input for the x component of the curve
+x_component_input = TextInput(value=arc_settings.x_component_input_msg, title="curve x")
+x_component_input.on_change('value', curve_change)
+# text input for the y component of the curve
+y_component_input = TextInput(value=arc_settings.y_component_input_msg, title="curve y")
+y_component_input.on_change('value', curve_change)
+# dropdown menu for selecting one of the sample curves
+sample_curve_input = Dropdown(label="choose a sample function pair or enter one below",
+                              menu=arc_settings.sample_curve_names)
 sample_curve_input.on_click(sample_curve_change)
+
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"

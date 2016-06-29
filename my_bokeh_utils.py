@@ -477,6 +477,15 @@ class Quiver:
         if self._fix_at_middle:
             self._base.data_source.data = data_base
 
+    def clear_quiver_data(self):
+        data_segments = dict(x0=[], y0=[], x1=[], y1=[])
+        data_patches = dict(xs=[], ys=[])
+        self._segments.data_source.data = data_segments
+        self._patches.data_source.data = data_patches
+        if self._fix_at_middle:
+            data_base = dict(x=[], y=[])
+            self._base.data_source.data = data_base
+
     def __quiver_to_data(self, x, y, u, v, h, do_normalization=True, fix_at_middle=True):
         def __normalize(u, v, h):
             length = np.sqrt(u ** 2 + v ** 2)
