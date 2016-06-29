@@ -1,3 +1,4 @@
+from __future__ import division
 import bokeh
 from sympy import sympify, lambdify, diff
 import numpy as np
@@ -444,7 +445,7 @@ class Quiver:
             base_source = ColumnDataSource(data=dict(x=[], y=[]))
             self._base = self._plot.circle(x='x', y='y', source=base_source, size=1.5, **kwargs)
 
-    def compute_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1, scaling=.9, normalize=True):
+    def compute_quiver_data(self, x_grid, y_grid, u_grid, v_grid, h=1.0, scaling=.9, normalize=True):
         """
         computes and updates the quiver data for the given quiver field.
         :param x_grid: x positions on the grid
@@ -479,18 +480,11 @@ class Quiver:
     def __quiver_to_data(self, x, y, u, v, h, do_normalization=True, fix_at_middle=True):
         def __normalize(u, v, h):
             length = np.sqrt(u ** 2 + v ** 2)
-            max_length = np.max(length)
             if do_normalization:
-                u[length > 0] *= 1.0 / length[length > 0] * h * .9
-                v[length > 0] *= 1.0 / length[length > 0] * h * .9
-            elif (max_length is not 0):
-                u[length > 0] *= 1.0 / max_length * h * .9
-                v[length > 0] *= 1.0 / max_length * h * .9
-            else:
-                u[:] = 0
-                v[:] = 0
-            u[length == 0] = 0
-            v[length == 0] = 0
+                u[length > 0.0] *= 1.0 / length[length > 0.0] * h
+                v[length > 0.0] *= 1.0 / length[length > 0.0] * h
+            u[length == 0.0] = 0.0
+            v[length == 0.0] = 0.0
             return u, v
 
         def quiver_to_segments(x, y, u, v, h):

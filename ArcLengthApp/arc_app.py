@@ -11,7 +11,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 from bokeh.models.widgets import Slider, RadioButtonGroup, Dropdown, TextInput, CheckboxGroup, \
     Panel, Tabs
-from bokeh.models import ColumnDataSource, VBoxForm, HBox, VBox
+from bokeh.models import ColumnDataSource
+from bokeh.layouts import widgetbox, row, column
 from bokeh.plotting import Figure
 from bokeh.io import curdoc
 
@@ -32,19 +33,16 @@ def import_bokeh(relative_path):
 # import local modules
 arc_settings = import_bokeh('arc_settings.py')
 arc_functions = import_bokeh('arc_functions.py')
+my_bokeh_utils = import_bokeh('../my_bokeh_utils.py')
 
 # initialize data source
 source_curve = ColumnDataSource(data=dict(x=[], y=[]))
 
 # plotting for normal parametrization
 source_point_normal = ColumnDataSource(data=dict(x=[], y=[]))
-source_patches_normal = ColumnDataSource(data=dict(xs=[], ys=[]))
-source_segments_normal = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
 
 # plotting for arc length parametrization
 source_point_arc = ColumnDataSource(data=dict(x=[], y=[]))
-source_patches_arc = ColumnDataSource(data=dict(xs=[], ys=[]))
-source_segments_arc = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[]))
 
 # initialize controls
 # choose between original and arc length parametrization
@@ -133,13 +131,11 @@ def update_point(parametrization_type):
 
 
 def update_tangents():
-    source_segments_normal.data, source_patches_normal.data = dict(xs=[], ys=[]), dict(x0=[], y0=[], x1=[], y1=[])
-    source_segments_arc.data, source_patches_arc.data = dict(xs=[], ys=[]), dict(x0=[], y0=[], x1=[], y1=[])
     for i in parametrization_input.active:
         if i == 0:
-            source_segments_normal.data, source_patches_normal.data = update_tangent(0)
+            update_tangent(0)
         elif i == 1:
-            source_segments_arc.data, source_patches_arc.data = update_tangent(1)
+            update_tangent(1)
 
 
 def update_tangent(parametrization_type):
@@ -151,11 +147,9 @@ def update_tangent(parametrization_type):
     x, y, u, v = arc_functions.calculate_tangent(f_x_str, f_y_str, t0)
 
     if parametrization_type == 1:  # arc length parametrization
-        u, v = arc_functions.normalize(u, v)
-
-    segments, patches = arc_functions.calculate_arrow_data(x, y, u, v)
-
-    return segments, patches
+        quiver[parametrization_type].compute_quiver_data(x, y, u, v, normalize=True)
+    elif parametrization_type == 0:
+        quiver[parametrization_type].compute_quiver_data(x, y, u, v, normalize=False)
 
 
 def sample_curve_change(self):
@@ -205,38 +199,19 @@ plot = Figure(title_text_font_size="12pt", plot_height=400, plot_width=400, tool
 
 # Plot the line by the x,y values in the source property
 plot.line('x', 'y', source=source_curve, line_width=3, line_alpha=1, color='black', legend='curve')
-# Plots related to normal length parametrization
+# quiver related to normal length parametrization
+quiver = 2*[None]
+quiver[0] = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='blue')
 plot.scatter('x', 'y', source=source_point_normal, color='blue', legend='original parametrization')
-plot.segment('x0', 'y0', 'x1', 'y1', color='blue', source=source_segments_normal)
-plot.patches('xs', 'ys', color='blue', source=source_patches_normal)
-# Plots related to arc length parametrization
+# quiver related to arc length parametrization
+quiver[1] = my_bokeh_utils.Quiver(plot, fix_at_middle=False, line_width=2, color='red')
 plot.scatter('x', 'y', source=source_point_arc, color='red', legend='arc length parametrization')
-plot.segment('x0', 'y0', 'x1', 'y1', color='red', source=source_segments_arc)
-plot.patches('xs', 'ys', color='red', source=source_patches_arc)
 
 # calculate data
 update_curve()
 update_points()
 update_tangents()
 
-# lists all the controls in our app
-parametrization_panel = Panel(child=VBox(children=[parametrization_input,
-                                                   t_value_input]),
-                              title='Parametrization')
-
-curve_panel = Panel(child=VBox(children=[sample_curve_input,
-                                         HBox(width=400,
-                                              children=[x_component_input,
-                                                        y_component_input])]),
-title = 'Curve')
-
-controls = Tabs(tabs=[parametrization_panel, curve_panel])
-
 # make layout
-curdoc().add_root(HBox(children=[plot, VBox(children=[Tabs(tabs=[curve_panel]),
-                                                      Tabs(tabs=[parametrization_panel])
-                                                      ]
-                                            )
-                                 ]
-                       )
-                  )
+curdoc().add_root(row(plot, widgetbox(parametrization_input, t_value_input, sample_curve_input, x_component_input,
+                                      y_component_input, width=400)))
