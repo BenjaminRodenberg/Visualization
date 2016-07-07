@@ -32,12 +32,11 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
 - [x] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
-- [ ] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
+- [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
-- [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
-- [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
 - [ ] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
+- [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
 
 ### Generate Running version of particular Apps
 - [x] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
@@ -51,11 +50,10 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
 - [x] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
 - [x] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
-- [ ] [TaylorApp](https://github.com/BenjaminRueth/Visualization/tree/master/TaylorApp)
 - [ ] Find nice additional visualisations
 
 ### Put Apps on Webpage
-- [ ] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
+- [x] [BoundaryValApp](https://github.com/BenjaminRueth/Visualization/tree/master/BoundaryValApp)
 - [x] [ODEApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODEApp)
 - [x] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [x] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
@@ -64,8 +62,8 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [x] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [x] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
-- [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
 - [x] [LagrangeApp](https://github.com/BenjaminRueth/Visualization/tree/master/LagrangeApp)
+- [ ] [CurveIntegralApp](https://github.com/BenjaminRueth/Visualization/tree/master/CurveIntegralApp)
 
 ### Embedding
 

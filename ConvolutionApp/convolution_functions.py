@@ -6,12 +6,13 @@ Created on Thu Jul 30 18:03:09 2015
 
 import numpy as np
 
-#==============================================================================
-# The window function
-#==============================================================================
-
 
 def window(x):
+    """
+    window function from -.5 to +.5
+    :param x: ndarray
+    :return: ndarray
+    """
     return np.piecewise(x,
                         [x < -.5,
                          (-.5 <= x) * (x <= .5),
@@ -20,10 +21,13 @@ def window(x):
                          1,
                          0])
 
-#==============================================================================
-# The ramp function
-#==============================================================================
+
 def ramp(x):
+    """
+    ramp function
+    :param x: ndarray
+    :return: ndarray
+    """
     return np.piecewise(x,
                         [x < 0,
                          (0 <= x) * (x <= 1.0),
@@ -32,10 +36,16 @@ def ramp(x):
                          lambda arg: arg,
                          lambda arg: 0.0])
 
+
 def saw(x):
-    w = 2.0 # intervall width
-    n = 2 # number of oszillations
-    return (((x+w*.5)%w) - w*.5) * npHeaviside(x+w*n*.5) * npHeaviside(w*n*.5-x)
+    """
+    saw tooth function
+    :param x: ndarray
+    :return: ndarray
+    """
+    w = 2.0  # intervall width
+    n = 2  # number of oszillations
+    return (((x + w * .5) % w) - w * .5) * npHeaviside(x + w * n * .5) * npHeaviside(w * n * .5 - x)
 
 
 def npHeaviside(x):
@@ -45,12 +55,13 @@ def npHeaviside(x):
     :return: ndarray
     """
     return np.piecewise(x,
-                        [x<0,
-                         x==0,
-                         x>0],
+                        [x < 0,
+                         x == 0,
+                         x > 0],
                         [lambda arg: 0.0,
                          lambda arg: 0.5,
                          lambda arg: 1.0])
+
 
 def npDirac(x, h):
     """
@@ -60,7 +71,7 @@ def npDirac(x, h):
     :param h: width of dirac
     :return: ndarray
     """
-    return npHeaviside(x)*npHeaviside(h-x)*1.0/h
+    return npHeaviside(x) * npHeaviside(h - x) * 1.0 / h
 
 
 def parser(fun_str, h):
@@ -68,38 +79,39 @@ def parser(fun_str, h):
     from sympy.abc import x
 
     fun_sym = sympify(fun_str)
-    fun_lam = lambdify(x, fun_sym,['numpy',
-                                   {"Heaviside": npHeaviside},
-                                   {"Dirac": lambda x: npDirac(x,h)}])
+    fun_lam = lambdify(x, fun_sym, ['numpy',
+                                    {"Heaviside": npHeaviside},
+                                    {"Dirac": lambda x: npDirac(x, h)}])
     return fun_lam
 
 
-def compute_overlay_vector(y1,y2):
-    assert(y1.size == y2.size)
+def compute_overlay_vector(y1, y2):
+    """
+    computes the overlay region of y1 and y2. Overlaying areas are returned in two separate arrays, one where the
+    product y1*y2 is positive and one where y1*y2 is negative.
+    :param y1: ndarray with function values
+    :param y2: ndarray with function values
+    :return: two overlay vectors, one with positive and one with negative sign
+    """
+    assert (y1.size == y2.size) # both input arrays have to have the same size
 
-    N = y1.size
+    N = y1.size # number of samples
     y_positive = np.zeros(2 * y1.size)
     y_negative = np.zeros(2 * y1.size)
 
     for i in range(N):
+        # positive sign -> both functions are on the same side of the x axis, always take closer branch
         if y1[i] * y2[i] > 0:
-            if y1[i] < y2[i]:
-                if y1[i] > 0:
-                    y_positive[i] = y1[i]
-                else:
-                    y_positive[i] = y2[i]
-            else:
-                if y2[i] > 0:
-                    y_positive[i] = y2[i]
-                else:
-                    y_positive[i] = y1[i]
+            if abs(y1[i]) < abs(y2[i]):  # y1 is closer to x axis
+                y_positive[i] = y1[i]  # take y1 as bound
+            else:  # y2 is closer to x axis
+                y_positive[i] = y2[i]  # take y2 as bound
+        # negative sign -> both functions are on opposite sides of the x axis, always closer negative branch
         elif y1[i] * y2[i] < 0:
-            if abs(y1[i]) > abs(y2[i]):
-                y_negative[i] = -abs(y2[i])
-                y_negative[2*N-i-1] = 0#y1[i]
-            else:
-                y_negative[i] = -abs(y1[i])
-                y_negative[2*N-i-1] = 0#y2[i]
+            if abs(y1[i]) < abs(y2[i]): # y1 is closer to x axis
+                y_negative[i] = -abs(y1[i]) # take y1 as bound on negative side
+            else: # y2 is closer to x axis
+                y_negative[i] = -abs(y2[i]) # take y2 as bound on negative side
 
     return y_positive, y_negative
 
@@ -111,20 +123,18 @@ def find_interval(x_array, x_value):
     :param x_value: value x
     :return i_left: index defining lower and upper bound of the interval such that a[i]<x<a[i+1]
     """
-    assert(type(x_array) is np.ndarray or type(x_array) is list)
+    assert (type(x_array) is np.ndarray or type(x_array) is list)
     if x_array is list:
         x_array = np.array(x_array)
-    assert(x_array.ndim == 1)
+    assert (x_array.ndim == 1)
 
     i_left = 0
     i_right = int(x_array.__len__() - 1)
 
-    while i_left+1 < i_right:
-        print str(i_left)+"|"+str(i_right)
-        assert(x_array[i_left] <= x_value <= x_array[i_right])
+    while i_left + 1 < i_right:
+        assert (x_array[i_left] <= x_value <= x_array[i_right])
 
-        i_middle = int(np.floor((i_left + i_right)*.5))
-        print str(i_middle)
+        i_middle = int(np.floor((i_left + i_right) * .5))
 
         if x_array[i_middle] <= x_value:
             i_left = i_middle
@@ -155,10 +165,6 @@ def find_value(x_array, y_array, x_value):
 
     y_left = y_array[idx]
     y_right = y_array[idx + 1]
-    y_value = (1-t) * y_left + t * y_right
+    y_value = (1 - t) * y_left + t * y_right
 
     return y_value
-
-
-
-
