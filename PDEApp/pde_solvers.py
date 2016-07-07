@@ -20,7 +20,6 @@ def heat_do_explicit_step(ux, u0, k, h):
     :return: u1: solution u(x,t=t+k)
     """
 
-    print "heat explicit"
     n = u0.shape[0]
     r = (c_heat ** 2) * k / (h ** 2)
     iteration_matrix = (r * sp.eye(n, n, -1) - 2 * r * sp.eye(n, n) + r * sp.eye(n, n, 1)).tocsr()
@@ -53,7 +52,6 @@ def heat_do_implicit_step(ux, u0, k, h):
     :param h: spatial meshwidth
     :return: u1: solution u(x,t=t+k)
     """
-    print "heat implicit"
 
     n = u0.shape[0]
     r = (c_heat ** 2) * k / (h ** 2)
@@ -82,7 +80,6 @@ def wave_do_explicit_step(u0, u1, k, h):
     :return: u2: solution u(x,t=t+k)
     """
 
-    print "wave explicit"
     n = u0.shape[0]
     r = (c_wave * k / h) ** 2
     a_h = (-2 * r * sp.eye(n, n) + r * sp.eye(n, n, -1) + r * sp.eye(n, n, 1)).tocsr()
@@ -124,7 +121,6 @@ def wave_do_implicit_step(u0, u1, k, h):
     :return: u2: solution u(x,t=t+k)
     """
 
-    print "wave implicit"
     n = u0.shape[0]
     r = (c_wave * k / h) ** 2
     a_h = (-2 * r * sp.eye(n, n) + r * sp.eye(n, n, -1) + r * sp.eye(n, n, 1)).tocsr()

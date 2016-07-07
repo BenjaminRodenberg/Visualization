@@ -31,7 +31,7 @@ for accepting connections to the server. All apps can be run using the ```bokeh-
 - [x] [FourierApp](https://github.com/BenjaminRueth/Visualization/tree/master/FourierApp)
 - [x] [ODESystemApp](https://github.com/BenjaminRueth/Visualization/tree/master/ODESystemApp)
 - [x] [MandelbrotApp](https://github.com/BenjaminRueth/Visualization/tree/master/MandelbrotApp)
-- [ ] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
+- [x] [PDEApp](https://github.com/BenjaminRueth/Visualization/tree/master/PDEApp)
 - [ ] [ConvolutionApp](https://github.com/BenjaminRueth/Visualization/tree/master/ConvolutionApp)
 - [ ] [LeibnitzApp](https://github.com/BenjaminRueth/Visualization/tree/master/LeibnitzApp)
 - [ ] [ArcLengthApp](https://github.com/BenjaminRueth/Visualization/tree/master/ArcLengthApp)
