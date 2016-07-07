@@ -125,7 +125,7 @@ sample_curve_input.on_click(sample_curve_change)
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
 # Generate a figure container
-plot = Figure(title_text_font_size="12pt", plot_height=400, plot_width=400, tools=toolset,
+plot = Figure(plot_height=400, plot_width=400, tools=toolset,
               title="Leibnitz sector formula",
               x_range=[leibnitz_settings.x_min_view, leibnitz_settings.x_max_view],
               y_range=[leibnitz_settings.y_min_view, leibnitz_settings.y_max_view])

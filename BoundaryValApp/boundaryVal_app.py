@@ -74,8 +74,7 @@ buttonFar.on_click(shoot_further)
 # initialize plot
 toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
 # Generate a figure container
-plot = Figure(title_text_font_size="12pt",
-              plot_height=bv_settings.fig_height,
+plot = Figure(plot_height=bv_settings.fig_height,
               plot_width=bv_settings.fig_width,
               tools=toolset,
               title=bv_settings.title,  # obj.text.value,

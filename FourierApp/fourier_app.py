@@ -207,8 +207,7 @@ sample_function_type.on_change('active', type_input_change)
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
 # Generate a figure container
-plot = Figure(title_text_font_size="12pt",
-              plot_height=fs.resolution,
+plot = Figure(plot_height=fs.resolution,
               plot_width=fs.resolution,
               tools=toolset,
               title="Fourier Series Approximation",

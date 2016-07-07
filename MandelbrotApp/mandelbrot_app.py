@@ -45,8 +45,7 @@ slider_frequency = Slider(title="coloring",
 
 # Generate a figure container
 toolset = "pan,reset,wheel_zoom,save"
-plot = Figure(title_text_font_size="12pt",
-              plot_height=mandelbrot_settings.x_res,
+plot = Figure(plot_height=mandelbrot_settings.x_res,
               plot_width=mandelbrot_settings.y_res,
               x_range=[mandelbrot_settings.x0, mandelbrot_settings.x1],
               y_range=[mandelbrot_settings.y0, mandelbrot_settings.y1],

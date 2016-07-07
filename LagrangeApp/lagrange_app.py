@@ -176,8 +176,7 @@ def refresh_contour():
 # initialize plot
 toolset = ["crosshair,pan,reset,resize,save,wheel_zoom,tap"]
 # Generate a figure container for the field
-plot = Figure(title_text_font_size="12pt",
-              plot_height=lagrange_settings.res_x,
+plot = Figure(plot_height=lagrange_settings.res_x,
               plot_width=lagrange_settings.res_y,
               tools=toolset,
               title="Optimization with side condition",

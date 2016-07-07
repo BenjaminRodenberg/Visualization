@@ -229,8 +229,7 @@ parameter_input.on_change('value', parameter_change)
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom"
 # Generate a figure container for the field
-plot_field = Figure(title_text_font_size="12pt",
-                    plot_height=400,
+plot_field = Figure(plot_height=400,
                     plot_width=400,
                     tools=toolset,
                     title="Vector valued function",

@@ -242,8 +242,7 @@ def refresh_user_view():
 # initialize plot
 toolset = "crosshair,pan,reset,resize,save,wheel_zoom,tap"
 # Generate a figure container
-plot = Figure(title_text_font_size="12pt",
-              plot_height=400,
+plot = Figure(plot_height=400,
               plot_width=400,
               tools=toolset,
               title="2D ODE System",

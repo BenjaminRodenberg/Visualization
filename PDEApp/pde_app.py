@@ -216,8 +216,7 @@ initial_condition.on_change('value', initial_condition_change)
 # initialize plot
 toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
 # Generate a figure container
-plot = Figure(title_text_font_size="12pt",
-              plot_height=400,
+plot = Figure(plot_height=400,
               plot_width=400,
               tools=toolset,
               title="Time dependent PDEs",
