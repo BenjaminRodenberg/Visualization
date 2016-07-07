@@ -9,96 +9,53 @@ import boundaryVal_helper as bv_help
 import boundaryVal_settings as bv_settings
 
 
-def shootFurther():
-    print "shootFurther(...) called..."
-    print "old alpha = %d " % app_data.data['alpha'][0]
-    print "old alpha_left = %d " % app_data.data['alpha_left'][0]
-    print "old alpha_right = %d " % app_data.data['alpha_right'][0]
-
+def shoot_further():
+    """
+    called to shoot further. Via bisection the next shot is placed in the interval right of the current shot
+    """
     alpha_right = app_data.data['alpha_right'][0]
     alpha_left = app_data.data['alpha'][0]
     app_data.data = dict(alpha=[(alpha_left + alpha_right) / 2],
                          alpha_left=[alpha_left],
                          alpha_right=[alpha_right])
-    print "new alpha = " + str(app_data.data['alpha'][0]) + "."
     update_data()
-    print "shootFurther(...) exited!"
 
 
-def shootShorter():
-    print "shootShorter(...) called..."
-    print "old alpha = %d " % app_data.data['alpha'][0]
-    print "old alpha_left = %d " % app_data.data['alpha_left'][0]
-    print "old alpha_right = %d " % app_data.data['alpha_right'][0]
+def shoot_shorter():
+    """
+    called to shoot shorter. Via bisection the next shot is placed in the interval left of the current shot
+    """
     alpha_right = app_data.data['alpha'][0]
     alpha_left = app_data.data['alpha_left'][0]
     app_data.data = dict(alpha=[(alpha_left + alpha_right) / 2],
                          alpha_left=[alpha_left],
                          alpha_right=[alpha_right])
-    print "new alpha = " + str(app_data.data['alpha'][0]) + "."
     update_data()
-    print "shootShorter(...) exited!"
 
 
 def update_data():
-    # ==============================================================================
-    #         Called each time that any watched property changes.
-    #         This updates the shooting curve data with the most recent values of
-    #         the sliders. This is stored as two numpy arrays in a dict into the
-    #         app's data source property.
-    # ==============================================================================
-    print "update_data(...) called..."
+    """
+    Called each time that any watched property changes. This updates the shooting curve data with the most recent values
+    """
+
     # solve shooting ODE with numerical scheme
-    print "computing new data..."
-    _, x = bv_math.shootAlpha(app_data.data['alpha'][0])
-    _, x_short = bv_math.shootAlpha(app_data.data['alpha_left'][0])
-    _, x_far = bv_math.shootAlpha(app_data.data['alpha_right'][0])
-    print "new data computed."
+    _, x = bv_math.shoot_with_alpha(app_data.data['alpha'][0])
+    _, x_short = bv_math.shoot_with_alpha(app_data.data['alpha_left'][0])
+    _, x_far = bv_math.shoot_with_alpha(app_data.data['alpha_right'][0])
 
-    # buttonShortSameFar.labels[1] = str(app_data.data['alpha'][0])
-
-    datatable_data = source_datatable.data
-
-    global target_position
     source_datatable.data = dict(shot_alpha=[app_data.data['alpha'][0]],
                                  shot_error=[x[0,-1]-target_position])
-    '''
-    datatable_data['shot_alpha'].append(app_data.data['alpha'][0])
-    datatable_data['shot_error'].append(x[0,-1]-target_position)
-    source_datatable.data = dict(shot_alpha=datatable_data['shot_alpha'],
-                                 shot_error=datatable_data['shot_error'])
-    '''
 
-    rx = x[0, :]
-    ry = x[1, :]
-    rx = rx.tolist()
-    ry = ry.tolist()
-    rx_short = x_short[0, :]
-    ry_short = x_short[1, :]
-    rx_short = rx_short.tolist()
-    ry_short = ry_short.tolist()
-    rx_far = x_far[0, :]
-    ry_far = x_far[1, :]
-    rx_far = rx_far.tolist()
-    ry_far = ry_far.tolist()
-    # ==============================================================================
-    #         This section is not working! Problem with adding line to plot!
-    # ==============================================================================
-    # ==============================================================================
-    #         print "storing old try..."
-    #         oldrx = source.data['rx'];
-    #         oldry = source.data['ry'];
-    #         plot.line(oldrx,oldry,color='green')
-    #         print "old try stored."
-    # ==============================================================================
+    rx = x[0, :].tolist()
+    ry = x[1, :].tolist()
+    rx_short = x_short[0, :].tolist()
+    ry_short = x_short[1, :].tolist()
+    rx_far = x_far[0, :].tolist()
+    ry_far = x_far[1, :].tolist()
 
-    print "saving data..."
     source.data = dict(rx=rx, ry=ry)
     source_short.data = dict(rx_short=rx_short, ry_short=ry_short)
     source_far.data = dict(rx_far=rx_far, ry_far=ry_far)
-    print "data saved."
-    print "data and plot was updated with parameters: alpha=" + str(app_data.data['alpha']) + "."
-    print "update_data(...) exited!"
 
 
 # initialize data source
@@ -110,9 +67,9 @@ app_data = ColumnDataSource(data=dict(alpha=[bv_settings.alpha_init], alpha_left
                                       alpha_right=[bv_settings.alpha_right]))
 
 buttonShort = Button(label="shoot shorter")
-buttonShort.on_click(shootShorter)
+buttonShort.on_click(shoot_shorter)
 buttonFar = Button(label="shoot further")
-buttonFar.on_click(shootFurther)
+buttonFar.on_click(shoot_further)
 
 # initialize plot
 toolset = "crosshair,pan,reset,resize,wheel_zoom,box_zoom"
@@ -148,10 +105,9 @@ plot.line('rx_far', 'ry_far',
           legend='old next farther sh')
 
 # insert picture of cannon and target
-global target_position
 target_position = np.random.rand() * 10
-bv_help.drawTargetAt(plot, target_position)
-bv_help.drawCannon(plot)
+bv_help.draw_target_at(plot, target_position)
+bv_help.draw_cannon(plot)
 
 columns = [
     TableColumn(field="shot_alpha", title="Alpha"),
