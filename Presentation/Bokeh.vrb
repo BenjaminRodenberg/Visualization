@@ -1,0 +1,8 @@
+\frametitle{\insertsubsection}
+\begin{block}{static plotting in the browser}
+\lstinputlisting[
+commentstyle=\textbf,
+language=Python,
+basicstyle=\footnotesize]
+{Examples/staticPlotting.py}
+\end{block}
