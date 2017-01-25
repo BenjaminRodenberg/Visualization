@@ -30,6 +30,8 @@
 \date{\today} 
 %\subject{} 
 
+\newcommand{\mytexttt}[1]{\colorbox{gray!20}{\texttt{#1}}}
+
 \AtBeginSection[]
 {
   \begin{frame}
@@ -126,10 +128,10 @@ another 2 minutes later\\
 \frametitle{\insertsubsection}
 \begin{block}{Git: Working on software in a team}
 \begin{itemize}
-\item \texttt{git clone} for downloading the source
-\item \texttt{git pull/push} for syncing with the repository
-\item \texttt{git add/commit} for contributing
-\item \texttt{git branch} for experiments
+\item \mytexttt{git clone} for downloading the source
+\item \mytexttt{git pull/push} for syncing with the repository
+\item \mytexttt{git add/commit} for contributing
+\item \mytexttt{git branch} for experiments
 \end{itemize}
 \end{block}
 
@@ -140,9 +142,9 @@ another 2 minutes later\\
 \item Sign up on \url{https://github.com/}
 \item \url{https://github.com/BenjaminRueth/Visualization}
 \item \textbf{HTTPS:} \\
-{\footnotesize\texttt{git clone https://github.com/BenjaminRueth/Visualization.git}}
+{\footnotesize\mytexttt{git clone https://github.com/BenjaminRueth/Visualization.git}}
 \item \textbf{SSH:\footnote{here you need a SSH key! \\ {\scriptsize\url{https://help.github.com/articles/connecting-to-github-with-ssh/}}}} \\
-{\footnotesize\texttt{git clone git@github.com:BenjaminRueth/Visualization.git}}
+{\footnotesize\mytexttt{git clone git@github.com:BenjaminRueth/Visualization.git}}
 \end{itemize}
 \end{block}
 \end{frame}
@@ -151,8 +153,8 @@ another 2 minutes later\\
 \frametitle{\insertsubsection}
 \begin{block}{Anaconda: A Python distribution}
 \begin{itemize}
-\item \textbf{Anaconda prompt:} \texttt{conda install bokeh}
-\item \textbf{Python prompt:} \texttt{ipython} or \texttt{python}
+\item \textbf{Anaconda prompt:} \mytexttt{conda install bokeh}
+\item \textbf{Python prompt:} \mytexttt{ipython} or \mytexttt{python}
 \end{itemize}
 \end{block}
 \includegraphics[width = \textwidth]{Pictures/PythonShell.png}
@@ -181,12 +183,12 @@ another 2 minutes later\\
 \item \textbf{Clone the repository:} \\
 use Git.
 \item \textbf{Our working directory:} \\
-\texttt{...\textbackslash Visualization\textbackslash Presentation\textbackslash Examples}
+\mytexttt{...\textbackslash Visualization\textbackslash Presentation\textbackslash Examples}
 \item \textbf{Start a shell:} 
 \begin{itemize}
-\item \textbf{Windows:} \texttt{start+r}, then type \text{cmd}
-\item \textbf{Linux:} \texttt{ctrl+alt+T}
-\item with \texttt{cd <path>} navigate to the working directory
+\item \textbf{Windows:} \mytexttt{start+r}, then type \text{cmd}
+\item \textbf{Linux:} \mytexttt{ctrl+alt+T}
+\item with \mytexttt{cd <path>} navigate to the working directory
 \end{itemize}
 \end{itemize}
 \end{block}
@@ -197,7 +199,7 @@ use Git.
 \begin{block}{Static example: Plotting in the browser}
 \begin{itemize}
 \item Fire up a shell in your working directory
-\item Start with \texttt{python staticPlotting.py}
+\item Start with \mytexttt{python staticPlotting.py}
 \item The browser should show the plot
 \end{itemize}
 \end{block}
@@ -219,7 +221,7 @@ basicstyle=\footnotesize]
 \begin{block}{Server example: An interactive function plotting tool}
 \begin{itemize}
 \item Fire up a shell in your working directory
-\item Start with \texttt{bokeh serve functionPlotter.py}
+\item Start with \mytexttt{bokeh serve functionPlotter.py}
 \item Visit \url{http://localhost:5006/functionPlotter}
 \pause
 \item only 60 LoC!
@@ -294,6 +296,21 @@ Visualization on \url{http://localhost:5006/odesystem_app}
 \end{block}
 \end{frame}
 
+\section{Collaborating}
+
+\begin{frame}
+\begin{block}{Use Git}
+\begin{itemize}
+\item \textbf{Create a branch:} \mytexttt{git checkout -b <myName>}
+\item \textbf{Develop:} e.g. change something in \mytexttt{Visualization/Example/staticPlotting.py}
+\item \textbf{Finalize:} \mytexttt{git add}, \mytexttt{git commit -m "my commit message"}
+\item \textbf{Synchronize:} \mytexttt{git push}\footnote{probably you get the hint to type:\\
+\mytexttt{git push --set-upstream origin <myName>. Just do it.}}
+\item \textbf{Merge:} If feature is done \mytexttt{git checkout master}, \mytexttt{git merge <myName>}
+\end{itemize}
+\end{block}
+\end{frame}
+
 \begin{frame}
 \begin{columns}
 \begin{column}{.5\textwidth}
@@ -307,14 +324,6 @@ basicstyle=\tiny]{Examples/thanks.py}
 \end{column}
 \end{columns}
 
-\end{frame}
-
-\section{Collaborating}
-
-\begin{frame}
-\begin{block}{Use Git}
-
-\end{block}
 \end{frame}
 
 \end{document}
