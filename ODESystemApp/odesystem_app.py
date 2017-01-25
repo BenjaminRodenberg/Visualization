@@ -290,4 +290,4 @@ function_controls = widgetbox(sample_fun_input, u_input, v_input,width=400)
 # refresh quiver field and streamline all 100ms
 curdoc().add_periodic_callback(refresh_user_view, 100)
 # make layout
-curdoc().add_root(column(plot, function_controls))
+curdoc().add_root(row(function_controls, plot))

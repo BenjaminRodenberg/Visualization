@@ -18,7 +18,7 @@ sample_system_names = [
 sample_system_functions = {
     "linear_stable": ("-x", "-y"),
     "linear_unstable": ("+x", "+y"),
-    "saddlepoint": ("-y", "-x"),
+    "saddlepoint": ("4*y", "x"),
     "circular_stable": ("-y", "x-y/10"),
     "circular_critical": ("-y", "x"),
     "circular_unstable": ("-y", "x+y/10"),
@@ -30,7 +30,7 @@ sample_system_functions = {
 }
 
 # defines initial ode system by key
-init_fun_key = "non_linear_orbit"
+init_fun_key = "saddlepoint"
 
 # defines initial user perspective on plot
 x_min = -5.0
