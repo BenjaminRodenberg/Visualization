@@ -297,18 +297,19 @@ Visualization on \url{http://localhost:5006/odesystem_app}
 \end{frame}
 
 \section{Collaborating}
-
+\frametitle{\insertsubsection}
 \begin{frame}
 \begin{block}{Use Git}
 \begin{itemize}
 \item \textbf{Create a branch:} \mytexttt{git checkout -b <myName>}
 \item \textbf{Develop:} e.g. change something in \mytexttt{Visualization/Example/staticPlotting.py}
-\item \textbf{Finalize:} \mytexttt{git add}, \mytexttt{git commit -m "my commit message"}
+\item \textbf{Finalize:} \mytexttt{git add}, \mytexttt{git commit -m "..."}
 \item \textbf{Synchronize:} \mytexttt{git push}\footnote{probably you get the hint to type:\\
-\mytexttt{git push --set-upstream origin <myName>. Just do it.}}
-\item \textbf{Merge:} If feature is done \mytexttt{git checkout master}, \mytexttt{git merge <myName>}
+\mytexttt{git push --set-upstream origin <myName>} just do it.}
+\item \textbf{Merge:} \mytexttt{git checkout master}, \mytexttt{git merge <myName>}
 \end{itemize}
 \end{block}
+\includegraphics[width=\textwidth]{Pictures/branching.png}
 \end{frame}
 
 \begin{frame}
