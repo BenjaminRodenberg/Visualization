@@ -1,8 +1,0 @@
-\beamer@endinputifotherversion {3.36pt}
-\beamer@sectionintoc {1}{Why do we need web visualization?}{2}{0}{1}
-\beamer@sectionintoc {2}{Interactive Web Visualization}{7}{0}{2}
-\beamer@subsectionintoc {2}{1}{What do we want?}{8}{0}{2}
-\beamer@subsectionintoc {2}{2}{Bokeh}{11}{0}{2}
-\beamer@subsectionintoc {2}{3}{Example: Phase Plane Pictures}{16}{0}{2}
-\beamer@subsectionintoc {2}{4}{What do we get?}{18}{0}{2}
-\beamer@sectionintoc {3}{Mini Pro \& Con}{20}{0}{3}
