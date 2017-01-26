@@ -29,7 +29,7 @@ derivative_input = Slider(title="n", value=1.0, start=0.0, end=5.0, step=1)
 def fun_change(attrname, old, new):
     f_str = f_input.value
     f_fun, f_sym = string_to_function_parser(f_str, ['x'])
-    print derivative_input.value
+    print(derivative_input.value)
     df_sym = diff(f_sym, 'x', int(derivative_input.value))
     df_fun = sym_to_function_parser(df_sym,['x'])
     x = np.linspace(-5, 5, 100)
