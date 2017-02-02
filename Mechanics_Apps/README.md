@@ -17,7 +17,7 @@ This Repository contains different prototypes for WebApps for the visualization 
 - [ ] 2) Pendulum/Schwerependel (sp)
 - [ ] 3) Base-excited oscillator/Fuﬂpunkterregter Schwinger (sp)
 - [ ] 4) Tuned mass damper/Schwingungstilger (sp)
-- [ ] 5) Instant centre of rotation/Momentanpol der Leiter (Leiter) 
+- [ ] 5) Instant centre of rotation/Momentanpol der Leiter (Leiter) (ak)
 - [ ] 6) Coriolis force/Drehscheibe-Corioliskraft (eb)
 - [ ] 7) Boat with three swimmers/Boot mit drei Schwimmern (...)
 - [ ] 8) Collision/Stoﬂ (...)
