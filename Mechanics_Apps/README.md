@@ -1,13 +1,13 @@
 # Mechanics Apps
 Webbased visualization for mechanics content via Bokeh
-This Repository contains different prototypes for WebApps for the visualization of mechanics example for the lectures of the Chair of Strcutrual Mechnaics, Prof. Müller, TUM (Technische UniversitÃ¤t MÃ¼nchen).
+This Repository contains different prototypes for WebApps for the visualization of mechanics example for the lectures of the Chair of Strcutrual Mechnaics, Prof. Müller, TUM (Technische Universität München).
 
 ## ToDos
 ### Selected Apps
 
 #### Technical mechanics I (jf):
-- [ ] 1) Zugversuch/Tensile testing (eb)
-- [ ] 2) Querdehnung/Transverse strain (eb)
+- [ ] 1) Tensile testing/Zugversuch (eb)
+- [ ] 2) Transverse strain/Querdehnung (eb)
 - [ ] 3) Doble-supported beam with point load/Balken (ad)
 - [ ] 4) Maxwell's reciprocity theorem/Reziprozitätssatz von Maxwell (ad)
 - [ ] 5) Buckling/Knickung (ad)
