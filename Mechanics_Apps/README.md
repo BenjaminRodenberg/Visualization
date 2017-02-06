@@ -19,12 +19,12 @@ This Repository contains different prototypes for WebApps for the visualization 
 - [ ] 4) Tuned mass damper/Schwingungstilger (sp)
 - [ ] 5) Instant centre of rotation/Momentanpol der Leiter (Leiter) (ak)
 - [ ] 6) Coriolis force/Drehscheibe-Corioliskraft (eb)
-- [ ] 7) Boat with three swimmers/Boot mit drei Schwimmern (...)
-- [ ] 8) Collision/Stoﬂ (...)
+- [ ] 7) Boat with three swimmers/Boot mit drei Schwimmern (ma)
+- [ ] 8) Collision/Stoﬂ (ma)
 
 #### Structural dynamics (cs):
 - [ ] 1) Euler-Bernoulli Vibrations with analytical solutions (ak)
-- [ ] 2) FEM Example (ak)
+- [ ] 2) FEM Example (ma)
 - [ ] 3) Seismic analysis (ak)
 
 #### Technical Acoustics II (ag):
