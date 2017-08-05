@@ -16,21 +16,24 @@ def heat_analytical(f0, x):
     return u_x
 
 
-def heat_fourier(f0, c_heat, x):
+def heat_analytical(f0, c_heat, x):
     """
     computes the analytical solution for the heat transport equation in 1D using fourier series ansatz. The fourier
     series approximation of the initial condition is computed using fast fourier transform.
+    ASSUMPTION: left and right boundary are dirichlet boundary conditions!
     :param f0: analytical, functional expression for the initial condition, that can be evaluated for arbitrary x
     :param c_heat: heat transport coefficient
     :param x: spatial x values for evaluation (equally spaced!)
     :return u_x: functional expression of the solution of the heat transport equation at positions x for arbitrary times t
     """
 
+    #todo also support Neumann boundary conditions!
+
     u0 = f0(x)
 
     u_lin = u0[0] * (np.max(x) - x) / (np.max(x) - np.min(x)) + u0[-1] * (x - np.min(x)) / (np.max(x) - np.min(x))
     u_hom = u0 - u_lin
-    u_hom = np.concatenate([u_hom, -u_hom[-2::-1]])  # periodically extend function
+    u_hom = np.concatenate([u_hom, -u_hom[-2:0:-1]])  # periodically extend function
 
     K = u_hom.__len__()
 
@@ -76,17 +79,20 @@ def wave_fourier(f0, c_wave, x):
     computes the analytical solution for the wave equation in 1D using fourier series ansatz. The fourier
     series approximation of the initial condition is computed using fast fourier transform. The initial condition f0' is
     assumed to be equal to zero. For theory see 'Karpfinger: Rezepte'
+	ASSUMPTION: left and right boundary are dirichlet boundary conditions!
     :param f0: analytical, functional expression for the initial condition, that can be evaluated for arbitrary x
     :param c_wave: wave travelling speed
     :param x: spatial x values for evaluation (equally spaced!)
     :return u_x: functional expression of the solution of the wave equation at positions x for arbitrary times t
     """
+	
+    #todo also support Neumann boundary conditions!	
 
     u0 = f0(x)
 
     u_lin = u0[0] * (np.max(x) - x) / (np.max(x) - np.min(x)) + u0[-1] * (x - np.min(x)) / (np.max(x) - np.min(x))
     u_hom = u0 - u_lin
-    u_hom = np.concatenate([u_hom, -u_hom[-2::-1]])  # periodically extend function
+    u_hom = np.concatenate([u_hom, -u_hom[-2:0:-1]])  # periodically extend function
 
     K = u_hom.__len__()
 
